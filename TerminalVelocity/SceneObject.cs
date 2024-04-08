@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.ComponentModel.Design.Serialization;
+using System.Data.Common;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
@@ -82,10 +83,10 @@ public class SceneObject : IDisposable
             needs_update = true;
         }
     }
-    private ConsoleColor bg_color = ConsoleColor.Black;
+    private ConsoleColor bg_color = ConsoleColor.White;
     private ConsoleColor fg_color = ConsoleColor.White;
 
-    public Action ProcessAction;
+    public Action? ProcessAction;
     public static SortedSet<int> ZIndexes = new SortedSet<int>(); // we just want one entry for an z-index 
     private int zIndex = 0;
 
@@ -270,13 +271,9 @@ public class SceneObject : IDisposable
     }
 
 
-    public virtual void OnProcess()
-    {
-    }
+    public virtual void OnProcess(){}
 
-    public virtual void OnInput(ConsoleKey key)
-    {
-    }
+    public virtual void OnInput(ConsoleKey key){}
 
     public static void ForceUpdate(SceneObject obj, bool update_children = true)
     {

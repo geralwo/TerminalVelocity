@@ -26,6 +26,8 @@ public class Game
         }
     }
 
+    public RenderServer rs;
+
     public static int FrameCount = 0;
     public static int RunTime = 0;
     public Game()
@@ -34,7 +36,7 @@ public class Game
     }
 
     private bool frame_completed = false;
-    public void run()
+    public void Run()
     {
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!quitting)
@@ -45,10 +47,10 @@ public class Game
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
 
-        Game.Finished();
+        _finished();
     }
 
-    private static void Finished()
+    private static void _finished()
     {
         Console.Clear(); // when we quit be nice and clear screen
         Console.CursorVisible = true;
@@ -106,3 +108,4 @@ public class Game
     public static event OnKeyPressed? KeyPressed;
     public delegate void OnKeyPressed(ConsoleKey key);
 }
+
