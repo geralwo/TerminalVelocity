@@ -26,12 +26,11 @@ public class Game
         }
     }
 
-    public RenderServer rs;
-
     public static int FrameCount = 0;
     public static int RunTime = 0;
     public Game()
     {
+        root.Visible = false;
         _init_console();
     }
 
@@ -42,7 +41,7 @@ public class Game
         while (!quitting)
         {
             ProcessTick?.Invoke();
-            Input.get_input(frame_completed);
+            Input.get_input();
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
@@ -52,19 +51,20 @@ public class Game
 
     private static void _finished()
     {
-        Console.Clear(); // when we quit be nice and clear screen
+        //Console.Clear(); // when we quit be nice and clear screen
         Console.CursorVisible = true;
     }
 
     private void render()
     {
-        frame_completed = false;
-        foreach (int _z_index in SceneObject.ZIndexes)
-        {
-            CurrentScene.render(_z_index);
-        }
-        frame_completed = true;
-        FrameCount++;
+        RenderServer.Instance.DrawBuffer();
+        // frame_completed = false;
+        // foreach (int _z_index in SceneObject.ZIndexes)
+        // {
+        //     CurrentScene.render(_z_index);
+        // }
+        // frame_completed = true;
+        // FrameCount++;
     }
 
 

@@ -7,7 +7,7 @@ public class Scene : SceneObject
 	{
 	}
 
-	public virtual void unload()
+    public virtual void unload()
 	{
 		Console.Clear();
 	}

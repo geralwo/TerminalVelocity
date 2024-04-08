@@ -129,6 +129,23 @@ public class SceneObject : IDisposable
             return display; 
         }
     }
+
+    private bool visible = true;
+    public bool Visible
+    {
+        get { return visible; }
+        set {
+            visible = value;
+            if(visible)
+            {
+                RenderServer.Instance.AddItem(this);
+            }
+            else
+            {
+                RenderServer.Instance.RemoveItem(this);
+            }
+        }
+    }
    
     public List<SceneObject> children = new List<SceneObject>();
     private bool needs_update = true;
