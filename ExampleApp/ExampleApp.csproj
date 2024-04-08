@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\TerminalVelocity\TerminalVelocity.csproj" />
+    <ProjectReference Include="../TerminalVelocity/TerminalVelocity.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

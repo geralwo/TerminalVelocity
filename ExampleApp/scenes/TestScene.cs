@@ -1,5 +1,5 @@
+using System.Reflection.Metadata;
 using TerminalVelocity;
-
 public class TestScene : Scene
 {
     public SceneObject fpsMeter = new SceneObject();
@@ -19,6 +19,10 @@ public class TestScene : Scene
         if(Game.FrameCount % 2 == 0)
         {
             fpsMeter.Display = ((int)((float)Game.FrameCount / ((float)Game.RunTime / 1000f))).ToString();
+        }
+        else
+        {
+            fpsMeter.Display = RenderServer.Hello();
         }
         
     }
