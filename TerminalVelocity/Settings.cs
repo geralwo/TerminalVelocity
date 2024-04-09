@@ -1,11 +1,8 @@
 namespace TerminalVelocity;
 
-public class GameSettings
+// TODO: fix me lol. this is shit
+public abstract class GameSettings
 {
-    public Vec2i lvl_size = new Vec2i(40,20);
-    public string player_char = "*";
-    public bool audio_enabled = false;
-
-    public int MaxFps = 240;
+    public Vec2i WindowSize = new Vec2i(Console.WindowWidth, Console.WindowHeight);
 }
     

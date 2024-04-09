@@ -102,14 +102,15 @@ public class PhysicsObject : SceneObject
         Position +=  _direction;
     }
 
-    public PhysicsObject()
+    public PhysicsObject() : base()
     {
         PhysicsServer.Instance.add_collider(this);
     }
 
-    public PhysicsObject(Vec2i _position, string _icon) : base(_position, _icon)
+    public PhysicsObject(Vec2i _position, string _icon) : this()
     {
-        PhysicsServer.Instance.add_collider(this);
+        Position = _position;
+        Display = _icon;
     }
 
     public virtual void on_collision(PhysicsServer.CollisionInfo collisionInfo)

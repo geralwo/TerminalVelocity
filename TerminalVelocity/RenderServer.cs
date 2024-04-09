@@ -21,14 +21,7 @@ public class RenderServer
             return singleton;
         }
 	}
-	private RenderServer(){
-        // for(int x = 0; x < Console.WindowWidth;x++)
-        // {
-        //     for(int y = 0;y < Console.WindowHeight;y++)
-        //     {
-        //         screen_buffer.Add(new Vec2i(x,y),new List<SceneObject>());
-        //     }
-        // }   
+	private RenderServer(){ 
 	}
 
 	public bool AddItem(SceneObject obj)
@@ -39,21 +32,7 @@ public class RenderServer
             return false;
         }
         registered_buffer.Add(obj);
-
         return true;
-
-        // if(screen_buffer.ContainsKey(obj.Position))
-        // {   
-        //     if(!screen_buffer[obj.Position].Contains(obj))
-        //         screen_buffer[obj.Position].Add(obj);
-        //         return true;
-        // }
-        // else
-        // {
-        //     screen_buffer[obj.Position] = new List<SceneObject>();
-        // }
-        // screen_buffer[obj.Position].Add(obj);
-        // return true;
 	}
 
 	public bool RemoveItem(SceneObject obj)
@@ -64,8 +43,7 @@ public class RenderServer
             return true;
         }
         return false;
-        // screen_buffer.Remove(obj.Position);
-		// return true;
+
 	}
 
     public int count()
@@ -75,7 +53,7 @@ public class RenderServer
 
     public void DrawBuffer()
     {
-        render();
+        
 
         foreach(Vec2i idx in screen_buffer.Keys)
         {   
@@ -85,24 +63,35 @@ public class RenderServer
 
             Console.Write(screen_buffer[idx].Display);
             Console.ResetColor();
-            }
         }
+        render();
+        }
+        
     public void render()
     {
         var screen_buffer_copy = new Dictionary<Vec2i, SceneObject>();
         foreach(SceneObject pixel in registered_buffer)
         {
-            if(!screen_buffer.ContainsKey(pixel.Position))
+            if(!screen_buffer_copy.ContainsKey(pixel.Position))
             {
                 screen_buffer_copy.Add(pixel.Position, pixel);
                 continue;
             }
-            if(pixel.ZIndex > screen_buffer[pixel.Position].ZIndex)
+            if(pixel.ZIndex > screen_buffer_copy[pixel.Position].ZIndex)
             {
-                // screen_buffer_copy[pixel.Position] = pixel;
                 screen_buffer_copy[pixel.Position] = pixel;
             }
         }
+        foreach(Vec2i pos in screen_buffer.Keys)
+        {
+            if(!screen_buffer_copy.ContainsKey(pos))
+            {
+                Console.SetCursorPosition(pos.x,pos.y);
+                //Console.BackgroundColor = ConsoleColor.Red;
+                Console.Write(" ");
+            }
+        }
         screen_buffer = screen_buffer_copy;
+        
     }
 }

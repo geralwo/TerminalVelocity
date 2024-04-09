@@ -6,7 +6,7 @@ public class Game
 
     public static bool quitting = false;
 
-    public static GameSettings Settings = new GameSettings();
+    public static DefaultSettings Settings = new DefaultSettings();
 
     private static Scene root = new Scene();
     private static Scene current_scene = new Scene();
@@ -40,10 +40,9 @@ public class Game
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!quitting)
         {
-            ProcessTick?.Invoke();
             Input.get_input();
-            if(frame_completed)
-                render();
+            ProcessTick?.Invoke();
+            render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
 
@@ -62,7 +61,7 @@ public class Game
         RenderServer.Instance.DrawBuffer();
         FrameCount++;
         frame_completed = true;
-        //Thread.Sleep(1000 / Game.Settings.MaxFps);
+        Thread.Sleep(1000 / Game.Settings.MaxFps); // needs to be because
     }
 
 
@@ -71,13 +70,14 @@ public class Game
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.CursorVisible = false;
         Console.Clear();
+        Console.SetCursorPosition(0,0);
     }
 
     public static void Beep(int freq, int milliseconds)
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.audio_enabled)
+            if (Game.Settings.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
 
@@ -87,7 +87,7 @@ public class Game
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.audio_enabled)
+            if (Game.Settings.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
         else if (force)
@@ -99,11 +99,10 @@ public class Game
 
     public static void Beep()
     {
-        if (Game.Settings.audio_enabled)
+        if (Game.Settings.AudioEnabled)
             Console.Beep();
     }
 
     public static event OnKeyPressed? KeyPressed;
     public delegate void OnKeyPressed(ConsoleKey key);
 }
-

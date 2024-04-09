@@ -5,13 +5,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace TerminalVelocity;
-public class SceneObject : IDisposable
+public class SceneObject : IDisposable 
 {
+
+    public Action? ProcessAction;
+    public Action? CollisionAction;
+    public Action? InputAction;
     public Guid id;
     public string name;
-
     private bool _disposed;
-
     private bool process_enabled;
     public bool ProcessEnabled
     {
@@ -79,30 +81,19 @@ public class SceneObject : IDisposable
             {
                 display = value;
             }
-                
-            needs_update = true;
         }
     }
     private ConsoleColor bg_color = ConsoleColor.White;
     private ConsoleColor fg_color = ConsoleColor.White;
-
-    public Action? ProcessAction;
-    public Action? CollisionAction;
-    public Action? InputAction;
-    public static SortedSet<int> ZIndexes = new SortedSet<int>(); // we just want one entry for an z-index 
     private int zIndex = 0;
-
-    public SceneObject? parent = null;
-
     public int ZIndex
     { 
         get { return zIndex; } 
         set {
-            needs_update = true;
             zIndex = value;
-            ZIndexes.Add(zIndex);
         }
     }
+
 
     public ConsoleColor ForegroundColor
     {
@@ -110,7 +101,6 @@ public class SceneObject : IDisposable
         set
         {
             fg_color = value;
-            needs_update = true;
         }
     }
 
@@ -120,17 +110,9 @@ public class SceneObject : IDisposable
         set
         {
             bg_color = value;
-            needs_update = true;
         }
     }
-    public string Icon
-    {
-        get { 
-            Console.ForegroundColor = fg_color;
-            Console.BackgroundColor = bg_color;
-            return display; 
-        }
-    }
+
 
     private bool visible = true;
     public bool Visible
@@ -149,8 +131,8 @@ public class SceneObject : IDisposable
         }
     }
    
+    public SceneObject? parent = null;
     public List<SceneObject> children = new List<SceneObject>();
-    private bool needs_update = true;
 
     private Vec2i position = Vec2i.ZERO;
     public Vec2i Position
@@ -159,10 +141,8 @@ public class SceneObject : IDisposable
         set 
         {
             // fixme: we need to check if we have a parent 
-            remove_trail();
             Vec2i offset = position - value;
             position = value;
-            needs_update = true;
             // somebody moved let everybody know the coords, if the last coord is me i need update
             if (children.Count > 0)
             {
@@ -176,12 +156,11 @@ public class SceneObject : IDisposable
     public SceneObject() {
         InputEnabled = false;
         ProcessEnabled = false;
+        Visible = true;
         id = Guid.NewGuid();
         name = id.ToString();
         Position = position;
         ZIndex = zIndex;
-        needs_update = true;
-        OnStart();
     }
 
     public SceneObject(bool _break_text) : this()
@@ -275,39 +254,12 @@ public class SceneObject : IDisposable
     }
 
 
-    public void render(int _zIndex)
-    {
-
-        if (position.x >= 0 && position.y >= 0 && position.x < Console.WindowWidth && position.y < Console.WindowHeight){
-            if (needs_update && _zIndex == this.ZIndex && this.Display.Length > 0) 
-            {
-                Console.SetCursorPosition(Position.x, Position.y);
-                Console.Write(Icon);
-                needs_update = false;
-            }
-        }
-        children.ForEach(child => { child.render(_zIndex); });
-    }
-
-
     public virtual void OnProcess(){
         ProcessAction?.Invoke();
     }
 
     public virtual void OnInput(ConsoleKey key){
         InputAction?.Invoke();
-    }
-
-    public static void ForceUpdate(SceneObject obj, bool update_children = true)
-    {
-        obj.needs_update = true;
-        if(update_children && obj.children.Count > 0)
-        {
-            foreach(SceneObject child in obj.children)
-            {
-                ForceUpdate(child);
-            }
-        }
     }
 
     private void remove_trail()
@@ -355,7 +307,7 @@ public class SceneObject : IDisposable
             }
             InputEnabled    = false;
             ProcessEnabled  = false;
-            Display = "";
+            Visible = false;
             children.Clear();
             _disposed       = true;
             
