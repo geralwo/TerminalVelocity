@@ -2,6 +2,7 @@
 
 public class PhysicsObject : SceneObject
 {
+    public Action? CollisionAction;
     public int layer = 0;
     private Vec2i velocity = new Vec2i();
 
@@ -15,8 +16,6 @@ public class PhysicsObject : SceneObject
     }
     public float mass = 1.0f;
     private bool solid = true;
-    public Action? OnCollision;
-
     public bool IsSolid
     {
         get { return solid; }
@@ -94,7 +93,7 @@ public class PhysicsObject : SceneObject
             }
         }
         
-        throw new Exception("we shouldnt be here");
+        return true;
     }
 
     public void move(Vec2i _direction)
@@ -111,15 +110,5 @@ public class PhysicsObject : SceneObject
     {
         Position = _position;
         Display = _icon;
-    }
-
-    public virtual void on_collision(PhysicsServer.CollisionInfo collisionInfo)
-    {
-        return;
-    }
-
-    public virtual void on_collision()
-    {
-        OnCollision?.Invoke();
     }
 }

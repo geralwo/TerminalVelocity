@@ -9,7 +9,6 @@ public class SceneObject : IDisposable
 {
 
     public Action? ProcessAction;
-    public Action? CollisionAction;
     public Action? InputAction;
     public Guid id;
     public string name;

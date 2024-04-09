@@ -23,12 +23,4 @@ public class Input
                 Console.ReadKey(true);
         }
     }
-
-    public static void get_input(bool emit_event)
-    {
-        if( emit_event )
-        {
-            get_input();
-        }
-    }
 }

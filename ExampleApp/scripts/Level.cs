@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using TerminalVelocity;
 public class Level : SceneObject {
     public Vec2i size = new Vec2i(8, 8);
@@ -65,11 +66,7 @@ public class Level : SceneObject {
 
     private Vec2i get_random_cell_in_bounds()
     {
-        Vec2i random_cell = new Vec2i();
-        do
-        {
-            random_cell = get_random_cell();
-        } while(!Is_inside_bounds(random_cell.x, random_cell.y));
+        Vec2i random_cell = new Vec2i(RandomNumberGenerator.GetInt32(1,size.x),RandomNumberGenerator.GetInt32(1,size.y));
         return random_cell;
     }
 
@@ -96,18 +93,5 @@ public class Level : SceneObject {
     public bool Is_wall(int x, int y)
     {
         return !Is_inside_bounds(x,y);
-    }
-
-
-
-
-    ~Level()
-    {
-        foreach (SceneObject physicsObject in this.children)
-            if(physicsObject is PhysicsObject)
-            {
-                PhysicsServer.Instance.remove_collider((PhysicsObject)physicsObject);
-            }
-            
     }
 }
