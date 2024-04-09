@@ -72,43 +72,35 @@ public class RenderServer
         
     public void render()
     {
-        var screen_buffer_copy = new Dictionary<Vec2i, SceneObject>();
-        foreach(int i in Z_INDICES)
-        {
-            
-        }
+        var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
         foreach(SceneObject pixel in registered_buffer)
         {
-            if(!screen_buffer_copy.ContainsKey(pixel.Position))
+            if(!new_screen_buffer.ContainsKey(pixel.Position))
             {
-                screen_buffer_copy.Add(pixel.Position, pixel);
+                new_screen_buffer.Add(pixel.Position, pixel);
                 continue;
             }
-            screen_buffer_copy[pixel.Position] = pixel;
+            new_screen_buffer[pixel.Position] = pixel;
         }
-                
-
         foreach(Vec2i pos in screen_buffer.Keys)
         {
             if(pos.x < 0 || pos.y < 0 || pos.x > Console.WindowWidth || pos.y > Console.WindowHeight)
                 continue;
-            if(!screen_buffer_copy.ContainsKey(pos))
+            if(!new_screen_buffer.ContainsKey(pos))
             {
                 Console.SetCursorPosition(pos.x,pos.y);
-                //Console.BackgroundColor = ConsoleColor.Red;
                 Console.Write(" ");
             }
             else
             {
-                if(screen_buffer_copy[pos].ZIndex > screen_buffer[pos].ZIndex)
+                if(new_screen_buffer[pos].ZIndex > screen_buffer[pos].ZIndex)
                 {
                     Console.SetCursorPosition(pos.x,pos.y);
-                    //Console.BackgroundColor = ConsoleColor.Red;
                     Console.Write(" ");
                 }
             }
         }
-        screen_buffer = screen_buffer_copy;
+        screen_buffer = new_screen_buffer;
         
     }
 }
