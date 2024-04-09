@@ -53,6 +53,5 @@ public class RenderServer
             var d = objects[idx].Icon;
             Console.Write(RenderServer.Instance.objects[idx].Display);
         }
-        Game.FrameCount++;
     }
 }

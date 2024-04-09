@@ -29,14 +29,13 @@ public class TestScene : Scene
 
     public override void OnProcess()
     {
-        if(Game.FrameCount % 2 == 0)
-            // fpsMeter.Display = ((int)((float)Game.FrameCount / ((float)Game.RunTime / 1000f))).ToString();
-            fpsMeter.Display = hello.Position.ToString();
+        
             
     }
 
     public override void OnInput(ConsoleKey key)
     {
+        fpsMeter.Display = hello.Position.ToString();
         if (key == ConsoleKey.LeftArrow)
         {
             hello.Position += Vec2i.DOWN;

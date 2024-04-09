@@ -51,20 +51,15 @@ public class Game
 
     private static void _finished()
     {
-        //Console.Clear(); // when we quit be nice and clear screen
+        Console.Clear(); // when we quit be nice and clear screen
         Console.CursorVisible = true;
     }
 
     private void render()
     {
         RenderServer.Instance.DrawBuffer();
-        // frame_completed = false;
-        // foreach (int _z_index in SceneObject.ZIndexes)
-        // {
-        //     CurrentScene.render(_z_index);
-        // }
-        // frame_completed = true;
-        // FrameCount++;
+        FrameCount++;
+        Thread.Sleep(1000 / Game.Settings.MaxFps);
     }
 
 
