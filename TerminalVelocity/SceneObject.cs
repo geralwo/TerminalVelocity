@@ -87,6 +87,8 @@ public class SceneObject : IDisposable
     private ConsoleColor fg_color = ConsoleColor.White;
 
     public Action? ProcessAction;
+    public Action? CollisionAction;
+    public Action? InputAction;
     public static SortedSet<int> ZIndexes = new SortedSet<int>(); // we just want one entry for an z-index 
     private int zIndex = 0;
 
@@ -288,9 +290,13 @@ public class SceneObject : IDisposable
     }
 
 
-    public virtual void OnProcess(){}
+    public virtual void OnProcess(){
+        ProcessAction?.Invoke();
+    }
 
-    public virtual void OnInput(ConsoleKey key){}
+    public virtual void OnInput(ConsoleKey key){
+        InputAction?.Invoke();
+    }
 
     public static void ForceUpdate(SceneObject obj, bool update_children = true)
     {
