@@ -6,6 +6,6 @@ public class GameSettings
     public string player_char = "*";
     public bool audio_enabled = false;
 
-    public int MaxFps = 144;
+    public int MaxFps = 240;
 }
     

@@ -3,13 +3,15 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Media;
 using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
 
 namespace TerminalVelocity;
 
 public class RenderServer
 {
 	private static RenderServer singleton = new RenderServer();
-	private Dictionary<Vec2i,SceneObject> objects = new Dictionary<Vec2i,SceneObject>();
+	private Dictionary<Vec2i, SceneObject> screen_buffer = new Dictionary<Vec2i, SceneObject>();
+    private List<SceneObject> registered_buffer = new List<SceneObject>();
 	public static RenderServer Instance { 
 		get {
             if (singleton == null)
@@ -20,38 +22,87 @@ public class RenderServer
         }
 	}
 	private RenderServer(){
+        // for(int x = 0; x < Console.WindowWidth;x++)
+        // {
+        //     for(int y = 0;y < Console.WindowHeight;y++)
+        //     {
+        //         screen_buffer.Add(new Vec2i(x,y),new List<SceneObject>());
+        //     }
+        // }   
 	}
 
 	public bool AddItem(SceneObject obj)
 	{
-        if(objects.ContainsKey(obj.Position))
+
+        if (registered_buffer.Contains(obj))
         {
-            if(objects[obj.Position].ZIndex < obj.ZIndex)
-                objects[obj.Position] = obj;
-            return true;
+            return false;
         }
-        objects.Add(obj.Position, obj);
-		return true;
-		
+        registered_buffer.Add(obj);
+
+        return true;
+
+        // if(screen_buffer.ContainsKey(obj.Position))
+        // {   
+        //     if(!screen_buffer[obj.Position].Contains(obj))
+        //         screen_buffer[obj.Position].Add(obj);
+        //         return true;
+        // }
+        // else
+        // {
+        //     screen_buffer[obj.Position] = new List<SceneObject>();
+        // }
+        // screen_buffer[obj.Position].Add(obj);
+        // return true;
 	}
 
 	public bool RemoveItem(SceneObject obj)
 	{
-		return true;
+        if(registered_buffer.Contains(obj))
+        {
+            registered_buffer.Remove(obj);
+            return true;
+        }
+        return false;
+        // screen_buffer.Remove(obj.Position);
+		// return true;
 	}
 
     public int count()
     {
-        return objects.Count;
+        return screen_buffer.Count;
     }
 
     public void DrawBuffer()
     {
-        foreach(Vec2i idx in objects.Keys)
-        {
+        render();
+
+        foreach(Vec2i idx in screen_buffer.Keys)
+        {   
             Console.SetCursorPosition(idx.x, idx.y);
-            var d = objects[idx].Icon;
-            Console.Write(RenderServer.Instance.objects[idx].Display);
+            Console.ForegroundColor = screen_buffer[idx].ForegroundColor;
+            Console.BackgroundColor = screen_buffer[idx].BackgroundColor;
+
+            Console.Write(screen_buffer[idx].Display);
+            Console.ResetColor();
+            }
         }
+    public void render()
+    {
+        var screen_buffer_copy = new Dictionary<Vec2i, SceneObject>();
+        foreach(SceneObject pixel in registered_buffer)
+        {
+            if(!screen_buffer.ContainsKey(pixel.Position))
+            {
+                screen_buffer_copy.Add(pixel.Position, pixel);
+                continue;
+            }
+            if(pixel.ZIndex > screen_buffer[pixel.Position].ZIndex)
+            {
+                // screen_buffer_copy[pixel.Position] = pixel;
+                screen_buffer_copy[pixel.Position] = pixel;
+            }
+        }
+        screen_buffer = screen_buffer_copy;
     }
 }

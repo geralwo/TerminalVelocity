@@ -34,7 +34,7 @@ public class Game
         _init_console();
     }
 
-    private bool frame_completed = false;
+    private bool frame_completed = true;
     public void Run()
     {
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -42,7 +42,8 @@ public class Game
         {
             ProcessTick?.Invoke();
             Input.get_input();
-            render();
+            if(frame_completed)
+                render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
 
@@ -57,9 +58,11 @@ public class Game
 
     private void render()
     {
+        frame_completed = false;
         RenderServer.Instance.DrawBuffer();
         FrameCount++;
-        Thread.Sleep(1000 / Game.Settings.MaxFps);
+        frame_completed = true;
+        //Thread.Sleep(1000 / Game.Settings.MaxFps);
     }
 
 

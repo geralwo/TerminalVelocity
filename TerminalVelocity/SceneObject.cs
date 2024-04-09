@@ -68,8 +68,8 @@ public class SceneObject : IDisposable
                 {
                     SceneObject subText = new SceneObject(str[i].PadRight(longest_str));
                     subText.Position    = Vec2i.DOWN * i;
-                    subText.Foreground  = this.Foreground;
-                    subText.Background  = this.Background;
+                    subText.ForegroundColor  = this.ForegroundColor;
+                    subText.BackgroundColor  = this.BackgroundColor;
                     subText.name        = $"{this.name}_{i}";
 
                     this.add_child(subText);
@@ -104,7 +104,7 @@ public class SceneObject : IDisposable
         }
     }
 
-    public ConsoleColor Foreground
+    public ConsoleColor ForegroundColor
     {
         get { return fg_color; }
         set
@@ -114,7 +114,7 @@ public class SceneObject : IDisposable
         }
     }
 
-    public ConsoleColor Background
+    public ConsoleColor BackgroundColor
     {
         get { return bg_color; }
         set
