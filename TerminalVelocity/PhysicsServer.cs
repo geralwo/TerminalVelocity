@@ -64,9 +64,8 @@ public class PhysicsServer
 				collisionInfo.obj.Add(obj);
 				collisionInfo.obj.Add(other_obj);
 
-                obj.on_collision(collisionInfo); // uses the old api
-                other_obj.on_collision(); // uses the new event api
-
+                obj.CollisionAction?.Invoke();
+                other_obj.CollisionAction?.Invoke();
             }
         }
         //obj.Background = ConsoleColor.Black; // debug collision
