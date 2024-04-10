@@ -6,10 +6,10 @@ public class Game
 
     public static bool quitting = false;
 
-    public static GameSettings Settings = new GameSettings();
+    public static Settings Settings = new Settings();
 
-    private static Scene root = new Scene();
-    private static Scene current_scene = new Scene();
+    private static Scene root = new Scene("root");
+    private static Scene current_scene = new Scene("empty default Scene");
     public static Scene CurrentScene
     {
         get { return current_scene; }
@@ -19,6 +19,7 @@ public class Game
             {
                 CurrentScene.unload();
                 root.remove_child(CurrentScene);
+                RenderServer.Instance.clear_scene();
                 GC.Collect();
             }
             current_scene = value;
@@ -28,27 +29,29 @@ public class Game
 
     public static int FrameCount = 0;
     public static int RunTime = 0;
-    public Game()
+    public Game(GameSettings g_settings)
     {
+        Game.Settings.User = g_settings;
+        root.Visible = false;
         _init_console();
     }
 
-    private bool frame_completed = false;
-    public void run()
+    private bool frame_completed = true;
+    public void Run()
     {
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!quitting)
         {
+            Input.get_input();
             ProcessTick?.Invoke();
-            Input.get_input(frame_completed);
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
 
-        Game.Finished();
+        _finished();
     }
 
-    private static void Finished()
+    private static void _finished()
     {
         Console.Clear(); // when we quit be nice and clear screen
         Console.CursorVisible = true;
@@ -57,12 +60,10 @@ public class Game
     private void render()
     {
         frame_completed = false;
-        foreach (int _z_index in SceneObject.ZIndexes)
-        {
-            CurrentScene.render(_z_index);
-        }
-        frame_completed = true;
+        RenderServer.Instance.DrawBuffer();
         FrameCount++;
+        frame_completed = true;
+        Thread.Sleep(1000 / Game.Settings.Engine.MaxFps); // needs to be because
     }
 
 
@@ -71,13 +72,14 @@ public class Game
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.CursorVisible = false;
         Console.Clear();
+        Console.SetCursorPosition(0,0);
     }
 
     public static void Beep(int freq, int milliseconds)
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.audio_enabled)
+            if (Game.Settings.Engine.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
 
@@ -87,7 +89,7 @@ public class Game
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.audio_enabled)
+            if (Game.Settings.Engine.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
         else if (force)
@@ -99,7 +101,7 @@ public class Game
 
     public static void Beep()
     {
-        if (Game.Settings.audio_enabled)
+        if (Game.Settings.Engine.AudioEnabled)
             Console.Beep();
     }
 

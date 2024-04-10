@@ -3,6 +3,8 @@ public class Input
 {
     public static event OnKeyPressed? KeyPressed;
     public delegate void OnKeyPressed(ConsoleKey key);
+
+    public static ConsoleKey LastKeyPressed;
     static Input()
     {
         
@@ -15,17 +17,10 @@ public class Input
             if (key != ConsoleKey.None)
             {
                 KeyPressed?.Invoke(key);
+                LastKeyPressed = key;
             }
             while (Console.KeyAvailable) // flush input
                 Console.ReadKey(true);
-        }
-    }
-
-    public static void get_input(bool emit_event)
-    {
-        if( emit_event )
-        {
-            get_input();
         }
     }
 }
