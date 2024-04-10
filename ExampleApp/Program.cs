@@ -4,9 +4,11 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Game game = new Game();
-        Scene scene = new GameScene();
+        GameSettings settings = new TestGameSettings();
+        Game game = new Game(settings);
+        Scene scene = new SettingsMenu();
         Game.CurrentScene = scene;
+        Game.Settings.User = settings;
         game.Run();
 
         Console.ResetColor();

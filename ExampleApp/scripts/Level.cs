@@ -7,11 +7,16 @@ public class Level : SceneObject {
     public Vec2i key_spawn = Vec2i.ZERO;
     public Guid key_guid = Guid.Empty;
     public Guid door_guid = Guid.Empty;
+
+    public PhysicsObject door;
+    public SceneObject key;
     private Random rng = new Random();
     public Level(int x, int y)
     {
         size = new Vec2i(x,y);
         generate_level();
+        Visible = false;
+        name = "level_constr";
     }
     public void generate_level()
     {
@@ -34,11 +39,12 @@ public class Level : SceneObject {
                     if (east > west && north > south && door_not_placed && x != 0 && y != 0)
                     {
                         wall_piece = new PhysicsObject(pos,"D");
+                        door = wall_piece;
                         door_spawn = wall_piece.Position;
                         wall_piece.name = "theoneandonly";
-                        SceneObject key = new SceneObject();
+                        key = new SceneObject();
                         key.Display = "K";
-                        key.Position = get_random_cell();
+                        key.Position = get_random_cell_in_bounds();
                         key.ZIndex = 1;
                         key.ForegroundColor = ConsoleColor.Red;
                         key.BackgroundColor = ConsoleColor.Green;
@@ -66,17 +72,13 @@ public class Level : SceneObject {
 
     private Vec2i get_random_cell_in_bounds()
     {
-        Vec2i random_cell = new Vec2i(RandomNumberGenerator.GetInt32(1,size.x),RandomNumberGenerator.GetInt32(1,size.y));
+        Vec2i random_cell = new Vec2i(RandomNumberGenerator.GetInt32(1,size.x-1),RandomNumberGenerator.GetInt32(1,size.y-1));
         return random_cell;
     }
 
     private void place_player_spawn()
     {
-        player_spawn = get_random_cell();
-        while (!Is_inside_bounds(player_spawn.x, player_spawn.y))
-        {
-            player_spawn = get_random_cell();
-        }
+        player_spawn = get_random_cell_in_bounds();
     }
 
 

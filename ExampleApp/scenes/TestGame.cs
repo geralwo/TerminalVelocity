@@ -3,41 +3,39 @@ using TerminalVelocity;
 
 public class GameScene : Scene
 {
-    Player p = new Player(Vec2i.ONE, Game.Settings.player_char);
-    Level l = new Level(Game.Settings.lvl_size.x, Game.Settings.lvl_size.y);
-    PhysicsObject d;
-    SceneObject k;
-    public GameScene()
+    Player p = new Player(Vec2i.ONE, TestGameSettings.player_char);
+    Level l = new Level(TestGameSettings.level_size.x,TestGameSettings.level_size.y);
+    public GameScene(string _name) : base(_name)
     {
+        name = "game_scene;";
         p.Visible = true;
-        l.Visible = true;
-        l.name = "level";
         InputEnabled = true;
         ProcessEnabled = true;
-        add_child(p);
-        add_child(l);
         p.Position = l.player_spawn;
         p.BackgroundColor = ConsoleColor.White;
         p.ForegroundColor = ConsoleColor.Red;
         p.ZIndex = 10;
-        d = l.GetNodeById(l.door_guid) as PhysicsObject;
-        k = l.GetNodeById(l.key_guid);
 
         SceneObject ztest = new SceneObject(new Vec2i(7,7),"Z");
+        ztest.name = "ztest";
         ztest.ZIndex = 0;
         ztest.Visible = true;
+
+        add_child(l);
+        add_child(p);
+        add_child(ztest);
     }
 
     public override void OnProcess()
     {
         if(Game.CurrentScene == this)
         {
-            if(p.Position == k.Position)
+            if(p.Position == l.key.Position)
             {
-                if (k != null && d != null)
+                if (l.door != null && l.key != null)
                 {
-                    d.Dispose();
-                    k.Dispose();
+                    l.door.Dispose();
+                    l.key.Dispose();
                 }
                 else
                 {
@@ -51,16 +49,19 @@ public class GameScene : Scene
 
     public override void OnInput(ConsoleKey key)
     {
-        if(Game.CurrentScene == this && key == ConsoleKey.Escape)
-            Game.quitting = true;
-        if(Game.CurrentScene == this && key == ConsoleKey.Enter)
-            Game.CurrentScene = new GameScene();
-    }
-
-    private void Sound()
-    {
-        Game.Beep(1940, 100);
-        Game.Beep(2180, 233);
-        Game.Beep(1556, 400);
+        if(Game.CurrentScene == this)
+        {
+            switch(key)
+            {
+                case ConsoleKey.Escape:
+                    Game.CurrentScene = new SettingsMenu();
+                    return;
+                case ConsoleKey.Enter:
+                    Game.CurrentScene = new GameScene("game scene after enter");
+                    return;
+                default:
+                    return;
+            }
+        }
     }
 }

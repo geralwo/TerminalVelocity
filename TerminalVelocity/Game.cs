@@ -6,10 +6,10 @@ public class Game
 
     public static bool quitting = false;
 
-    public static DefaultSettings Settings = new DefaultSettings();
+    public static Settings Settings = new Settings();
 
-    private static Scene root = new Scene();
-    private static Scene current_scene = new Scene();
+    private static Scene root = new Scene("root");
+    private static Scene current_scene = new Scene("empty default Scene");
     public static Scene CurrentScene
     {
         get { return current_scene; }
@@ -19,6 +19,7 @@ public class Game
             {
                 CurrentScene.unload();
                 root.remove_child(CurrentScene);
+                RenderServer.Instance.clear_scene();
                 GC.Collect();
             }
             current_scene = value;
@@ -28,8 +29,9 @@ public class Game
 
     public static int FrameCount = 0;
     public static int RunTime = 0;
-    public Game()
+    public Game(GameSettings g_settings)
     {
+        Game.Settings.User = g_settings;
         root.Visible = false;
         _init_console();
     }
@@ -61,7 +63,7 @@ public class Game
         RenderServer.Instance.DrawBuffer();
         FrameCount++;
         frame_completed = true;
-        Thread.Sleep(1000 / Game.Settings.MaxFps); // needs to be because
+        Thread.Sleep(1000 / Game.Settings.Engine.MaxFps); // needs to be because
     }
 
 
@@ -77,7 +79,7 @@ public class Game
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.AudioEnabled)
+            if (Game.Settings.Engine.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
 
@@ -87,7 +89,7 @@ public class Game
     {
         if (System.OperatingSystem.IsWindows())
         {
-            if (Game.Settings.AudioEnabled)
+            if (Game.Settings.Engine.AudioEnabled)
                 Console.Beep(freq, milliseconds);
         }
         else if (force)
@@ -99,7 +101,7 @@ public class Game
 
     public static void Beep()
     {
-        if (Game.Settings.AudioEnabled)
+        if (Game.Settings.Engine.AudioEnabled)
             Console.Beep();
     }
 

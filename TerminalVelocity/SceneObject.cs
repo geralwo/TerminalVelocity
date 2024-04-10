@@ -53,8 +53,7 @@ public class SceneObject : IDisposable
     public virtual string Display
     {
         get { return display; } 
-        set { 
-            remove_trail();
+        set {
             if(break_text && value.Contains('\n'))
             {
                 string[] str = value.Split('\n');
@@ -82,7 +81,7 @@ public class SceneObject : IDisposable
             }
         }
     }
-    private ConsoleColor bg_color = ConsoleColor.White;
+    private ConsoleColor bg_color = ConsoleColor.Black;
     private ConsoleColor fg_color = ConsoleColor.White;
     private int zIndex = 0;
     public int ZIndex
@@ -113,7 +112,7 @@ public class SceneObject : IDisposable
     }
 
 
-    private bool visible = true;
+    private bool visible = false;
     public bool Visible
     {
         get { return visible; }
@@ -157,7 +156,7 @@ public class SceneObject : IDisposable
         ProcessEnabled = false;
         Visible = true;
         id = Guid.NewGuid();
-        name = id.ToString();
+        name = this.GetType().ToString() + id.ToString();
         Position = position;
         ZIndex = zIndex;
     }
@@ -187,7 +186,8 @@ public class SceneObject : IDisposable
     {
         _child.parent = this;
         _child.Position += this.position;
-        _child.ZIndex = ZIndex; // or +=?
+        _child.ZIndex += this.ZIndex;
+        _child.Visible = _child.Visible;
         children.Add(_child);
         _child.OnStart();
         return true;
@@ -195,8 +195,8 @@ public class SceneObject : IDisposable
 
     public virtual void OnStart()
     {
-        // stuff thats needs to be done on start
-        return;
+        children.ForEach(child => child.OnStart());
+        Visible = this.Visible;
     }
 
     public bool remove_child(SceneObject _child) {
@@ -205,7 +205,7 @@ public class SceneObject : IDisposable
         {
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write($"You can't free yourself: {this.name} Type: {this.GetType()}");
+            Console.Write($"You can't free yourself: {this.name}");
             return false;
         }
         
@@ -259,20 +259,6 @@ public class SceneObject : IDisposable
 
     public virtual void OnInput(ConsoleKey key){
         InputAction?.Invoke();
-    }
-
-    private void remove_trail()
-    {
-        if (position.x >= 0 && position.y >= 0 && position.x < Console.WindowWidth && position.y < Console.WindowHeight)
-            {
-                Console.SetCursorPosition(position.x, position.y);
-                for (int i = 0; i < display.Length; i++)
-                {
-                    Console.ResetColor();
-                    Console.Write(" ");
-                }
-                
-        }
     }
 
     public void Dispose()

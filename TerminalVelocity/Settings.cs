@@ -1,8 +1,11 @@
 namespace TerminalVelocity;
-
-// TODO: fix me lol. this is shit
-public abstract class GameSettings
+public struct Settings
 {
-    public Vec2i WindowSize = new Vec2i(Console.WindowWidth, Console.WindowHeight);
+    public EngineSettings Engine;
+    public GameSettings? User;
+    public Settings()
+    {
+        Engine = new EngineSettings();
+    }
 }
     

@@ -9,6 +9,7 @@ public class Player : PhysicsObject
         Display = _display;
         InputEnabled = true;
         ProcessEnabled = true;
+        name = "player";
     }
     public override void OnProcess()
     {

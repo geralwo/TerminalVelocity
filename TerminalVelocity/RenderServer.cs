@@ -65,9 +65,18 @@ public class RenderServer
             Console.BackgroundColor = screen_buffer[idx].BackgroundColor;
 
             Console.Write(screen_buffer[idx].Display);
+            // Console.Write(screen_buffer[idx].name);
+            // Console.Write(screen_buffer[idx].GetType());
             Console.ResetColor();
         }
         render();
+    }
+
+    public void clear_scene()
+    {
+        Console.Clear();
+        screen_buffer = new Dictionary<Vec2i, SceneObject>();
+        registered_buffer = new List<SceneObject>();
     }
         
     public void render()
