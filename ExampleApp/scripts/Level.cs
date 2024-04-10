@@ -10,6 +10,8 @@ public class Level : SceneObject {
 
     public PhysicsObject door;
     public SceneObject key;
+
+    public bool ready = false;
     private Random rng = new Random();
     public Level(int x, int y)
     {
@@ -20,6 +22,11 @@ public class Level : SceneObject {
     }
     public void generate_level()
     {
+        key = new SceneObject();
+        key.Display = "K";
+        key.Position = get_random_cell_in_bounds();
+        key.ZIndex = 1;
+        add_child(key);
         // place walls around
         bool door_not_placed = true;
         for (int y = 0; y < size.y; y++)
@@ -42,10 +49,6 @@ public class Level : SceneObject {
                         door = wall_piece;
                         door_spawn = wall_piece.Position;
                         wall_piece.name = "theoneandonly";
-                        key = new SceneObject();
-                        key.Display = "K";
-                        key.Position = get_random_cell_in_bounds();
-                        key.ZIndex = 1;
                         key.ForegroundColor = ConsoleColor.Red;
                         key.BackgroundColor = ConsoleColor.Green;
                         key.Visible = true;
@@ -79,6 +82,7 @@ public class Level : SceneObject {
     private void place_player_spawn()
     {
         player_spawn = get_random_cell_in_bounds();
+        ready = true;
     }
 
 

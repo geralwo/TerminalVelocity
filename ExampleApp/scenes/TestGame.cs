@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using TerminalVelocity;
 
 
@@ -9,8 +10,6 @@ public class GameScene : Scene
     {
         name = "game_scene;";
         p.Visible = true;
-        InputEnabled = true;
-        ProcessEnabled = true;
         p.Position = l.player_spawn;
         p.BackgroundColor = ConsoleColor.White;
         p.ForegroundColor = ConsoleColor.Red;
@@ -24,12 +23,23 @@ public class GameScene : Scene
         add_child(l);
         add_child(p);
         add_child(ztest);
+
+        InputEnabled = true;
+        ProcessEnabled = true;
     }
 
     public override void OnProcess()
     {
-        if(Game.CurrentScene == this)
+        if(Game.CurrentScene == this && l.ready)
         {
+            if(l.key == null)
+            {
+                throw new Exception($"null key {l} {p}");
+            }
+            if(p == null)
+            {
+                throw new Exception("player null");
+            }
             if(p.Position == l.key.Position)
             {
                 if (l.door != null && l.key != null)
