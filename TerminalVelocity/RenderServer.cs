@@ -49,7 +49,7 @@ public class RenderServer
 
 	}
 
-    public int count()
+    public int Count()
     {
         return screen_buffer.Count;
     }
@@ -93,6 +93,8 @@ public class RenderServer
         }
         foreach(Vec2i pos in screen_buffer.Keys)
         {
+            #region screen edge bug
+            //if we dont do this, on the positive x and y we dont properly remove the obj when it goes out of bounds
             if(pos.x < 0 || pos.y < 0)
                 continue;
             if(pos.x >= Console.WindowWidth || pos.y >= Console.WindowHeight)
@@ -100,6 +102,8 @@ public class RenderServer
                 Console.SetCursorPosition(pos.x,pos.y);
                 Console.Write(" ");
             }
+            #endregion
+            
             if(!new_screen_buffer.ContainsKey(pos) )
             {
                 Console.SetCursorPosition(pos.x,pos.y);
