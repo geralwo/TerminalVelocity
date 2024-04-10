@@ -5,9 +5,6 @@ public class Level : SceneObject {
     public Vec2i player_spawn = Vec2i.ZERO;
     public Vec2i door_spawn = Vec2i.ZERO;
     public Vec2i key_spawn = Vec2i.ZERO;
-    public Guid key_guid = Guid.Empty;
-    public Guid door_guid = Guid.Empty;
-
     public PhysicsObject door;
     public SceneObject key;
 
@@ -15,6 +12,7 @@ public class Level : SceneObject {
     private Random rng = new Random();
     public Level(int x, int y)
     {
+        size = TestGameSettings.level_size;
         size = new Vec2i(x,y);
         generate_level();
         Visible = false;
@@ -29,21 +27,37 @@ public class Level : SceneObject {
         add_child(key);
         // place walls around
         bool door_not_placed = true;
+        int axis = RandomNumberGenerator.GetInt32(100) > 50 ? 0 : size.x - 1;
+        Random random = new Random();
+        int side = random.Next(4); // Choose a random side for the door (0: top, 1: right, 2: bottom, 3: left)
+
+        Vec2i door_pos;
+        switch (side)
+        {
+            case 0: // Top
+                door_pos = new Vec2i(random.Next(1, size.x - 1), 0);
+                break;
+            case 1: // Right
+                door_pos = new Vec2i(size.x - 1,random.Next(1, size.y - 1));
+                break;
+            case 2: // Bottom
+                door_pos = new Vec2i(random.Next(1, size.x - 1), size.y - 1);
+                break;
+            case 3: // Left
+                door_pos = new Vec2i(0, random.Next(1, size.y - 1));
+                break;
+            default:
+                return;
+        }
         for (int y = 0; y < size.y; y++)
         {
-            int east = rng.Next(5);
-            int west = rng.Next(5);
             for (int x = 0; x < size.x; x++)
             {
-                rng = new Random();
-                
-                int north = rng.Next(5);
-                int south = rng.Next(5);
                 Vec2i pos = new Vec2i(x, y);
-                if (y == 0 || x == 0 || x == size.x - 1|| y == size.y - 1)
+                if (y == 0 || x == 0 || x == size.x - 1 || y == size.y - 1)
                 {
                     PhysicsObject wall_piece;
-                    if (east > west && north > south && door_not_placed && x != 0 && y != 0)
+                    if (pos == door_pos && door_not_placed) 
                     {
                         wall_piece = new PhysicsObject(pos,"D");
                         door = wall_piece;
@@ -52,8 +66,6 @@ public class Level : SceneObject {
                         key.ForegroundColor = ConsoleColor.Red;
                         key.BackgroundColor = ConsoleColor.Green;
                         key.Visible = true;
-                        key_guid = key.id;
-                        door_guid = wall_piece.id;
                         add_child(key);
                         door_not_placed = false;
                     }
@@ -72,7 +84,6 @@ public class Level : SceneObject {
         }
         place_player_spawn();
     }
-
     private Vec2i get_random_cell_in_bounds()
     {
         Vec2i random_cell = new Vec2i(RandomNumberGenerator.GetInt32(1,size.x-1),RandomNumberGenerator.GetInt32(1,size.y-1));
@@ -84,8 +95,6 @@ public class Level : SceneObject {
         player_spawn = get_random_cell_in_bounds();
         ready = true;
     }
-
-
     public Vec2i get_random_cell()
     {
         return new Vec2i(rng.Next(0, size.x), rng.Next(0, size.y));
