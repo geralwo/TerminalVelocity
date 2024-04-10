@@ -32,14 +32,6 @@ public class GameScene : Scene
     {
         if(Game.CurrentScene == this && l.ready)
         {
-            if(l.key == null)
-            {
-                throw new Exception($"null key {l} {p}");
-            }
-            if(p == null)
-            {
-                throw new Exception("player null");
-            }
             if(p.Position == l.key.Position)
             {
                 if (l.door != null && l.key != null)
@@ -49,7 +41,10 @@ public class GameScene : Scene
                 }
                 else
                 {
-                    throw new Exception("door or key not found");
+                    if(l.door == null)
+                        throw new Exception("door not found");
+                    else if(l.key == null)
+                        throw new Exception("key not found");
                 }
             }
         }

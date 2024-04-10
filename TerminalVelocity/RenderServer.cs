@@ -91,11 +91,17 @@ public class RenderServer
             }
             new_screen_buffer[pixel.Position] = pixel;
         }
+        // cases for screen edges are bugged
         foreach(Vec2i pos in screen_buffer.Keys)
         {
-            if(pos.x < 0 || pos.y < 0 || pos.x > Console.WindowWidth || pos.y > Console.WindowHeight)
+            if(pos.x < 0 || pos.y < 0)
                 continue;
-            if(!new_screen_buffer.ContainsKey(pos))
+            if(pos.x >= Console.WindowWidth || pos.y >= Console.WindowHeight)
+            {
+                Console.SetCursorPosition(pos.x,pos.y);
+                Console.Write(" ");
+            }
+            if(!new_screen_buffer.ContainsKey(pos) )
             {
                 Console.SetCursorPosition(pos.x,pos.y);
                 Console.Write(" ");
