@@ -91,7 +91,6 @@ public class RenderServer
             }
             new_screen_buffer[pixel.Position] = pixel;
         }
-        // cases for screen edges are bugged
         foreach(Vec2i pos in screen_buffer.Keys)
         {
             if(pos.x < 0 || pos.y < 0)
