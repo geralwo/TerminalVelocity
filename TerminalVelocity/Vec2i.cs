@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 #pragma warning disable CA1050 // Declare types in namespaces
 
-public class Vec2i
+public struct Vec2i
 #pragma warning restore CA1050 // Declare types in namespaces
 #pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 #pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
@@ -89,4 +90,6 @@ public class Vec2i
     public static readonly Vec2i DOWN = new Vec2i(0, 1);
     public static readonly Vec2i LEFT = new Vec2i(-1, 0);
     public static readonly Vec2i RIGHT = new Vec2i(1, 0);
+
+
 }

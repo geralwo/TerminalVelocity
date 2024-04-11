@@ -59,10 +59,8 @@ public class Game
 
     private void render()
     {
-        frame_completed = false;
         RenderServer.Instance.DrawBuffer();
         FrameCount++;
-        frame_completed = true;
         Thread.Sleep(1000 / Game.Settings.Engine.MaxFps); // needs to be because
     }
 

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Media;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace TerminalVelocity;
 
@@ -12,8 +13,6 @@ public class RenderServer
 	private static RenderServer singleton = new RenderServer();
 	private Dictionary<Vec2i, SceneObject> screen_buffer = new Dictionary<Vec2i, SceneObject>();
     private List<SceneObject> registered_buffer = new List<SceneObject>();
-
-    private SortedSet<int> Z_INDICES = new SortedSet<int>();
 	public static RenderServer Instance { 
 		get {
             if (singleton == null)
@@ -28,12 +27,10 @@ public class RenderServer
 
 	public bool AddItem(SceneObject obj)
 	{
-
         if (registered_buffer.Contains(obj))
         {
             return false;
         }
-        Z_INDICES.Add(obj.ZIndex);
         registered_buffer.Add(obj);
         return true;
 	}
@@ -46,7 +43,6 @@ public class RenderServer
             return true;
         }
         return false;
-
 	}
 
     public int Count()
@@ -67,12 +63,13 @@ public class RenderServer
             Console.Write(screen_buffer[idx].Display);
             // Console.Write(screen_buffer[idx].name);
             // Console.Write(screen_buffer[idx].GetType());
+            // Console.Write(screen_buffer[idx].ZIndex);
             Console.ResetColor();
         }
         render();
     }
 
-    public void clear_scene()
+    internal void clear_scene()
     {
         Console.Clear();
         screen_buffer = new Dictionary<Vec2i, SceneObject>();
@@ -87,11 +84,13 @@ public class RenderServer
             if(!new_screen_buffer.ContainsKey(pixel.Position))
             {
                 new_screen_buffer.Add(pixel.Position, pixel);
-                continue;
             }
-            new_screen_buffer[pixel.Position] = pixel;
+            else if(pixel.ZIndex > new_screen_buffer[pixel.Position].ZIndex)
+            {
+                new_screen_buffer[pixel.Position] = pixel;
+            }
         }
-        foreach(Vec2i pos in screen_buffer.Keys)
+        foreach(Vec2i pos in screen_buffer.Keys) // go through old buffer to clean changed pixels;
         {
             #region screen edge bug
             //if we dont do this, on the positive x and y we dont properly remove the obj when it goes out of bounds
@@ -104,21 +103,16 @@ public class RenderServer
             }
             #endregion
             
-            if(!new_screen_buffer.ContainsKey(pos) )
+            if(!new_screen_buffer.ContainsKey(pos))
             {
                 Console.SetCursorPosition(pos.x,pos.y);
-                Console.Write(" ");
-            }
-            else
-            {
-                if(new_screen_buffer[pos].ZIndex > screen_buffer[pos].ZIndex)
+                for(int i = 0; i < screen_buffer[pos].Display.Length; i++)
                 {
-                    Console.SetCursorPosition(pos.x,pos.y);
                     Console.Write(" ");
                 }
+
             }
         }
         screen_buffer = new_screen_buffer;
-        
     }
 }
