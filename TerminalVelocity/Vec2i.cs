@@ -41,7 +41,6 @@ public struct Vec2i
 
     public static Vec2i operator *(Vec2i a, Vec2i b)
     {
-        Vec2i result = new Vec2i();
         return new Vec2i(a.x * b.x, a.y * b.y);
     }
     public static bool operator ==(Vec2i a, Vec2i b)

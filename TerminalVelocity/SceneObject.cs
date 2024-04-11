@@ -200,7 +200,6 @@ public class SceneObject : IDisposable
     }
 
     public bool remove_child(SceneObject _child) {
-
         if (_child == this)
         {
             Console.BackgroundColor = ConsoleColor.Red;

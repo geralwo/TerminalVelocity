@@ -29,14 +29,11 @@ public class Game
 
     public static int FrameCount = 0;
     public static int RunTime = 0;
-    public Game(GameSettings g_settings)
+    public Game()
     {
-        Game.Settings.User = g_settings;
         root.Visible = false;
         _init_console();
     }
-
-    private bool frame_completed = true;
     public void Run()
     {
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -83,26 +80,9 @@ public class Game
 
     }
 
-    public static void Beep(int freq, int milliseconds, bool force = false)
-    {
-        if (System.OperatingSystem.IsWindows())
-        {
-            if (Game.Settings.Engine.AudioEnabled)
-                Console.Beep(freq, milliseconds);
-        }
-        else if (force)
-        {
-            Console.Beep();
-        }
-
-    }
-
     public static void Beep()
     {
         if (Game.Settings.Engine.AudioEnabled)
             Console.Beep();
     }
-
-    public static event OnKeyPressed? KeyPressed;
-    public delegate void OnKeyPressed(ConsoleKey key);
 }

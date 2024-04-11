@@ -12,7 +12,7 @@ public class Level : SceneObject {
     private Random rng = new Random();
     public Level(int x, int y)
     {
-        size = TestGameSettings.level_size;
+        size = EscapeRoomSettings.RoomSize;
         size = new Vec2i(x,y);
         generate_level();
         Visible = false;
@@ -26,7 +26,6 @@ public class Level : SceneObject {
         key.ZIndex = 1;
         add_child(key);
         // place walls around
-        bool door_not_placed = true;
         int axis = RandomNumberGenerator.GetInt32(100) > 50 ? 0 : size.x - 1;
         Random random = new Random();
         int side = random.Next(4); // Choose a random side for the door (0: top, 1: right, 2: bottom, 3: left)
@@ -57,7 +56,7 @@ public class Level : SceneObject {
                 if (y == 0 || x == 0 || x == size.x - 1 || y == size.y - 1)
                 {
                     PhysicsObject wall_piece;
-                    if (pos == door_pos && door_not_placed) 
+                    if (pos == door_pos) 
                     {
                         wall_piece = new PhysicsObject(pos,"D");
                         door = wall_piece;
@@ -67,7 +66,6 @@ public class Level : SceneObject {
                         key.BackgroundColor = ConsoleColor.Green;
                         key.Visible = true;
                         add_child(key);
-                        door_not_placed = false;
                     }
                     else
                     {

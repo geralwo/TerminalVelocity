@@ -4,8 +4,8 @@ using TerminalVelocity;
 
 public class GameScene : Scene
 {
-    Player p = new Player(Vec2i.ONE, TestGameSettings.player_char);
-    Level l = new Level(TestGameSettings.level_size.x,TestGameSettings.level_size.y);
+    Player p = new Player(Vec2i.ONE, EscapeRoomSettings.PlayerChar);
+    Level l = new Level(EscapeRoomSettings.RoomSize.x,EscapeRoomSettings.RoomSize.y);
     public GameScene(string _name) : base(_name)
     {
         name = "game_scene;";
@@ -20,10 +20,9 @@ public class GameScene : Scene
         ztest.ZIndex = 0;
         ztest.Visible = true;
 
+        add_child(ztest);
         add_child(l);
         add_child(p);
-        add_child(ztest);
-
         InputEnabled = true;
         ProcessEnabled = true;
     }
@@ -47,6 +46,10 @@ public class GameScene : Scene
                         throw new Exception("key not found");
                 }
             }
+            if(p.Position == l.door_spawn)
+            {
+                Game.CurrentScene = new GameScene("finishedg");
+            }
         }
 
 
@@ -59,7 +62,7 @@ public class GameScene : Scene
             switch(key)
             {
                 case ConsoleKey.Escape:
-                    Game.CurrentScene = new SettingsMenu();
+                    Game.CurrentScene = new MainMenu();
                     return;
                 case ConsoleKey.Enter:
                     Game.CurrentScene = new GameScene("game scene after enter");
