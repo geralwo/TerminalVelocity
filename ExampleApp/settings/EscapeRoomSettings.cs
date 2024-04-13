@@ -5,5 +5,7 @@ public class EscapeRoomSettings
     {}
 
     public static Vec2i RoomSize = new Vec2i(Console.WindowHeight,Console.WindowHeight > Console.WindowWidth ? Console.WindowWidth : Console.WindowHeight);
-    public static string PlayerChar = "*";
+    public static string PlayerChar = "@";
+
+    public static ConsoleColor KeyColor = ConsoleColor.Black;
 }

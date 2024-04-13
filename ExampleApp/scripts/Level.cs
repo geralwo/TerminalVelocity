@@ -5,8 +5,8 @@ public class Level : SceneObject {
     public Vec2i player_spawn = Vec2i.ZERO;
     public Vec2i door_spawn = Vec2i.ZERO;
     public Vec2i key_spawn = Vec2i.ZERO;
-    public PhysicsObject door;
-    public SceneObject key;
+    public PhysicsObject? door;
+    public SceneObject? key;
 
     public bool ready = false;
     private Random rng = new Random();
@@ -18,15 +18,46 @@ public class Level : SceneObject {
         Visible = false;
         name = "level_constr";
     }
+    private ConsoleColor GetRandomConsoleColor()
+    {
+        var consoleColors = Enum.GetValues(typeof(ConsoleColor));
+        ConsoleColor random_color = (ConsoleColor)consoleColors.GetValue(rng.Next(consoleColors.Length));
+        if(random_color == ConsoleColor.Black)
+        {
+            return GetRandomConsoleColor();
+        }
+        return random_color;
+    }
+    
     public void generate_level()
     {
+        ConsoleColor key_color = GetRandomConsoleColor();
         key = new SceneObject();
-        key.Display = "K";
+        key.Display = "k";
         key.Position = get_random_cell_in_bounds();
         key.ZIndex = 1;
+        key.BackgroundColor = key_color;
         add_child(key);
+        EscapeRoomSettings.KeyColor = key_color;
+
+        Vec2i[] fence_coords = {
+            Vec2i.UP * 2 + Vec2i.LEFT * 2, Vec2i.UP * 2 + Vec2i.LEFT * 1   , Vec2i.UP * 2 + Vec2i.LEFT * 0,    Vec2i.UP * 2 + Vec2i.RIGHT * 1,     Vec2i.UP * 2 + Vec2i.RIGHT * 2,
+            Vec2i.LEFT * 2 + Vec2i.UP,                                                                                                                 Vec2i.RIGHT * 2 + Vec2i.UP,
+            Vec2i.LEFT * 2,                                                                                                                                       Vec2i.RIGHT * 2,
+            Vec2i.LEFT * 2 + Vec2i.DOWN,                                                                                                             Vec2i.RIGHT * 2 + Vec2i.DOWN,
+            Vec2i.DOWN * 2 + Vec2i.LEFT * 2, Vec2i.DOWN * 2 + Vec2i.LEFT * 1, Vec2i.DOWN * 2 + Vec2i.LEFT * 0, Vec2i.DOWN * 2 + Vec2i.RIGHT * 1, Vec2i.DOWN * 2 + Vec2i.RIGHT * 2,
+        };
+        for(int i = 0; i < fence_coords.Length;i++)
+        {
+            PhysicsObject key_fence = new PhysicsObject(fence_coords[i] + key.Position," ");
+            key_fence.BackgroundColor = key.BackgroundColor;
+            key_fence.Visible = true;
+            key_fence.ZIndex = -1;
+            key_fence.CollisionFilter.Add(key_color.ToString());
+            add_child(key_fence);
+        }
+
         // place walls around
-        int axis = RandomNumberGenerator.GetInt32(100) > 50 ? 0 : size.x - 1;
         Random random = new Random();
         int side = random.Next(4); // Choose a random side for the door (0: top, 1: right, 2: bottom, 3: left)
 
@@ -62,8 +93,8 @@ public class Level : SceneObject {
                         door = wall_piece;
                         door_spawn = wall_piece.Position;
                         wall_piece.name = "theoneandonly";
-                        key.ForegroundColor = ConsoleColor.Red;
-                        key.BackgroundColor = ConsoleColor.Green;
+                        key.ForegroundColor = ConsoleColor.Black;
+
                         key.Visible = true;
                         add_child(key);
                     }

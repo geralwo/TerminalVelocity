@@ -11,16 +11,16 @@ public class GameScene : Scene
         name = "game_scene;";
         p.Visible = true;
         p.Position = l.player_spawn;
+        p.name = "player";
         p.BackgroundColor = ConsoleColor.White;
         p.ForegroundColor = ConsoleColor.Red;
         p.ZIndex = 10;
+        
 
-        SceneObject ztest = new SceneObject(new Vec2i(7,7),"Z");
-        ztest.name = "ztest";
-        ztest.ZIndex = 0;
-        ztest.Visible = true;
-
-        add_child(ztest);
+        SceneObject coltest = new SceneObject();
+        coltest.name = EscapeRoomSettings.KeyColor.ToString();
+        coltest.BackgroundColor = ConsoleColor.White;
+        add_child(coltest);
         add_child(l);
         add_child(p);
         InputEnabled = true;
