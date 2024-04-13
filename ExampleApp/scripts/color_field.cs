@@ -7,7 +7,7 @@ public class ColorField : PhysicsArea
     {
         BackgroundColor = _color;
         Position = _position;
-        Display = "#";
+        Display = " ";
     }
 
     public override void on_collision(PhysicsServer.CollisionInfo collisionInfo)

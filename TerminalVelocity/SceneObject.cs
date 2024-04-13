@@ -83,11 +83,13 @@ public class SceneObject : IDisposable
     }
     private ConsoleColor bg_color = ConsoleColor.Black;
     private ConsoleColor fg_color = ConsoleColor.White;
-    private int zIndex = 0;
+    private int zIndex = 1;
     public int ZIndex
     { 
         get { return zIndex; } 
         set {
+            if(value == 0)
+                return;
             zIndex = value;
         }
     }
