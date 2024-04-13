@@ -53,7 +53,7 @@ public class Level : SceneObject {
             key_fence.BackgroundColor = key.BackgroundColor;
             key_fence.Visible = true;
             key_fence.ZIndex = -1;
-            key_fence.CollisionFilter.Add(key_color.ToString());
+            // key_fence.CollisionFilter.Add(key_color.ToString());
             add_child(key_fence);
         }
 
