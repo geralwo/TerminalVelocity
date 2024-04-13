@@ -19,13 +19,13 @@ public class Level : SceneObject {
         Visible = false;
         name = "level";
     }
-    private ConsoleColor GetRandomConsoleColor()
+    private ConsoleColor GetRandomConsoleColor(ConsoleColor exclude)
     {
         var consoleColors = Enum.GetValues(typeof(ConsoleColor));
         ConsoleColor random_color = (ConsoleColor)consoleColors.GetValue(rng.Next(consoleColors.Length));
-        if(random_color == ConsoleColor.Black)
+        if(random_color == exclude)
         {
-            return GetRandomConsoleColor();
+            return GetRandomConsoleColor(exclude);
         }
         return random_color;
     }
@@ -33,27 +33,27 @@ public class Level : SceneObject {
     public void generate_level()
     {
 
-        ConsoleColor key_color = GetRandomConsoleColor();
+        ConsoleColor key_color = GetRandomConsoleColor(ConsoleColor.Black);
         key = new SceneObject();
         key.Display = "k";
         key.Position = get_random_cell_in_bounds();
         key.ZIndex = 1;
-        ColorField f = new ColorField(key_color,get_random_cell_in_bounds());
-        add_child(f);
+        // ColorField f = new ColorField(key_color,get_random_cell_in_bounds());
+        // add_child(f);
         // this does not work yet
-        // for(int i = 0; i < 16;i++)
-        // {
-        //     ColorField f;
-        //     if(i % 4 == 0)
-        //     {
-        //         f = new ColorField(key_color,get_random_cell_in_bounds());
-        //     }
-        //     else
-        //     {
-        //         f = new ColorField(GetRandomConsoleColor(),get_random_cell_in_bounds());
-        //     }
-        //     add_child(f);
-        // }
+        for(int i = 0; i < 16;i++)
+        {
+            ColorField f;
+            if(i % 4 == 0)
+            {
+                f = new ColorField(key_color,get_random_cell_in_bounds());
+            }
+            else
+            {
+                f = new ColorField(GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
+            }
+            add_child(f);
+        }
         key.BackgroundColor = key_color;
         add_child(key);
         EscapeRoomSettings.KeyColor = key_color;
@@ -81,8 +81,7 @@ public class Level : SceneObject {
             key_fence.BackgroundColor = key.BackgroundColor;
             key_fence.Visible = true;
             key_fence.ZIndex = -10;
-            key_fence.name = "keyfence";
-            // key_fence.CollisionFilter.Add(key_color.ToString());
+            key_fence.name = key_color.ToString();
             add_child(key_fence);
         }
 

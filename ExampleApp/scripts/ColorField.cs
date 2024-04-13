@@ -2,7 +2,6 @@ using TerminalVelocity;
 
 public class ColorField : PhysicsArea
 {
-    public static SceneObject[] fence;
     public ColorField(ConsoleColor _color, Vec2i _position)
     {
         BackgroundColor = _color;
@@ -13,8 +12,10 @@ public class ColorField : PhysicsArea
     public override void on_collision(PhysicsServer.CollisionInfo collisionInfo)
     {
         collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj => {
+            obj.CollisionIgnoreFilter.Clear();
             obj.BackgroundColor = this.BackgroundColor;
-            obj.CollisionIgnoreFilter.Add("keyfence");
+            obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
+            obj.ForegroundColor = ConsoleColor.Black;
         });
     }
 }
