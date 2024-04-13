@@ -8,6 +8,7 @@ public class Level : SceneObject {
     public PhysicsObject? door;
     public SceneObject? key;
 
+    public Vec2i[] fence_positions = new Vec2i[8];
     public bool ready = false;
     private Random rng = new Random();
     public Level(int x, int y)
@@ -16,7 +17,7 @@ public class Level : SceneObject {
         size = new Vec2i(x,y);
         generate_level();
         Visible = false;
-        name = "level_constr";
+        name = "level";
     }
     private ConsoleColor GetRandomConsoleColor()
     {
@@ -31,7 +32,10 @@ public class Level : SceneObject {
     
     public void generate_level()
     {
+
         ConsoleColor key_color = GetRandomConsoleColor();
+        ColorField f = new ColorField(key_color,get_random_cell_in_bounds()); // HÄ??? wieso wird das ohne SceneObject.Display gerendert? 
+        add_child(f);
         key = new SceneObject();
         key.Display = "k";
         key.Position = get_random_cell_in_bounds();
@@ -41,11 +45,21 @@ public class Level : SceneObject {
         EscapeRoomSettings.KeyColor = key_color;
 
         Vec2i[] fence_coords = {
-            Vec2i.UP * 2 + Vec2i.LEFT * 2, Vec2i.UP * 2 + Vec2i.LEFT * 1   , Vec2i.UP * 2 + Vec2i.LEFT * 0,    Vec2i.UP * 2 + Vec2i.RIGHT * 1,     Vec2i.UP * 2 + Vec2i.RIGHT * 2,
-            Vec2i.LEFT * 2 + Vec2i.UP,                                                                                                                 Vec2i.RIGHT * 2 + Vec2i.UP,
-            Vec2i.LEFT * 2,                                                                                                                                       Vec2i.RIGHT * 2,
-            Vec2i.LEFT * 2 + Vec2i.DOWN,                                                                                                             Vec2i.RIGHT * 2 + Vec2i.DOWN,
-            Vec2i.DOWN * 2 + Vec2i.LEFT * 2, Vec2i.DOWN * 2 + Vec2i.LEFT * 1, Vec2i.DOWN * 2 + Vec2i.LEFT * 0, Vec2i.DOWN * 2 + Vec2i.RIGHT * 1, Vec2i.DOWN * 2 + Vec2i.RIGHT * 2,
+            Vec2i.UP * 2 + Vec2i.LEFT * 2,
+            Vec2i.UP * 2 + Vec2i.LEFT * 1,
+            Vec2i.UP * 2,
+            Vec2i.UP * 2 + Vec2i.RIGHT * 1,
+            Vec2i.UP * 2 + Vec2i.RIGHT * 2,
+            Vec2i.LEFT * 2 + Vec2i.UP,
+            Vec2i.RIGHT * 2 + Vec2i.UP,
+            Vec2i.LEFT * 2,Vec2i.RIGHT * 2,
+            Vec2i.LEFT * 2 + Vec2i.DOWN,
+            Vec2i.RIGHT * 2 + Vec2i.DOWN,
+            Vec2i.DOWN * 2 + Vec2i.LEFT * 2,
+            Vec2i.DOWN * 2 + Vec2i.LEFT * 1,
+            Vec2i.DOWN * 2,
+            Vec2i.DOWN * 2 + Vec2i.RIGHT * 1,
+            Vec2i.DOWN * 2 + Vec2i.RIGHT * 2,
         };
         for(int i = 0; i < fence_coords.Length;i++)
         {
@@ -53,6 +67,7 @@ public class Level : SceneObject {
             key_fence.BackgroundColor = key.BackgroundColor;
             key_fence.Visible = true;
             key_fence.ZIndex = -1;
+            key_fence.name = "keyfence";
             // key_fence.CollisionFilter.Add(key_color.ToString());
             add_child(key_fence);
         }

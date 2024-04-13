@@ -59,13 +59,21 @@ public class PhysicsServer
         {
             if (target_position == other_obj.Position && obj != other_obj)
             {
-				
+				if(obj.CollisionIgnoreFilter.Contains(other_obj.name))
+				{
+					return collisionInfo;
+				}
+
+
 				//obj.Background = ConsoleColor.Red; // debug collision
-				collisionInfo.obj.Add(obj);
-				collisionInfo.obj.Add(other_obj);
+				collisionInfo.colliders.Add(obj);
+				collisionInfo.colliders.Add(other_obj);
 
                 obj.CollisionAction?.Invoke();
                 other_obj.CollisionAction?.Invoke();
+
+				obj.on_collision(collisionInfo);
+				other_obj.on_collision(collisionInfo);
             }
         }
         //obj.Background = ConsoleColor.Black; // debug collision
@@ -74,8 +82,10 @@ public class PhysicsServer
 
 	public struct CollisionInfo
 	{
-		// CollisionInfo should hold all the objects and information about the collision
-		public List<PhysicsObject> obj = new List<PhysicsObject>();
+		// CollisionInfo holds all the objects and information about the collision
+		public bool is_valid = true;
+		
+		public List<PhysicsObject> colliders = new List<PhysicsObject>();
 
         public CollisionInfo()
         {
