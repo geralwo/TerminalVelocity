@@ -5,13 +5,12 @@ public class PhysicsObject : SceneObject
     public Action? CollisionAction;
     public int layer = 0;
     private Vec2i velocity = new Vec2i();
-
+    public List<string> CollisionIgnoreFilter = new List<string>();
     public Vec2i Velocity
     {
         get {return velocity;}
         set {
             velocity = value;
-            //SceneObject.ForceUpdate(this);
         }
     }
     public float mass = 1.0f;
@@ -35,13 +34,13 @@ public class PhysicsObject : SceneObject
     {
         Velocity += _direction;
         PhysicsServer.CollisionInfo col = PhysicsServer.Instance.colliding(this);
-        if(col.obj.Count == 0)
+        if(col.colliders.Count == 0)
         {
             move(Velocity);
             Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
             return true;
         }
-        foreach (var colItem in col.obj)
+        foreach (var colItem in col.colliders) // should this be in physics server?
         {
             if(colItem == this)
                 continue;
@@ -59,7 +58,7 @@ public class PhysicsObject : SceneObject
             }
         }
         
-        throw new Exception("we shouldnt be here");
+        throw new Exception($"something strange happened in move_and_collide: {this.name} {this.GetType()}");
     }
 
     public bool move_and_collide()
@@ -68,14 +67,14 @@ public class PhysicsObject : SceneObject
             return true;
         PhysicsServer.CollisionInfo col = PhysicsServer.Instance.colliding(this);
         
-        if(col.obj.Count == 0)
+        if(col.colliders.Count == 0)
         {
             Position += Velocity;
             //move(Velocity);
             Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
             return true;
         }
-        foreach (var colItem in col.obj)
+        foreach (var colItem in col.colliders)
         {
             if(colItem == this)
                 continue;
@@ -110,5 +109,10 @@ public class PhysicsObject : SceneObject
     {
         Position = _position;
         Display = _icon;
+    }
+
+    public virtual void on_collision(PhysicsServer.CollisionInfo collisionInfo)
+    {
+        return;
     }
 }

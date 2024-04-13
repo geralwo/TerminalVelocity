@@ -16,11 +16,6 @@ public class GameScene : Scene
         p.ForegroundColor = ConsoleColor.Red;
         p.ZIndex = 10;
         
-
-        SceneObject coltest = new SceneObject();
-        coltest.name = EscapeRoomSettings.KeyColor.ToString();
-        coltest.BackgroundColor = ConsoleColor.White;
-        add_child(coltest);
         add_child(l);
         add_child(p);
         InputEnabled = true;
@@ -50,6 +45,7 @@ public class GameScene : Scene
             {
                 Game.CurrentScene = new GameScene("finishedg");
             }
+            
         }
 
 
