@@ -34,10 +34,8 @@ public class PhysicsObject : SceneObject
             Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
             return true;
         }
-        foreach (var colItem in col.colliders) // should this be in physics server?
+        foreach (var colItem in col.colliders.Where(colItem => colItem != this))
         {
-            if(colItem == this)
-                continue;
             if (colItem is PhysicsArea)
             {
                 move(Velocity);
@@ -68,10 +66,8 @@ public class PhysicsObject : SceneObject
             Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
             return true;
         }
-        foreach (var colItem in col.colliders)
+        foreach (var colItem in col.colliders.Where(colItem => colItem != this))
         {
-            if(colItem == this)
-                continue;
             if (colItem is PhysicsArea)
             {
                 move(Velocity);

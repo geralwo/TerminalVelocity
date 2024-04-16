@@ -205,28 +205,8 @@ public class SceneObject : IDisposable
     public SceneObject? GetNodeById(Guid _id)
     {
         if(this.id == _id ) { return this; }
-        if (Children.Count > 0)
-        {
-            foreach (var c in Children)
-            {
-                if (c.id == _id)
-                {
-                    return c;
-                }
-                if (c.Children.Count > 0)
-                {
-                    return c.GetNodeById(_id);
-                }
-            }
-        }
-        if(parent != null)
-        {
-            return parent.GetNodeById(_id);
-        }
-        else
-        {
-            return null;
-        }
+        Children.ForEach(child => { child.GetNodeById(_id); });
+        return parent?.GetNodeById(_id);
     }
 
 
@@ -250,30 +230,27 @@ public class SceneObject : IDisposable
     // dispose pattern https://gist.github.com/matthewaburton/5455227
     private void Dispose(bool disposing)
     {
-        if(!_disposed)
+        if (_disposed) return;
+        if (disposing)
         {
-            if (disposing)
+            if (this.Children.Count > 0)
             {
-                if (this.Children.Count > 0)
+                List<SceneObject> cc = new List<SceneObject>(this.Children);
+                foreach (var child in cc)
                 {
-                    List<SceneObject> cc = new List<SceneObject>(this.Children);
-                    foreach (var child in cc)
-                    {
-                        child.Dispose();
-                    }
-                }
-                if (this is PhysicsObject || this is PhysicsArea)
-                {
-                    PhysicsServer.Instance.remove_collider((PhysicsObject)this);
+                    child.Dispose();
                 }
             }
-            InputEnabled    = false;
-            ProcessEnabled  = false;
-            Visible = false;
-            Children.Clear();
-            _disposed       = true;
-            
+            if (this is PhysicsObject || this is PhysicsArea)
+            {
+                PhysicsServer.Instance.remove_collider((PhysicsObject)this);
+            }
         }
+        InputEnabled    = false;
+        ProcessEnabled  = false;
+        Visible = false;
+        Children.Clear();
+        _disposed       = true;
     }
 
     public void center_x(int y = 0)
