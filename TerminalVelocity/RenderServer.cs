@@ -57,8 +57,15 @@ public class RenderServer
             if(idx.x < 0 || idx.y < 0 || idx.x > Console.WindowWidth || idx.y > Console.WindowHeight)
                 continue;
             Console.SetCursorPosition(idx.x, idx.y);
-            Console.ForegroundColor = screen_buffer[idx].ForegroundColor;
-            Console.BackgroundColor = screen_buffer[idx].BackgroundColor;
+            // Console.ForegroundColor = screen_buffer[idx].ForegroundColor;
+            // Console.BackgroundColor = screen_buffer[idx].BackgroundColor;
+
+            screen_buffer.TryGetValue(idx, out SceneObject v);
+            if (v != null)
+            {
+                Console.ForegroundColor = v.ForegroundColor;
+                Console.BackgroundColor = v.BackgroundColor;
+            }
 
             Console.Write(screen_buffer[idx].Display);
             // Console.Write(screen_buffer[idx].name);
@@ -81,13 +88,16 @@ public class RenderServer
         var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
         foreach(SceneObject pixel in registered_buffer)
         {
-            if(!new_screen_buffer.ContainsKey(pixel.Position))
+            if (pixel.Visible)
             {
-                new_screen_buffer.Add(pixel.Position, pixel);
-            }
-            else if(pixel.ZIndex > new_screen_buffer[pixel.Position].ZIndex)
-            {
-                new_screen_buffer[pixel.Position] = pixel;
+                if(!new_screen_buffer.ContainsKey(pixel.Position))
+                {
+                    new_screen_buffer.TryAdd(pixel.Position, pixel);
+                }
+                else if(pixel.ZIndex > new_screen_buffer[pixel.Position].ZIndex)
+                {
+                    new_screen_buffer[pixel.Position] = pixel;
+                }
             }
         }
         foreach(Vec2i pos in screen_buffer.Keys) // go through old buffer to clean changed pixels;
@@ -96,7 +106,7 @@ public class RenderServer
             //if we dont do this, on the positive x and y we dont properly remove the obj when it goes out of bounds
             if(pos.x < 0 || pos.y < 0)
                 continue;
-            if(pos.x >= Console.WindowWidth || pos.y >= Console.WindowHeight)
+            if(pos.x > Console.WindowWidth || pos.y > Console.WindowHeight)
             {
                 Console.SetCursorPosition(pos.x,pos.y);
                 Console.Write(" ");
@@ -113,6 +123,7 @@ public class RenderServer
 
             }
         }
+        screen_buffer.Clear();
         screen_buffer = new_screen_buffer;
     }
 }

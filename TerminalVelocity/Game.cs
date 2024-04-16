@@ -31,8 +31,12 @@ public class Game
     public static int RunTime = 0;
     public Game()
     {
+        Console.CancelKeyPress += delegate {
+            Console.Clear();
+        };
         root.Visible = false;
         _init_console();
+
     }
     public void Run()
     {

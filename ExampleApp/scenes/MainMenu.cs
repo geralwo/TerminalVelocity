@@ -81,17 +81,17 @@ public class MainMenu : Scene
     {
 		if(Game.CurrentScene  == this)
 		{
-			for(int i=0;i < selectables.children.Count;i++)
+			for(int i=0;i < selectables.Children.Count;i++)
 			{
 				if (i == menuIndex)
 				{
-					selectables.children[i].BackgroundColor = ConsoleColor.Red;
-					selectables.children[i].ForegroundColor = ConsoleColor.Black;
+					selectables.Children[i].BackgroundColor = ConsoleColor.Red;
+					selectables.Children[i].ForegroundColor = ConsoleColor.Black;
 				}
 				else
 				{
-                    selectables.children[i].BackgroundColor = ConsoleColor.White;
-                    selectables.children[i].ForegroundColor = ConsoleColor.Red;
+                    selectables.Children[i].BackgroundColor = ConsoleColor.White;
+                    selectables.Children[i].ForegroundColor = ConsoleColor.Red;
                 }
 			}
 		}
@@ -105,7 +105,7 @@ public class MainMenu : Scene
 			switch(key)
 			{
 				case ConsoleKey.DownArrow:
-					if(menuIndex < selectables.children.Count -1)
+					if(menuIndex < selectables.Children.Count -1)
 						menuIndex++;
 						break;
 				case ConsoleKey.UpArrow:
@@ -114,7 +114,7 @@ public class MainMenu : Scene
 						break;
 				case ConsoleKey.Enter:
                     Game.Beep();
-                    selectables.children[menuIndex].ProcessAction.Invoke();
+                    selectables.Children[menuIndex].ProcessAction.Invoke();
 					break;
 				default:
 					break;

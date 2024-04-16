@@ -76,20 +76,20 @@ public class SettingsScene : Scene
     {
         getting_input = true;
         Game.Beep(1100,700);
-        Console.SetCursorPosition(children[menuIndex].Position.x, children[menuIndex].Position.y);
+        Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y);
         Console.BackgroundColor = ConsoleColor.Green;
         Console.ForegroundColor = ConsoleColor.Black;
         Console.CursorVisible = true;
 
         // setting for level size
-        if (children[menuIndex].name == value_lvl_size.name)
+        if (Children[menuIndex].name == value_lvl_size.name)
         {
             // asking for x input
             x_input_loop:
             Console.Clear();
-            Console.SetCursorPosition(children[menuIndex].Position.x, children[menuIndex].Position.y - 1);
+            Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y - 1);
             Console.WriteLine($"pls enter the value for the x dimension [min: 10, max : {Console.WindowWidth}]");
-            Console.SetCursorPosition(children[menuIndex].Position.x, children[menuIndex].Position.y);
+            Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y);
             string? x_dim = Console.ReadLine();
             int ix_dim = EscapeRoomSettings.RoomSize.x;
             if (x_dim != null)
@@ -109,9 +109,9 @@ public class SettingsScene : Scene
             // asking for y input
             y_input_loop:
             Console.Clear();
-            Console.SetCursorPosition(children[menuIndex].Position.x, children[menuIndex].Position.y - 1);
+            Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y - 1);
             Console.WriteLine($"pls enter the value for the y dimension [min: 10, max : {Console.WindowHeight}]");
-            Console.SetCursorPosition(children[menuIndex].Position.x, children[menuIndex].Position.y);
+            Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y);
             string? y_dim = Console.ReadLine();
             int iy_dim = EscapeRoomSettings.RoomSize.y;
             if (y_dim != null)
@@ -132,25 +132,25 @@ public class SettingsScene : Scene
 
             // Setting values in settings
             Vec2i new_size = new Vec2i(ix_dim, iy_dim);
-            children[menuIndex].Display = new_size.ToString();
+            Children[menuIndex].Display = new_size.ToString();
             EscapeRoomSettings.RoomSize = new_size;
             Console.Clear();
         }
 
         // setting for player character
         
-        if (children[menuIndex].name == value_player_char.name)
+        if (Children[menuIndex].name == value_player_char.name)
         {
-            children[menuIndex].BackgroundColor = ConsoleColor.White;
-            children[menuIndex].ForegroundColor = ConsoleColor.Black;
+            Children[menuIndex].BackgroundColor = ConsoleColor.White;
+            Children[menuIndex].ForegroundColor = ConsoleColor.Black;
             char input = Console.ReadKey().KeyChar;
             if (!char.IsControl(input))
             {
                 Game.Beep(2254, 200);
                 player_char = input.ToString();
-                children[menuIndex].BackgroundColor = ConsoleColor.Green;
-                children[menuIndex].ForegroundColor = ConsoleColor.Black;
-                children[menuIndex].Display = player_char.ToString();
+                Children[menuIndex].BackgroundColor = ConsoleColor.Green;
+                Children[menuIndex].ForegroundColor = ConsoleColor.Black;
+                Children[menuIndex].Display = player_char.ToString();
             }
             else
             {
@@ -162,10 +162,10 @@ public class SettingsScene : Scene
         }
 
         // setting for audio enabling
-        if (children[menuIndex].name == value_audio_enabled.name)
+        if (Children[menuIndex].name == value_audio_enabled.name)
         {
             audio_enabled = !audio_enabled;
-            children[menuIndex].Display = audio_enabled.ToString();
+            Children[menuIndex].Display = audio_enabled.ToString();
             Game.Settings.Engine.AudioEnabled = audio_enabled;
             Game.Beep(2254, 200);
             Console.Clear();
@@ -179,17 +179,17 @@ public class SettingsScene : Scene
     {
         if (Game.CurrentScene == this)
         {
-            for (int i = 0; i < children.Count; i++)
+            for (int i = 0; i < Children.Count; i++)
             {
                 if (i == menuIndex)
                 {
-                    children[i].ForegroundColor = ConsoleColor.Black;
-                    children[i].BackgroundColor = ConsoleColor.Green;
+                    Children[i].ForegroundColor = ConsoleColor.Black;
+                    Children[i].BackgroundColor = ConsoleColor.Green;
                 }
                 else
                 {
-                    children[i].ForegroundColor = ConsoleColor.White;
-                    children[i].BackgroundColor = ConsoleColor.Black;
+                    Children[i].ForegroundColor = ConsoleColor.White;
+                    Children[i].BackgroundColor = ConsoleColor.Black;
                 }
             }
         }
@@ -202,7 +202,7 @@ public class SettingsScene : Scene
             switch (key)
             {
                 case ConsoleKey.DownArrow:
-                    if (!getting_input && menuIndex < children.Count - 2)
+                    if (!getting_input && menuIndex < Children.Count - 2)
                     {
                         menuIndex += 2;
                     }
@@ -226,8 +226,8 @@ public class SettingsScene : Scene
                 case ConsoleKey.Enter:
                     if(!getting_input)
                     {
-                        if(children[menuIndex].name != value_audio_enabled.name) Game.Beep(1337,133);
-                        children[menuIndex].ProcessAction.Invoke();
+                        if(Children[menuIndex].name != value_audio_enabled.name) Game.Beep(1337,133);
+                        Children[menuIndex].ProcessAction.Invoke();
                     }
                         
                     break;

@@ -34,7 +34,7 @@ public class SceneObject : IDisposable
     private bool input_enabled;
     public bool InputEnabled
     {
-        get { return input_enabled; }
+        get => input_enabled;
         set
         {
             input_enabled = value;
@@ -52,7 +52,7 @@ public class SceneObject : IDisposable
     private string display = " ";
     public virtual string Display
     {
-        get { return display; } 
+        get => display;
         set {
             if(break_text && value.Contains('\n'))
             {
@@ -81,41 +81,28 @@ public class SceneObject : IDisposable
             }
         }
     }
-    private ConsoleColor bg_color = ConsoleColor.Black;
-    private ConsoleColor fg_color = ConsoleColor.White;
-    private int zIndex = 0;
+
+    private int zIndex = 1;
     public int ZIndex
-    { 
-        get { return zIndex; } 
+    {
+        get => zIndex; 
         set {
+            if(value == 0)
+                return;
             zIndex = value;
         }
     }
 
 
-    public ConsoleColor ForegroundColor
-    {
-        get { return fg_color; }
-        set
-        {
-            fg_color = value;
-        }
-    }
+    public ConsoleColor ForegroundColor { get; set; } = ConsoleColor.White;
 
-    public ConsoleColor BackgroundColor
-    {
-        get { return bg_color; }
-        set
-        {
-            bg_color = value;
-        }
-    }
+    public ConsoleColor BackgroundColor { get; set; } = ConsoleColor.Magenta;
 
 
-    private bool visible = false;
+    private bool visible = true;
     public bool Visible
     {
-        get { return visible; }
+        get => visible;
         set {
             visible = value;
             if(visible)
@@ -130,40 +117,31 @@ public class SceneObject : IDisposable
     }
    
     public SceneObject? parent = null;
-    public List<SceneObject> children = new List<SceneObject>();
+    public List<SceneObject> Children = new List<SceneObject>();
 
     private Vec2i position = Vec2i.ZERO;
     public Vec2i Position
     {
-        get { return position; }
+        get => position;
         set 
         {
-            // fixme: we need to check if we have a parent 
             Vec2i offset = position - value;
             position = value;
-            // somebody moved let everybody know the coords, if the last coord is me i need update
-            if (children.Count > 0)
-            {
-                foreach (var child in children)
-                {
-                    child.Position -= offset;
-                }
-            }
+            Children.ForEach(child => child.Position -= offset);
         }
     }
     public SceneObject() {
         InputEnabled = false;
         ProcessEnabled = false;
-        Visible = true;
         id = Guid.NewGuid();
         name = this.GetType().ToString() + id.ToString();
         Position = position;
         ZIndex = zIndex;
     }
 
-    public SceneObject(bool _break_text) : this()
+    public SceneObject(bool breakText) : this()
     {
-        break_text = _break_text;
+        break_text = breakText;
     }
     public SceneObject(string _icon, int _zindex) : this() {
         display = _icon; 
@@ -188,15 +166,15 @@ public class SceneObject : IDisposable
         _child.Position += this.position;
         _child.ZIndex += this.ZIndex;
         _child.Visible = _child.Visible;
-        children.Add(_child);
+        Children.Add(_child);
         _child.OnStart();
         return true;
     }
 
     public virtual void OnStart()
     {
-        children.ForEach(child => child.OnStart());
-        Visible = this.Visible;
+        Children.ForEach(child => child.OnStart());
+        Visible = this.Visible; // hack: else nothing is visible first frame
     }
 
     public bool remove_child(SceneObject _child) {
@@ -205,11 +183,11 @@ public class SceneObject : IDisposable
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.Write($"You can't free yourself: {this.name}");
-            return false;
+            throw new Exception("Circular ref?");
         }
         
         _child.Dispose();
-        return children.Remove(_child); // maybe put into OnRemove function?
+        return Children.Remove(_child); // maybe put into OnRemove function?
     }
 
     public SceneObject get_root()
@@ -227,15 +205,15 @@ public class SceneObject : IDisposable
     public SceneObject? GetNodeById(Guid _id)
     {
         if(this.id == _id ) { return this; }
-        if (children.Count > 0)
+        if (Children.Count > 0)
         {
-            foreach (var c in children)
+            foreach (var c in Children)
             {
                 if (c.id == _id)
                 {
                     return c;
                 }
-                if (c.children.Count > 0)
+                if (c.Children.Count > 0)
                 {
                     return c.GetNodeById(_id);
                 }
@@ -276,9 +254,9 @@ public class SceneObject : IDisposable
         {
             if (disposing)
             {
-                if (this.children.Count > 0)
+                if (this.Children.Count > 0)
                 {
-                    List<SceneObject> cc = new List<SceneObject>(this.children);
+                    List<SceneObject> cc = new List<SceneObject>(this.Children);
                     foreach (var child in cc)
                     {
                         child.Dispose();
@@ -292,7 +270,7 @@ public class SceneObject : IDisposable
             InputEnabled    = false;
             ProcessEnabled  = false;
             Visible = false;
-            children.Clear();
+            Children.Clear();
             _disposed       = true;
             
         }

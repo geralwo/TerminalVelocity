@@ -4,20 +4,14 @@ public class PhysicsObject : SceneObject
 {
     public Action? CollisionAction;
     public int layer = 0;
-    private Vec2i velocity = new Vec2i();
     public List<string> CollisionIgnoreFilter = new List<string>();
-    public Vec2i Velocity
-    {
-        get {return velocity;}
-        set {
-            velocity = value;
-        }
-    }
-    public float mass = 1.0f;
+    public Vec2i Velocity { get; set; } = new Vec2i();
+
+    public float Mass = 1.0f;
     private bool solid = true;
     public bool IsSolid
     {
-        get { return solid; }
+        get => solid;
         set { 
             solid = value;
             if(solid)
@@ -47,7 +41,7 @@ public class PhysicsObject : SceneObject
             if (colItem is PhysicsArea)
             {
                 move(Velocity);
-                velocity = Vec2i.ZERO;
+                Velocity = Vec2i.ZERO;
                 return true;
                 
             }
