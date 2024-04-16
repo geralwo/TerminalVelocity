@@ -130,7 +130,7 @@ public class Level : SceneObject {
                     else
                     {
                         wall_piece = new PhysicsObject(pos, "█");
-                        wall_piece.mass = 1000;
+                        wall_piece.Mass = 1000;
                         wall_piece.BackgroundColor = ConsoleColor.Blue;
                         wall_piece.ForegroundColor = ConsoleColor.Blue;
 
