@@ -4,7 +4,7 @@ using System.Numerics;
 #pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 #pragma warning disable CA1050 // Declare types in namespaces
-
+namespace TerminalVelocity;
 public struct Vec2i
 #pragma warning restore CA1050 // Declare types in namespaces
 #pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
@@ -37,6 +37,11 @@ public struct Vec2i
     public static Vec2i operator *(Vec2i a, int b)
     {
         return new Vec2i(a.x * b, a.y * b);
+    }
+    
+    public static Vec2i operator /(Vec2i a, int b)
+    {
+        return new Vec2i(a.x / b, a.y / b);
     }
 
     public static Vec2i operator *(Vec2i a, Vec2i b)

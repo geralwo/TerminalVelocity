@@ -6,6 +6,8 @@ public class Program
     {
         Game game = new Game();
         Scene scene = new MainMenu();
+        //Scene scene = new QuadTreeTest();
+        //Scene scene = new SelectBoxTest();
         Game.CurrentScene = scene;
 
         game.Run();

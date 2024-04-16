@@ -32,3 +32,11 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+# Rider
+.idea/.idea.TerminalVelocity/.idea/.gitignore
+.idea/.idea.TerminalVelocity/.idea/encodings.xml
+.idea/.idea.TerminalVelocity/.idea/indexLayout.xml
+.idea/.idea.TerminalVelocity/.idea/vcs.xml
+.idea/.idea.TerminalVelocity.dir/.idea/.gitignore
+.idea/.idea.TerminalVelocity.dir/.idea/indexLayout.xml
+.idea/.idea.TerminalVelocity.dir/.idea/vcs.xml

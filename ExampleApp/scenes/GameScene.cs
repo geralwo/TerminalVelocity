@@ -43,7 +43,7 @@ public class GameScene : Scene
             }
             if(p.Position == l.door_spawn)
             {
-                Game.CurrentScene = new GameScene("finishedg");
+                Game.CurrentScene = new WinScreen();
             }
             
         }

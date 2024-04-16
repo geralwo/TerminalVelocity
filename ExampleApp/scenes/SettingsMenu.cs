@@ -69,6 +69,7 @@ public class SettingsScene : Scene
         legend.Position = new Vec2i(0, Console.WindowHeight - 3);
         legend.Display = legend_text;
         add_child(legend);
+        center_y();
        
     }
 

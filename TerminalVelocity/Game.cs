@@ -27,6 +27,7 @@ public class Game
         }
     }
 
+
     public static int FrameCount = 0;
     public static int RunTime = 0;
     public Game()
@@ -88,5 +89,17 @@ public class Game
     {
         if (Game.Settings.Engine.AudioEnabled)
             Console.Beep();
+    }
+    
+    public static ConsoleColor GetRandomConsoleColor(ConsoleColor exclude = ConsoleColor.Black)
+    {
+        Random rng = new Random();
+        var consoleColors = Enum.GetValues(typeof(ConsoleColor));
+        ConsoleColor random_color = (ConsoleColor)consoleColors.GetValue(rng.Next(consoleColors.Length));
+        if(random_color == exclude)
+        {
+            return GetRandomConsoleColor(exclude);
+        }
+        return random_color;
     }
 }

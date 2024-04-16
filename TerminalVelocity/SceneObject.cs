@@ -94,9 +94,31 @@ public class SceneObject : IDisposable
     }
 
 
-    public ConsoleColor ForegroundColor { get; set; } = ConsoleColor.White;
+    private ConsoleColor foregroundColor = ConsoleColor.White;
+    public ConsoleColor ForegroundColor { 
+        get { return foregroundColor; }
+        set
+        {
+            foregroundColor = value;
+            if(break_text)
+            {
+                Children.ForEach(child => child.ForegroundColor = ForegroundColor);
+            }
+        }
+     }
 
-    public ConsoleColor BackgroundColor { get; set; } = ConsoleColor.Magenta;
+    private ConsoleColor backgroundColor = ConsoleColor.Magenta;
+    public ConsoleColor BackgroundColor { 
+        get { return backgroundColor; }
+        set
+        {
+            backgroundColor = value;
+            if(break_text)
+            {
+                Children.ForEach(child => child.BackgroundColor = BackgroundColor);
+            }
+        }
+     }
 
 
     private bool visible = true;
@@ -137,6 +159,7 @@ public class SceneObject : IDisposable
         name = this.GetType().ToString() + id.ToString();
         Position = position;
         ZIndex = zIndex;
+        Visible = visible;
     }
 
     public SceneObject(bool breakText) : this()
@@ -174,7 +197,7 @@ public class SceneObject : IDisposable
     public virtual void OnStart()
     {
         Children.ForEach(child => child.OnStart());
-        Visible = this.Visible; // hack: else nothing is visible first frame
+        Visible = Visible; // hack: else nothing is visible
     }
 
     public bool remove_child(SceneObject _child) {
