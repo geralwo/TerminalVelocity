@@ -95,8 +95,10 @@ public class Game
     {
         Random rng = new Random();
         var consoleColors = Enum.GetValues(typeof(ConsoleColor));
+#pragma warning disable CS8605 // Unboxing a possibly null value.
         ConsoleColor random_color = (ConsoleColor)consoleColors.GetValue(rng.Next(consoleColors.Length));
-        if(random_color == exclude)
+#pragma warning restore CS8605 // Unboxing a possibly null value.
+        if (random_color == exclude)
         {
             return GetRandomConsoleColor(exclude);
         }

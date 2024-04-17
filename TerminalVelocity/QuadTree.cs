@@ -6,7 +6,7 @@ public class QuadTree
     public int Capacity;
     public List<SceneObject> Items = new List<SceneObject>();
     public bool Divided { get; private set; } = false;
-    public QuadTree[] SubTrees;
+    public QuadTree[]? SubTrees;
     
     public QuadTree(Vec2i _position, Vec2i _size, int _capacity)
     {
