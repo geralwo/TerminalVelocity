@@ -80,8 +80,8 @@ public struct Vec2i
         return dot_result;
     }
 
-    public Vec2i distance_to(Vec2i other) {
-
+    public Vec2i distance_to(Vec2i other) 
+    {
         throw new NotImplementedException();
     }
 

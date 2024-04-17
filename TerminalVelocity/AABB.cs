@@ -43,7 +43,7 @@ public struct AABB
                _aabb.Position.y >= Position.y && _aabb.End.y <= End.y;
     }
     
-    public SceneObject GetVisual()
+    public SceneObject GetVisual(int z = 0)
     {
         var bounds = new SceneObject();
         ConsoleColor rndc = Game.GetRandomConsoleColor();
@@ -58,7 +58,7 @@ public struct AABB
                     Vec2i global_pos = Position + offset;
                     SceneObject line = new SceneObject(global_pos,":");
                     line.BackgroundColor = rndc;
-                    line.ZIndex = -10;
+                    line.ZIndex = z;
                     bounds.add_child(line);
                 }
                 
