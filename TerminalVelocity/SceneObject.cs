@@ -94,7 +94,7 @@ public class SceneObject : IDisposable
     }
 
 
-    private ConsoleColor foregroundColor = ConsoleColor.White;
+    private ConsoleColor foregroundColor = ConsoleColor.Black;
     public ConsoleColor ForegroundColor { 
         get { return foregroundColor; }
         set

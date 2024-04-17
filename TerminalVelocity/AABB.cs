@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace TerminalVelocity;
 
 public struct AABB
@@ -62,10 +64,6 @@ public struct AABB
                 
             }
         }
-        var center = new SceneObject("o");
-        center.BackgroundColor = ConsoleColor.Black;
-        center.Position = Center;
-        bounds.add_child(center);
         return bounds;
     }
     

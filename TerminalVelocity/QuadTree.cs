@@ -79,6 +79,8 @@ public class QuadTree
         var vis = new SceneObject();
         vis.Visible = false;
         vis.add_child(this.Aabb.GetVisual());
+        //vis.add_child(new SceneObject(this.Aabb.Center,Items.Count.ToString()));
+        vis.add_child(new SceneObject(this.Aabb.Center,Aabb.Size.ToString()));
         if(Divided)
         {
             for(int i=0;i<4;i++)
