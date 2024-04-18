@@ -53,7 +53,7 @@ public class PhysicsServer
 
 		CollisionInfo collisionInfo = new CollisionInfo();
 
-        List<PhysicsObject> objectsDup = new List<PhysicsObject>(objects); // You need to Copy the List else it crashes
+        List<PhysicsObject> objectsDup = new List<PhysicsObject>(objects); // copy list because you cant interate AND change the same list at the same time
 
         foreach (PhysicsObject other_obj in objectsDup)
         {

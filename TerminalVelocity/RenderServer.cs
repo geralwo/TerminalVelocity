@@ -87,6 +87,11 @@ public class RenderServer
         var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
         foreach (var pixel in registered_buffer.Where(pixel => pixel.Visible))
         {
+            if(screen_buffer.ContainsKey(pixel.Position) && pixel.id == screen_buffer[pixel.Position].id) // obj did not move, so we remove it from the old screen to reduce cleanup loops
+            {
+                screen_buffer.Remove(pixel.Position);
+            }
+
             new_screen_buffer.TryAdd(pixel.Position, pixel);
 
             if(pixel.ZIndex > new_screen_buffer[pixel.Position].ZIndex)
@@ -94,25 +99,15 @@ public class RenderServer
                 new_screen_buffer[pixel.Position] = pixel;
             }
         }
-        foreach (var pos in screen_buffer.Keys.Where(pos => pos.x >= 0 && pos.y >= 0))
+        foreach (var pos in screen_buffer.Keys)
         {
-            if(pos.x > Console.WindowWidth || pos.y > Console.WindowHeight)
+            Console.SetCursorPosition(pos.x,pos.y);
+            for(int i = 0; i < screen_buffer[pos].Display.Length; i++)
             {
-                Console.SetCursorPosition(pos.x,pos.y);
                 Console.Write(" ");
             }
-            
-            if(!new_screen_buffer.ContainsKey(pos))
-            {
-                Console.SetCursorPosition(pos.x,pos.y);
-                for(int i = 0; i < screen_buffer[pos].Display.Length; i++)
-                {
-                    Console.Write(" ");
-                }
-
-            }
         }
-        screen_buffer.Clear();
+
         screen_buffer = new_screen_buffer;
     }
 }
