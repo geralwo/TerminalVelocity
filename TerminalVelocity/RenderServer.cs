@@ -82,7 +82,7 @@ public class RenderServer
     {
         var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
 
-        foreach (var obj in registered_buffer.Where(obj => obj.Visible))
+        foreach (var obj in registered_buffer.Where(obj => obj.Visible && obj.Position.x >= 0 && obj.Position.y >= 0 && obj.Position.x < Console.WindowWidth && obj.Position.y < Console.WindowHeight))
         {
             new_screen_buffer.TryAdd(obj.Position, obj);
             {
