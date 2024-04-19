@@ -95,5 +95,9 @@ public struct Vec2i
     public static readonly Vec2i LEFT = new Vec2i(-1, 0);
     public static readonly Vec2i RIGHT = new Vec2i(1, 0);
 
-
+    public static readonly Vec2i[] CardinalDirections = [Vec2i.DOWN, Vec2i.UP, Vec2i.LEFT, Vec2i.RIGHT];
+    public static Vec2i RandomCardinalDirection 
+    {
+        get { return CardinalDirections[new Random().Next(0, CardinalDirections.Length)]; }
+    }
 }

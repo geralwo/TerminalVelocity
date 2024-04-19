@@ -14,21 +14,6 @@ public class QuadTreeTest : Scene
     {
         cursor.ZIndex = 10;
         InputEnabled = true;
-        // aabb.Position = Vec2i.ZERO;
-        // aabb.Size = Vec2i.ONE * 4;
-        // add_child(aabb.DrawBounds());
-        // AABB naabb = new AABB();
-        // naabb.Position = new Vec2i(1, 1);
-        // naabb.Size = new Vec2i(8, 2);
-        // if (aabb.Contains(naabb))
-        // {
-        //     add_child(naabb.DrawBounds());
-        // }
-        // if (aabb.Contains(naabb.Position))
-        // {
-        //     add_child(naabb.DrawBounds());
-        // }
-
         qt = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 8);
         qt_vis = qt.visualize();
         add_child(qt_vis);
