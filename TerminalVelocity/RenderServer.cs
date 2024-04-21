@@ -55,6 +55,7 @@ public class RenderServer
 
     public void DrawBuffer()
     {
+        render();
         foreach (var idx in screen_buffer.Keys.Where(idx => idx.x >= 0 && idx.y >= 0 && idx.x <= Console.WindowWidth && idx.y <= Console.WindowHeight))
         {
             Console.SetCursorPosition(idx.x, idx.y);
@@ -75,14 +76,16 @@ public class RenderServer
             // Console.Write(screen_buffer[idx].ZIndex);
             Console.ResetColor();
         }
-        render();
+
     }
 
     public void render()
     {
         var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
 
-        foreach (var obj in registered_buffer.Where(obj => obj.Visible && obj.Position.x >= 0 && obj.Position.y >= 0 && obj.Position.x < Console.WindowWidth && obj.Position.y < Console.WindowHeight))
+        var rBufferCopy = new List<SceneObject>(registered_buffer);
+
+        foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.x >= 0 && obj.Position.y >= 0 && obj.Position.x < Console.WindowWidth && obj.Position.y < Console.WindowHeight))
         {
             new_screen_buffer.TryAdd(obj.Position, obj);
             {

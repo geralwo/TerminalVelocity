@@ -4,6 +4,7 @@ public class SettingsScene : Scene
     public Vec2i lvl_size = new Vec2i(40,20);
     public string player_char = "*";
     public bool audio_enabled = false;
+    public int MaxFps;
     private int menuIndex = 1;
 
 
@@ -17,6 +18,9 @@ public class SettingsScene : Scene
     private SceneObject title_audio_enabled;
     private SceneObject value_audio_enabled;
 
+    private SceneObject title_max_fps;
+    private SceneObject value_max_fps;
+
     public HashSet<String>custom_data = new HashSet<string>();
     private bool getting_input = false;
 
@@ -25,6 +29,8 @@ public class SettingsScene : Scene
         lvl_size = EscapeRoomSettings.RoomSize;
         player_char = EscapeRoomSettings.PlayerChar;
         audio_enabled = Game.Settings.Engine.AudioEnabled;
+        MaxFps = Game.Settings.Engine.MaxFps;
+
         InputEnabled = true;
         ProcessEnabled = true;
 

@@ -44,7 +44,11 @@ public class Game
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!quitting)
         {
+
             Input.get_input();
+            //new Thread(() => {
+            //    ProcessTick?.Invoke();
+            //    }).Start();
             ProcessTick?.Invoke();
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;

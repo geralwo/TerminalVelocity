@@ -16,5 +16,7 @@ public class Program
         Console.WriteLine($"total run time : {Game.RunTime} ms");
         Console.WriteLine($"average fps    : {(int)(Game.FrameCount / (Game.RunTime / 1000))}");
         Console.WriteLine($"render items   : { RenderServer.Instance.Count() }");
+        Console.WriteLine("press any thing to exit");
+        Console.ReadLine();
     }
 }
