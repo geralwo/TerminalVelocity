@@ -37,19 +37,17 @@ public class Level : SceneObject {
         key = new SceneObject();
         key.ProcessEnabled = true;
         key.ProcessAction = () => {
-            if(Game.FrameCount % 60 == 0)
+            if(Game.FrameCount % 16 == 0)
                 key.BackgroundColor = Game.GetRandomConsoleColor();
         };
         key.Display = "k";
         key.Position = get_random_cell_in_bounds();
         key.ZIndex = 1;
-        // ColorField f = new ColorField(key_color,get_random_cell_in_bounds());
-        // add_child(f);
-        // this does not work yet
-        for(int i = 0; i < 16;i++)
+
+        for(int i = 0; i < size.x;i++)
         {
             ColorField f;
-            if(i % 4 == 0)
+            if(i % size.x / 4 == 0)
             {
                 f = new ColorField(key_color,get_random_cell_in_bounds());
             }
@@ -125,7 +123,7 @@ public class Level : SceneObject {
                         wall_piece = new PhysicsObject(pos,"D");
                         wall_piece.ProcessEnabled = true;
                         wall_piece.ProcessAction = () => {
-                            if(Game.FrameCount % 60 == 0)
+                            if(Game.FrameCount % 16 == 0)
                                 wall_piece.BackgroundColor = key.BackgroundColor;
                         };
                         wall_piece.ZIndex = 2;

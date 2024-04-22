@@ -18,6 +18,7 @@ public class QuadTreeTest : Scene
         qt_vis = qt.visualize();
         add_child(qt_vis);
         add_child(cursor);
+        cursor.center_xy();
     }
     
     public override void OnInput(ConsoleKey key)

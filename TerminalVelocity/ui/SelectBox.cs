@@ -11,6 +11,8 @@ public class SelectBox : SceneObject
     public ConsoleColor DefaultForegroundColor = ConsoleColor.White;
     public ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
 
+    private int longest_str = 0;
+
     public SelectBox()
     {
         Visible = false;
@@ -80,6 +82,7 @@ public class SelectBox : SceneObject
             }
         );
         center_xy();
+        Position += Vec2i.LEFT * longest_str / 2;
     }
 
 

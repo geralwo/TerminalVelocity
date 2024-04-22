@@ -26,8 +26,6 @@ public class Game
             root.add_child(CurrentScene);
         }
     }
-
-
     public static int FrameCount = 0;
     public static int RunTime = 0;
     public Game()
@@ -46,10 +44,10 @@ public class Game
         {
 
             Input.get_input();
-            //new Thread(() => {
-            //    ProcessTick?.Invoke();
-            //    }).Start();
-            ProcessTick?.Invoke();
+            new Thread(() => {
+               ProcessTick?.Invoke();
+            }).Start();
+            // ProcessTick?.Invoke();
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }

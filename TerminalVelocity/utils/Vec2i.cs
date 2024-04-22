@@ -68,6 +68,21 @@ public struct Vec2i
         return Math.Abs(a.x) > Math.Abs(b.x) && Math.Abs(a.y) > Math.Abs(b.y);
     }
 
+    public static Vec2i operator <<(Vec2i a, int b)
+    {
+        return new Vec2i(a.x << b,a.y << b);
+    }
+
+        public static Vec2i operator >>(Vec2i a, int b)
+    {
+        return new Vec2i(a.x >> b,a.y >> b);
+    }
+
+        public static Vec2i operator &(Vec2i a, int b)
+    {
+        return new Vec2i(a.x & b,a.y & b);
+    }
+
 
     public override string ToString()
     {

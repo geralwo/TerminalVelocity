@@ -17,7 +17,7 @@ public class MainMenu : Scene
 		selectables.HighlightBackgroundColor = ConsoleColor.Red;
         selectables.add_child(play);
         selectables.add_child(settings);
-	//selectables.add_child(extras);
+	selectables.add_child(extras);
         selectables.add_child(exit);
         InputEnabled = true;
         name = "main_menu";
