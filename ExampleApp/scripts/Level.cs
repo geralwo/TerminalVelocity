@@ -35,6 +35,11 @@ public class Level : SceneObject {
 
         ConsoleColor key_color = GetRandomConsoleColor(ConsoleColor.Black);
         key = new SceneObject();
+        key.ProcessEnabled = true;
+        key.ProcessAction = () => {
+            if(Game.FrameCount % 60 == 0)
+                key.BackgroundColor = Game.GetRandomConsoleColor();
+        };
         key.Display = "k";
         key.Position = get_random_cell_in_bounds();
         key.ZIndex = 1;
@@ -118,6 +123,11 @@ public class Level : SceneObject {
                     if (pos == door_pos) 
                     {
                         wall_piece = new PhysicsObject(pos,"D");
+                        wall_piece.ProcessEnabled = true;
+                        wall_piece.ProcessAction = () => {
+                            if(Game.FrameCount % 60 == 0)
+                                wall_piece.BackgroundColor = key.BackgroundColor;
+                        };
                         wall_piece.ZIndex = 2;
                         door = wall_piece;
                         door_spawn = wall_piece.Position;

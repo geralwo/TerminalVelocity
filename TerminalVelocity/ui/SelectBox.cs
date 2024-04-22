@@ -3,7 +3,7 @@ using TerminalVelocity;
 
 public class SelectBox : SceneObject
 {
-    public Vec2i Gap = Vec2i.DOWN;
+    public Vec2i Gap = Vec2i.ZERO;
     public Vec2i FlowDirection = Vec2i.DOWN;
     public ConsoleColor HighlightForegroundColor = ConsoleColor.Black;
     public ConsoleColor HighlightBackgroundColor = ConsoleColor.White;

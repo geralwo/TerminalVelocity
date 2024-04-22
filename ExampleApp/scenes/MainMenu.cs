@@ -3,9 +3,9 @@ public class MainMenu : Scene
 {
 	int menuIndex = 0;
 	SelectBox selectables = new SelectBox();
-    SceneObject play = new SceneObject(" play ");
-    SceneObject settings = new SceneObject(" settings ");
-    SceneObject exit = new SceneObject(" exit ");
+    	SceneObject play = new SceneObject(" play ");
+    	SceneObject settings = new SceneObject(" settings ");
+    	SceneObject exit = new SceneObject(" exit ");
 
 	SceneObject extras = new SceneObject(" extras ");
     public MainMenu(string _name = "SettingsMenu") : base(_name)
@@ -15,10 +15,9 @@ public class MainMenu : Scene
         selectables.name = "selectables";
 		selectables.ZIndex = 100;
 		selectables.HighlightBackgroundColor = ConsoleColor.Red;
-		selectables.Gap = Vec2i.ZERO;
         selectables.add_child(play);
         selectables.add_child(settings);
-		selectables.add_child(extras);
+	//selectables.add_child(extras);
         selectables.add_child(exit);
         InputEnabled = true;
         name = "main_menu";
@@ -30,10 +29,17 @@ public class MainMenu : Scene
 
 		SceneObject banner = new SceneObject(true);
         banner.name = "banner";
-        banner.ForegroundColor = ConsoleColor.Red;
-        banner.BackgroundColor = ConsoleColor.Black;
-        banner.Display = "___________                                   \r\n\\_   _____/ ______ ____ _____  ______   ____  \r\n |    __)_ /  ___// ___\\\\__  \\ \\____ \\_/ __ \\ \r\n |        \\\\___ \\\\  \\___ / __ \\|  |_> >  ___/ \r\n/_______  /____  >\\___  >____  /   __/ \\___  >\r\n        \\/     \\/     \\/     \\/|__|        \\/ \r\n__________                        ________    \r\n\\______   \\ ____   ____   _____   \\_____  \\   \r\n |       _//  _ \\ /  _ \\ /     \\   /  ____/   \r\n |    |   (  <_> |  <_> )  Y Y  \\ /       \\   \r\n |____|_  /\\____/ \\____/|__|_|  / \\_______ \\  \r\n        \\/                    \\/          \\/";
-		banner.center_x();
+        banner.ForegroundColor = ConsoleColor.Black;
+        banner.BackgroundColor = ConsoleColor.Red;
+		banner.Display = """                                                  
+ _____                        _____               
+|   __|___ ___ ___ ___ ___   | __  |___ ___ _____ 
+|   __|_ -|  _| .'| . | -_|  |    -| . | . |     |
+|_____|___|___|__,|  _|___|  |__|__|___|___|_|_|_|
+                  |_|
+""";
+		banner.center_xy();
+		banner.Position = banner.Position + Vec2i.UP * 8;
 		add_child(banner);	
 		
 		extras.ProcessAction = () => Game.CurrentScene = new ExtrasScene();
@@ -54,6 +60,7 @@ public class MainMenu : Scene
 		};
         selectables.pad_and_recenter();
 		add_child(selectables);
+		selectables.center_xy();
     }
 
     public override void OnInput(ConsoleKey key)
