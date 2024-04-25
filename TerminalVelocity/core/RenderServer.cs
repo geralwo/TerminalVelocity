@@ -105,7 +105,7 @@ public class RenderServer
             }
         }
 
-
+        // Fixme: on scene change we access non existent keys
         // clean up screen by removing pixels left in the old screen buffer
         foreach (var pos in screen_buffer.Keys)
         {
@@ -121,14 +121,13 @@ public class RenderServer
             }
         }
         // now we just add all pixels to the buffer to render
-        // todo: we dont need to add all pixels, only the pixels that have changed
+        // we dont need to add all pixels, only the pixels that have changed?
         screen_buffer = new_screen_buffer;
     }
 
     internal void clear_scene()
     {
         Console.Clear();
-        screen_buffer = new Dictionary<Vec2i, SceneObject>();
         registered_buffer = new List<SceneObject>();
     }
 }
