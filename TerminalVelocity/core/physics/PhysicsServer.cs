@@ -46,7 +46,20 @@ public class PhysicsServer
 		}
 	}
 
+	public void Step()
+	{
+		var qt = new QuadTree(Vec2i.ZERO,Game.Settings.Engine.WindowSize,8);
+		foreach(var pobj in objects)
+		{
+			qt.Insert(pobj);
+			if(pobj.Velocity == Vec2i.ZERO)
+				continue;
+			var destination = pobj.Position + pobj.Velocity;
+			
+		}
+	}
 
+	
 	public CollisionInfo colliding(PhysicsObject obj) // bad name
     {
         Vec2i target_position = obj.Position + obj.Velocity;

@@ -19,6 +19,11 @@ public struct AABB
         Size = _aabb.Size;
     }
 
+    public AABB(Vec2i _size)
+    {
+        Size = _size;
+    }
+
     public AABB(Vec2i _position, Vec2i _size)
     {
         Position = _position;

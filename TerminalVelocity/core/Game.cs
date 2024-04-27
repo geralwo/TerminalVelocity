@@ -19,7 +19,7 @@ public class Game
             {
                 CurrentScene.unload();
                 root.remove_child(CurrentScene);
-                RenderServer.Instance.clear_scene();
+                RenderServer.Instance.ClearScene();
                 GC.Collect();
             }
             current_scene = value;
@@ -47,7 +47,6 @@ public class Game
             new Thread(() => {
                ProcessTick?.Invoke();
             }).Start();
-            // ProcessTick?.Invoke();
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }

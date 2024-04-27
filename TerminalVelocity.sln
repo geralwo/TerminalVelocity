@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalVelocity", "Termina
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleApp", "ExampleApp\ExampleApp.csproj", "{0FA16B1B-FAB6-444F-B493-0F73B8AF3A2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterSim", "MonsterSim\MonsterSim.csproj", "{6F5B6568-7AC6-4219-B0EE-6F24BBC6FF4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0FA16B1B-FAB6-444F-B493-0F73B8AF3A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FA16B1B-FAB6-444F-B493-0F73B8AF3A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FA16B1B-FAB6-444F-B493-0F73B8AF3A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F5B6568-7AC6-4219-B0EE-6F24BBC6FF4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F5B6568-7AC6-4219-B0EE-6F24BBC6FF4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F5B6568-7AC6-4219-B0EE-6F24BBC6FF4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F5B6568-7AC6-4219-B0EE-6F24BBC6FF4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

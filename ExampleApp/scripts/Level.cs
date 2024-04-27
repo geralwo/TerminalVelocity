@@ -19,21 +19,11 @@ public class Level : SceneObject {
         Visible = false;
         name = "level";
     }
-    private ConsoleColor GetRandomConsoleColor(ConsoleColor exclude)
-    {
-        var consoleColors = Enum.GetValues(typeof(ConsoleColor));
-        ConsoleColor random_color = (ConsoleColor)consoleColors.GetValue(rng.Next(consoleColors.Length));
-        if(random_color == exclude)
-        {
-            return GetRandomConsoleColor(exclude);
-        }
-        return random_color;
-    }
     
     public void generate_level()
     {
 
-        ConsoleColor key_color = GetRandomConsoleColor(ConsoleColor.Black);
+        ConsoleColor key_color = Game.GetRandomConsoleColor(ConsoleColor.Black);
         key = new SceneObject();
         key.ProcessEnabled = true;
         key.ProcessAction = () => {
@@ -44,7 +34,7 @@ public class Level : SceneObject {
         key.Position = get_random_cell_in_bounds();
         key.ZIndex = 1;
 
-        for(int i = 0; i < size.x;i++)
+        for(int i = 0; i < size.x / 2;i++)
         {
             ColorField f;
             if(i % size.x / 4 == 0)
@@ -53,7 +43,7 @@ public class Level : SceneObject {
             }
             else
             {
-                f = new ColorField(GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
+                f = new ColorField(Game.GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
             }
             add_child(f);
         }

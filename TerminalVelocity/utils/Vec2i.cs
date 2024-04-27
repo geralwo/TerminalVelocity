@@ -100,6 +100,25 @@ public struct Vec2i
         throw new NotImplementedException();
     }
 
+    public double magnitude()
+    {
+        return Math.Sqrt(this.x * this.x + this.y * this.y);
+    }
+    public bool IsInBoundsOf(AABB _aabb)
+    {
+        return _aabb.Contains(this);
+    }
+
+        public bool IsInBoundsOf(Vec2i _size)
+    {
+        return new AABB(_size).Contains(this);
+    }
+
+    public static readonly Vec2i[] CardinalDirections = [Vec2i.DOWN, Vec2i.UP, Vec2i.LEFT, Vec2i.RIGHT];
+    public static Vec2i RandomCardinalDirection 
+    {
+        get { return CardinalDirections[new Random().Next(0, CardinalDirections.Length)]; }
+    }
 
 
     public static readonly Vec2i ZERO = new Vec2i(0, 0);
@@ -110,9 +129,5 @@ public struct Vec2i
     public static readonly Vec2i LEFT = new Vec2i(-1, 0);
     public static readonly Vec2i RIGHT = new Vec2i(1, 0);
 
-    public static readonly Vec2i[] CardinalDirections = [Vec2i.DOWN, Vec2i.UP, Vec2i.LEFT, Vec2i.RIGHT];
-    public static Vec2i RandomCardinalDirection 
-    {
-        get { return CardinalDirections[new Random().Next(0, CardinalDirections.Length)]; }
-    }
+
 }

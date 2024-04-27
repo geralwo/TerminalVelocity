@@ -8,15 +8,35 @@ namespace TerminalVelocity;
 public class SceneObject : IDisposable 
 {
 
+    /// <summary>
+    /// The Action you execute when using ProcessEnabled in override void OnProcess()
+    /// </summary>
     public Action? ProcessAction;
+    /// <summary>
+    /// The Action you execute when using InputEnabled in override void OnInput(ConsoleKey)
+    /// </summary>
     public Action? InputAction;
-    public Guid id;
+    /// <summary>
+    /// Unique identifier
+    /// </summary>
+    public readonly Guid id;
+    /// <summary>
+    /// The name of the object. The default is ClassName+id
+    /// </summary>
     public string name;
+    /// <summary>
+    /// used for GC in SceneObject.Dispose(bool)
+    /// </summary>
     private bool _disposed;
     private bool process_enabled;
+    /// <summary>
+    /// Setting ProcessEnabled to true subscribes the object to the Game.ProcessTick event or unsubscribes it when setting it to false
+    /// Function:
+    /// public override void OnProcess()
+    /// </summary>
     public bool ProcessEnabled
     {
-        get { return process_enabled; }
+        get => process_enabled;
         set
         {
             process_enabled = value;
@@ -32,6 +52,11 @@ public class SceneObject : IDisposable
         }
     }
     private bool input_enabled;
+    /// <summary>
+    /// Setting InputEnabled to true subscribes the object to the Input.KeyPressed event or unsubscribes it when setting it to false
+    /// Function:
+    /// public override void OnInput(ConsoleKey)
+    /// </summary>
     public bool InputEnabled
     {
         get => input_enabled;
@@ -48,11 +73,22 @@ public class SceneObject : IDisposable
             }
         }
     }
+    /// <summary>
+    /// When setting break_text to true it creates new SceneObjects for every new line
+    /// </summary>
     private bool break_text = false;
-    private string display = " ";
+    private string display = "";
+    /// <summary>
+    /// Getting the value sets the console colors and return the string.
+    /// Setting the value sets the value and if break_text is true splits into new child per newline
+    /// </summary>
     public virtual string Display
     {
-        get => display;
+        get { 
+            Console.BackgroundColor = BackgroundColor;
+            Console.ForegroundColor = ForegroundColor;
+            return display;
+        }
         set {
             if(break_text && value.Contains('\n'))
             {
@@ -61,7 +97,7 @@ public class SceneObject : IDisposable
 
                 int diff = longest_str - str[0].Length;
                 
-                this.Position = this.Position + new Vec2i(-diff,0); // if a subtext is longer than the first element, we offset the position so it centers better; workaround for scene menus
+                this.Position = this.Position + new Vec2i(-diff,0); // recenter after finding longest string
                 display = str[0].PadRight(longest_str);
                 
                 for(int i = 1; i < str.Length; i++)
@@ -83,6 +119,9 @@ public class SceneObject : IDisposable
     }
 
     private int zIndex = 1;
+    /// <summary>
+    /// Sets the z-index. Higher values get rendered infront.
+    /// </summary>
     public int ZIndex
     {
         get => zIndex; 
@@ -94,7 +133,10 @@ public class SceneObject : IDisposable
     }
 
 
-    private ConsoleColor foregroundColor = ConsoleColor.Black;
+    private ConsoleColor foregroundColor = Console.ForegroundColor;
+    /// <summary>
+    /// Sets the foreground color for the object
+    /// </summary>
     public ConsoleColor ForegroundColor { 
         get { return foregroundColor; }
         set
@@ -107,7 +149,10 @@ public class SceneObject : IDisposable
         }
      }
 
-    private ConsoleColor backgroundColor = ConsoleColor.Magenta;
+    private ConsoleColor backgroundColor = Console.BackgroundColor;
+    /// <summary>
+    /// Sets the background color for the object
+    /// </summary>
     public ConsoleColor BackgroundColor { 
         get { return backgroundColor; }
         set
@@ -122,6 +167,9 @@ public class SceneObject : IDisposable
 
 
     private bool visible = true;
+    /// <summary>
+    /// If Visible is true the object is rendered
+    /// </summary>
     public bool Visible
     {
         get => visible;
@@ -137,11 +185,20 @@ public class SceneObject : IDisposable
             }
         }
     }
-   
-    public SceneObject? parent = null;
+   /// <summary>
+   /// Reference to the parent of this object
+   /// </summary>
+    public SceneObject? Parent = null;
+    /// <summary>
+    /// Contains possible children objects
+    /// </summary>
     public List<SceneObject> Children = new List<SceneObject>();
 
+
     private Vec2i position = Vec2i.ZERO;
+    /// <summary>
+    /// Represents the global position
+    /// </summary>
     public Vec2i Position
     {
         get => position;
@@ -185,7 +242,7 @@ public class SceneObject : IDisposable
     }
     public bool add_child(SceneObject _child)
     {
-        _child.parent = this;
+        _child.Parent = this;
         _child.Position += this.position;
         _child.ZIndex += this.ZIndex;
         _child.Visible = _child.Visible;
@@ -193,7 +250,9 @@ public class SceneObject : IDisposable
         _child.OnStart();
         return true;
     }
-
+    /// <summary>
+    /// OnStart() gets executed when an object is added to a parent object (SceneObject, Scene)
+    /// </summary>
     public virtual void OnStart()
     {
         Children.ForEach(child => child.OnStart());
@@ -212,31 +271,43 @@ public class SceneObject : IDisposable
         _child.Dispose();
         return Children.Remove(_child); // maybe put into OnRemove function?
     }
-
+    /// <summary>
+    /// Returns the root Scene
+    /// </summary>
+    /// <returns>SceneObject scene_object</returns>
     public SceneObject get_root()
     {
-        if(this.parent == null)
+        if(this.Parent == null)
         {
             return this;
         } 
         else
         {
-            return parent.get_root();
+            return Parent.get_root();
         }
     }
-
+    /// <summary>
+    /// Tries to return the object with the specified id
+    /// </summary>
+    /// <param name="_id"></param>
+    /// <returns>SceneObject or null</returns>
     public SceneObject? GetNodeById(Guid _id)
     {
         if(this.id == _id ) { return this; }
         Children.ForEach(child => { child.GetNodeById(_id); });
-        return parent?.GetNodeById(_id);
+        return Parent?.GetNodeById(_id);
     }
 
-
+    /// <summary>
+    /// Gets invoked on every Game.ProcessTick
+    /// </summary>
     public virtual void OnProcess(){
         ProcessAction?.Invoke();
     }
-
+    /// <summary>
+    /// Gets invoked on every Input.KeyPressed event
+    /// </summary>
+    /// <param name="key">ConsoleKey key</param>
     public virtual void OnInput(ConsoleKey key){
         InputAction?.Invoke();
     }
@@ -275,17 +346,26 @@ public class SceneObject : IDisposable
         Children.Clear();
         _disposed       = true;
     }
-
+    /// <summary>
+    /// Centers element relative to screen width and places it on the specified y position
+    /// </summary>
+    /// <param name="y">int y represents the y coordinate on the screen</param>
     public void center_x(int y = 0)
     {
         Position = new Vec2i((Console.WindowWidth / 2) - this.Display.Length / 2, this.Position.y);
     }
-
+    /// <summary>
+    /// Centers the element relative to the screen on the y axis and places it on the specified x position
+    /// </summary>
+    /// <param name="x">int x represents the x position on the screen</param>
     public void center_y(int x = 0)
     {
         Position = new Vec2i(this.Position.x, Console.WindowHeight / 2);
     }
-
+    /// <summary>
+    /// Centers the element on the screen on both axis
+    /// </summary>
+    /// <param name="offset">int offset is unused</param>
     public void center_xy(int offset = 0)
     {
         center_x();

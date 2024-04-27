@@ -10,6 +10,7 @@ public class MainMenu : Scene
 	SceneObject extras = new SceneObject(" extras ");
     public MainMenu(string _name = "SettingsMenu") : base(_name)
 	{   
+		SceneBackgroundColor = ConsoleColor.DarkBlue;
         name = _name;
         Visible = false;
         selectables.name = "selectables";
