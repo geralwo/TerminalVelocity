@@ -13,7 +13,7 @@ public class Player : PhysicsObject
     }
     public override void OnProcess()
     {
-        move_and_collide();
+        MoveAndCollide();
     }
 
     public override void OnInput(ConsoleKey key)

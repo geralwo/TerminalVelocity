@@ -10,7 +10,6 @@ public class MainMenu : Scene
 	SceneObject extras = new SceneObject(" extras ");
     public MainMenu(string _name = "SettingsMenu") : base(_name)
 	{   
-		SceneBackgroundColor = ConsoleColor.DarkBlue;
         name = _name;
         Visible = false;
         selectables.name = "selectables";
@@ -57,7 +56,7 @@ public class MainMenu : Scene
 			Game.Beep(633, 300);
             Game.Beep(553, 200);
             Game.Beep(513, 500);
-            Game.quitting = true;
+            Game.Quit = true;
 		};
         selectables.pad_and_recenter();
 		add_child(selectables);

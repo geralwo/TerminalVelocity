@@ -2,7 +2,6 @@
 namespace TerminalVelocity;
 public class Scene : SceneObject
 {
-    public ConsoleColor SceneBackgroundColor = ConsoleColor.Black;
 	public Scene(string _name)
 	{
 		name = _name;
@@ -11,7 +10,7 @@ public class Scene : SceneObject
     public override void OnInput(ConsoleKey key)
     {
         if (key == ConsoleKey.Escape)
-			Game.quitting = true;
+			Game.Quit = true;
     }
     public virtual void unload()
 	{

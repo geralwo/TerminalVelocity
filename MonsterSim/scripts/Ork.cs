@@ -1,19 +1,31 @@
 using TerminalVelocity;
 
-public class Ork : Player, IAttackMove, IDefensiveMove, IMovementAbility
+public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble
 {
-    public int HP;
-    public int AD;
-    public Ork(Vec2i _pos, string _display) : base(_pos, _display)
-    {
-        Position = _pos;
-        Display = _display;
+    private int hp = 100;
 
+    public int HP {
+        get => hp;
+        set {
+            hp = value;
+            if(HP < 0)
+            {
+                Display = "X";
+            }
+        }
+    }
+    public int AD = 33;
+    public Ork()
+    {
+        BackgroundColor = ConsoleColor.DarkGreen;
+        ForegroundColor = ConsoleColor.Green;
+        Display = "ô";
     }
 
-    public void Attack(SceneObject target)
+
+    public void Attack(IAttackble target)
     {
-        throw new NotImplementedException();
+        target.HP -= AD;
     }
 
     public void DefensiveMove()
@@ -24,5 +36,10 @@ public class Ork : Player, IAttackMove, IDefensiveMove, IMovementAbility
     public void Move()
     {
         throw new NotImplementedException();
+    }
+
+    public void TakeDamage(int damage)
+    {
+        HP -= damage;
     }
 }

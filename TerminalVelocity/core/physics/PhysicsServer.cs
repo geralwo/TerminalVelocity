@@ -85,8 +85,8 @@ public class PhysicsServer
                 obj.CollisionAction?.Invoke();
                 other_obj.CollisionAction?.Invoke();
 
-				obj.on_collision(collisionInfo);
-				other_obj.on_collision(collisionInfo);
+				obj.OnCollision(collisionInfo);
+				other_obj.OnCollision(collisionInfo);
             }
         }
         //obj.Background = ConsoleColor.Black; // debug collision

@@ -12,7 +12,7 @@ public class SelectBoxTest : Scene
         action.ProcessAction = () => s.add_child(new SceneObject("x"));
         SceneObject exit = new SceneObject("exit");
         exit.Visible = true;
-        exit.ProcessAction = () => Game.quitting = true;
+        exit.ProcessAction = () => Game.Quit = true;
         s.add_child(action);
         s.add_child(exit);
         add_child(s);

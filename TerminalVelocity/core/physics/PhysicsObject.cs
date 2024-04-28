@@ -2,13 +2,30 @@
 
 public class PhysicsObject : SceneObject
 {
+    /// <summary>
+    /// A function tha gets executed when a collision happens
+    /// </summary>
     public Action? CollisionAction;
-    public int layer = 0;
+    /// <summary>
+    /// Objects on the same layer collide - not implemented
+    /// </summary>
+    public int CollisionLayer = 0;
+    /// <summary>
+    /// A list of object names for which collision should be ignored. If an object's name matches any entry in this list, it will not collide with this object.
+    /// </summary>
     public List<string> CollisionIgnoreFilter = new List<string>();
+    /// <summary>
+    ///  The Velocity of this object
+    /// </summary>
     public Vec2i Velocity { get; set; } = new Vec2i();
-
+    /// <summary>
+    /// Mass property. Not used at the moment.
+    /// </summary>
     public float Mass = 1.0f;
     private bool solid = true;
+    /// <summary>
+    /// If IsSolid is true the object is added to the PhysicsServer, else it gets removed from the PhysicsServer
+    /// </summary>
     public bool IsSolid
     {
         get => solid;
@@ -24,13 +41,19 @@ public class PhysicsObject : SceneObject
             }
         }
     }
-    public bool move_and_collide(Vec2i _direction)
+    /// <summary>
+    /// Uses the objects Velocity to move and collide with the world.<br />
+    /// Let's you add velocity when calling it with a Vec2i _direction.
+    /// </summary>
+    /// <param name="_direction">Vec2i _directions adds Velocity to Velocity</param>
+    /// <returns>True if the object moved freely, False when it collides</returns>
+    public bool MoveAndCollide(Vec2i _direction)
     {
         Velocity += _direction;
         PhysicsServer.CollisionInfo col = PhysicsServer.Instance.colliding(this);
         if(col.colliders.Count == 0)
         {
-            move(Velocity);
+            Teleport(Velocity);
             Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
             return true;
         }
@@ -38,7 +61,7 @@ public class PhysicsObject : SceneObject
         {
             if (colItem is PhysicsArea)
             {
-                move(Velocity);
+                Teleport(Velocity);
                 Velocity = Vec2i.ZERO;
                 return true;
                 
@@ -52,8 +75,11 @@ public class PhysicsObject : SceneObject
         
         throw new Exception($"something strange happened in move_and_collide: {this.name} {this.GetType()}");
     }
-
-    public bool move_and_collide()
+    /// <summary>
+    /// Uses the objects Velocity to move and collide with the world.
+    /// </summary>
+    /// <returns>True if it moved freely, False when it collides</returns>
+    public bool MoveAndCollide()
     {
         if (Velocity == Vec2i.ZERO)
             return true;
@@ -70,7 +96,7 @@ public class PhysicsObject : SceneObject
         {
             if (colItem is PhysicsArea)
             {
-                move(Velocity);
+                Teleport(Velocity);
                 Velocity = Vec2i.ZERO;
                 return true;
                 
@@ -84,8 +110,11 @@ public class PhysicsObject : SceneObject
         
         return true;
     }
-
-    public void move(Vec2i _direction)
+    /// <summary>
+    /// Teleports object to position
+    /// </summary>
+    /// <param name="_direction"></param>
+    public void Teleport(Vec2i _direction)
     {
         Position +=  _direction;
     }
@@ -100,8 +129,12 @@ public class PhysicsObject : SceneObject
         Position = _position;
         Display = _icon;
     }
-
-    public virtual void on_collision(PhysicsServer.CollisionInfo collisionInfo)
+    /// <summary>
+    /// A function to override when you want to do things with the objects involved in the collision<br />
+    /// PhysicsServer.CollisionInfo is passed as Parameter
+    /// </summary>
+    /// <param name="collisionInfo"></param>
+    public virtual void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
         return;
     }

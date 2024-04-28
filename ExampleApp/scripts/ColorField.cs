@@ -9,7 +9,7 @@ public class ColorField : PhysicsArea
         Display = " ";
     }
 
-    public override void on_collision(PhysicsServer.CollisionInfo collisionInfo)
+    public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
         collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj => {
             obj.CollisionIgnoreFilter.Clear();

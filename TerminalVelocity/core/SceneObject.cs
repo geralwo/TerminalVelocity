@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace TerminalVelocity;
-public class SceneObject : IDisposable 
+public class SceneObject : IDisposable
 {
 
     /// <summary>
@@ -48,7 +48,7 @@ public class SceneObject : IDisposable
             {
                 Game.ProcessTick -= OnProcess;
             }
-            
+
         }
     }
     private bool input_enabled;
@@ -84,29 +84,29 @@ public class SceneObject : IDisposable
     /// </summary>
     public virtual string Display
     {
-        get { 
-            Console.BackgroundColor = BackgroundColor;
-            Console.ForegroundColor = ForegroundColor;
+        get
+        {
             return display;
         }
-        set {
-            if(break_text && value.Contains('\n'))
+        set
+        {
+            if (break_text && value.Contains('\n'))
             {
                 string[] str = value.Split('\n');
-                int longest_str = str.OrderByDescending( s => s.Length ).First().Length;
+                int longest_str = str.OrderByDescending(s => s.Length).First().Length;
 
                 int diff = longest_str - str[0].Length;
-                
-                this.Position = this.Position + new Vec2i(-diff,0); // recenter after finding longest string
+
+                this.Position = this.Position; // recenter after finding longest string
                 display = str[0].PadRight(longest_str);
-                
-                for(int i = 1; i < str.Length; i++)
+
+                for (int i = 1; i < str.Length; i++)
                 {
                     SceneObject subText = new SceneObject(str[i].PadRight(longest_str));
-                    subText.Position    = Vec2i.DOWN * i;
-                    subText.ForegroundColor  = this.ForegroundColor;
-                    subText.BackgroundColor  = this.BackgroundColor;
-                    subText.name        = $"{this.name}_{i}";
+                    subText.Position = Vec2i.DOWN * i;
+                    subText.ForegroundColor = this.ForegroundColor;
+                    subText.BackgroundColor = this.BackgroundColor;
+                    subText.name = $"{this.name}_{i}";
 
                     this.add_child(subText);
                 }
@@ -124,9 +124,10 @@ public class SceneObject : IDisposable
     /// </summary>
     public int ZIndex
     {
-        get => zIndex; 
-        set {
-            if(value == 0)
+        get => zIndex;
+        set
+        {
+            if (value == 0)
                 return;
             zIndex = value;
         }
@@ -137,33 +138,35 @@ public class SceneObject : IDisposable
     /// <summary>
     /// Sets the foreground color for the object
     /// </summary>
-    public ConsoleColor ForegroundColor { 
+    public ConsoleColor ForegroundColor
+    {
         get { return foregroundColor; }
         set
         {
             foregroundColor = value;
-            if(break_text)
+            if (break_text)
             {
                 Children.ForEach(child => child.ForegroundColor = ForegroundColor);
             }
         }
-     }
+    }
 
     private ConsoleColor backgroundColor = Console.BackgroundColor;
     /// <summary>
     /// Sets the background color for the object
     /// </summary>
-    public ConsoleColor BackgroundColor { 
+    public ConsoleColor BackgroundColor
+    {
         get { return backgroundColor; }
         set
         {
             backgroundColor = value;
-            if(break_text)
+            if (break_text)
             {
                 Children.ForEach(child => child.BackgroundColor = BackgroundColor);
             }
         }
-     }
+    }
 
 
     private bool visible = true;
@@ -173,21 +176,22 @@ public class SceneObject : IDisposable
     public bool Visible
     {
         get => visible;
-        set {
+        set
+        {
             visible = value;
-            if(visible)
+            if (visible)
             {
-                RenderServer.Instance.AddItem(this);
+                RenderServer.AddItem(this);
             }
             else
             {
-                RenderServer.Instance.RemoveItem(this);
+                RenderServer.RemoveItem(this);
             }
         }
     }
-   /// <summary>
-   /// Reference to the parent of this object
-   /// </summary>
+    /// <summary>
+    /// Reference to the parent of this object
+    /// </summary>
     public SceneObject? Parent = null;
     /// <summary>
     /// Contains possible children objects
@@ -202,14 +206,15 @@ public class SceneObject : IDisposable
     public Vec2i Position
     {
         get => position;
-        set 
+        set
         {
             Vec2i offset = position - value;
             position = value;
             Children.ForEach(child => child.Position -= offset);
         }
     }
-    public SceneObject() {
+    public SceneObject()
+    {
         InputEnabled = false;
         ProcessEnabled = false;
         id = Guid.NewGuid();
@@ -218,17 +223,31 @@ public class SceneObject : IDisposable
         ZIndex = zIndex;
         Visible = visible;
     }
-
+    /// <summary>
+    /// If break_text is true, every newline creates a new child.
+    /// </summary>
+    /// <param name="breakText">bool break_text</param>
     public SceneObject(bool breakText) : this()
     {
         break_text = breakText;
     }
-    public SceneObject(string _icon, int _zindex) : this() {
-        display = _icon; 
+    /// <summary>
+    /// Sets the appearence and z-index
+    /// </summary>
+    /// <param name="_display">string</param>
+    /// <param name="_zindex">int</param>
+    public SceneObject(string _display, int _zindex) : this()
+    {
+        display = _display;
         ZIndex = _zindex;
     }
-    public SceneObject(Vec2i _pos) : this() { 
-        Position = _pos; 
+    /// <summary>
+    /// Sets the Position
+    /// </summary>
+    /// <param name="_pos"></param>
+    public SceneObject(Vec2i _pos) : this()
+    {
+        Position = _pos;
     }
     public SceneObject(Vec2i _position, string _icon) : this()
     {
@@ -240,6 +259,12 @@ public class SceneObject : IDisposable
     {
         Display = _icon;
     }
+    /// <summary>
+    /// Adds the object as child and sets the position and z-index relative to the parent.
+    /// Also then executes the OnStart() method.
+    /// </summary>
+    /// <param name="_child">SceneObject</param>
+    /// <returns></returns>
     public bool add_child(SceneObject _child)
     {
         _child.Parent = this;
@@ -259,7 +284,8 @@ public class SceneObject : IDisposable
         Visible = Visible; // hack: else nothing is visible
     }
 
-    public bool remove_child(SceneObject _child) {
+    public bool remove_child(SceneObject _child)
+    {
         if (_child == this)
         {
             Console.BackgroundColor = ConsoleColor.Red;
@@ -267,7 +293,7 @@ public class SceneObject : IDisposable
             Console.Write($"You can't free yourself: {this.name}");
             throw new Exception("Circular ref?");
         }
-        
+
         _child.Dispose();
         return Children.Remove(_child); // maybe put into OnRemove function?
     }
@@ -277,10 +303,10 @@ public class SceneObject : IDisposable
     /// <returns>SceneObject scene_object</returns>
     public SceneObject get_root()
     {
-        if(this.Parent == null)
+        if (this.Parent == null)
         {
             return this;
-        } 
+        }
         else
         {
             return Parent.get_root();
@@ -293,7 +319,7 @@ public class SceneObject : IDisposable
     /// <returns>SceneObject or null</returns>
     public SceneObject? GetNodeById(Guid _id)
     {
-        if(this.id == _id ) { return this; }
+        if (this.id == _id) { return this; }
         Children.ForEach(child => { child.GetNodeById(_id); });
         return Parent?.GetNodeById(_id);
     }
@@ -301,50 +327,17 @@ public class SceneObject : IDisposable
     /// <summary>
     /// Gets invoked on every Game.ProcessTick
     /// </summary>
-    public virtual void OnProcess(){
+    public virtual void OnProcess()
+    {
         ProcessAction?.Invoke();
     }
     /// <summary>
     /// Gets invoked on every Input.KeyPressed event
     /// </summary>
     /// <param name="key">ConsoleKey key</param>
-    public virtual void OnInput(ConsoleKey key){
+    public virtual void OnInput(ConsoleKey key)
+    {
         InputAction?.Invoke();
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    ~SceneObject() {
-        Dispose(false);
-    }
-    // dispose pattern https://gist.github.com/matthewaburton/5455227
-    private void Dispose(bool disposing)
-    {
-        if (_disposed) return;
-        if (disposing)
-        {
-            if (this.Children.Count > 0)
-            {
-                List<SceneObject> cc = new List<SceneObject>(this.Children);
-                foreach (var child in cc)
-                {
-                    child.Dispose();
-                }
-            }
-            if (this is PhysicsObject || this is PhysicsArea)
-            {
-                PhysicsServer.Instance.remove_collider((PhysicsObject)this);
-            }
-        }
-        InputEnabled    = false;
-        ProcessEnabled  = false;
-        Visible = false;
-        Children.Clear();
-        _disposed       = true;
     }
     /// <summary>
     /// Centers element relative to screen width and places it on the specified y position
@@ -370,5 +363,41 @@ public class SceneObject : IDisposable
     {
         center_x();
         center_y();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~SceneObject()
+    {
+        Dispose(false);
+    }
+    // dispose pattern https://gist.github.com/matthewaburton/5455227
+    private void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+        if (disposing)
+        {
+            if (this.Children.Count > 0)
+            {
+                List<SceneObject> cc = new List<SceneObject>(this.Children);
+                foreach (var child in cc)
+                {
+                    child.Dispose();
+                }
+            }
+            if (this is PhysicsObject || this is PhysicsArea)
+            {
+                PhysicsServer.Instance.remove_collider((PhysicsObject)this);
+            }
+        }
+        InputEnabled = false;
+        ProcessEnabled = false;
+        Visible = false;
+        Children.Clear();
+        _disposed = true;
     }
 }
