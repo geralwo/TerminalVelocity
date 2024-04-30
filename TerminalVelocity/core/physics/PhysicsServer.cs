@@ -56,10 +56,10 @@ public class PhysicsServer
 	private static List<SceneObject> debugCols = new List<SceneObject>();
 	public static void Step()
 	{
-		foreach (var debug_col in debugCols)
-		{
-			Game.CurrentScene.remove_child(debug_col);
-		}
+		// foreach (var debug_col in debugCols)
+		// {
+		// 	Game.CurrentScene.remove_child(debug_col);
+		// }
 		debugCols = new List<SceneObject>();
 		CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 4);
 		foreach (var obj in Instance.objects)
@@ -71,6 +71,8 @@ public class PhysicsServer
 				// colDebug.Position = colpos + obj.Position;
 				// if (obj.Velocity == Vec2i.ZERO)
 				// 	colDebug.BackgroundColor = ConsoleColor.Green;
+				// if (obj.IsColliding)
+				// 	colDebug.BackgroundColor = ConsoleColor.Red;
 				// debugCols.Add(colDebug);
 				CollisionTree.Insert(colpos + obj.Position, obj);
 			}
@@ -151,9 +153,8 @@ public class PhysicsServer
 		else
 		{
 			Game.CurrentScene.remove_child(quadTreeVisuals);
-			quadTreeVisuals = CollisionTree.Visualize();
+			quadTreeVisuals = null;
 		}
-		Game.CurrentScene.add_child(quadTreeVisuals);
 	}
 
 }

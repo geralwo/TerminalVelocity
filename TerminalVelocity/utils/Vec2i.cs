@@ -79,6 +79,16 @@ public struct Vec2i
     {
         return Math.Abs(a.x) > b && Math.Abs(a.y) > b;
     }
+    
+    public static bool operator <=(Vec2i a, Vec2i b)
+    {
+        return a.x <= b.x && a.y <= b.y;
+    }
+    
+    public static bool operator >=(Vec2i a, Vec2i b)
+    {
+        return a.x >= b.x && a.y >= b.x;
+    }
 
     public static Vec2i operator <<(Vec2i a, int b)
     {

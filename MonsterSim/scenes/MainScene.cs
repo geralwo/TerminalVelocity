@@ -7,14 +7,15 @@ public class MainScene : Scene
         Player<Ork> player= new Player<Ork>(Vec2i.ZERO, new Ork());
         Rat rat = new Rat(Vec2i.ONE * 5);
         rat.ProcessAction += () => {         
-            if(Game.RunTime % 60 == 0)
+            if(Game.FrameCount % 60 == 0)
             {
                 rat.Velocity = Vec2i.RIGHT;
             }
         };
         Rat rat2 = new Rat(new Vec2i(40,5));
+        rat2.Display = ".::-";
         rat2.ProcessAction += () => {         
-            if(Game.RunTime % 60 == 0)
+            if(Game.FrameCount % 60 == 0)
             {
                 rat2.Velocity = Vec2i.LEFT;
             }
