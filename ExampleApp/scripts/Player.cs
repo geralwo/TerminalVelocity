@@ -11,10 +11,6 @@ public class Player : PhysicsObject
         ProcessEnabled = true;
         name = "player";
     }
-    public override void OnProcess()
-    {
-        MoveAndCollide();
-    }
 
     public override void OnInput(ConsoleKey key)
     {

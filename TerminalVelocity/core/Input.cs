@@ -15,7 +15,7 @@ public class Input
         
     }
     /// <summary>
-    /// If a key is pressed the KeyPressed event is fired and the pressed key is passed
+    /// If a key is pressed the KeyPressed event is fired and the pressed key is passed as 
     /// </summary>
     public static void get_input()
     {

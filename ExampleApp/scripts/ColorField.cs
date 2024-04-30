@@ -4,18 +4,18 @@ public class ColorField : PhysicsArea
 {
     public ColorField(ConsoleColor _color, Vec2i _position)
     {
-        BackgroundColor = _color;
+        Color = _color;
         Position = _position;
-        Display = " ";
     }
 
     public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
+        throw new Exception("lol");
         collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj => {
             obj.CollisionIgnoreFilter.Clear();
             obj.BackgroundColor = this.BackgroundColor;
             obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
-            obj.ForegroundColor = ConsoleColor.Black;
+            obj.Color = ConsoleColor.Black;
         });
     }
 }

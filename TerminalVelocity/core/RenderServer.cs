@@ -15,8 +15,9 @@ public class RenderServer
     /// <summary>
     /// This is the screen buffer that gets drawn to the terminal
     /// </summary>
-    private Dictionary<Vec2i, SceneObject> screenBuffer = new Dictionary<Vec2i, SceneObject>();
-    private List<SceneObject> registered_buffer = new List<SceneObject>();
+    private Dictionary<Vec2i, Pixel> screenBuffer = new();
+    private List<SceneObject> registered_buffer = new();
+
     /// <summary>
     /// This is the singleton instance of the RenderServer
     /// </summary>
@@ -76,19 +77,22 @@ public class RenderServer
     public static void DrawBuffer()
     {
         Instance.Render();
-        foreach (var idx in Instance.screenBuffer.Keys.Where(idx => idx.x >= 0 && idx.y >= 0 && idx.x <= Console.WindowWidth && idx.y <= Console.WindowHeight))
+        for (int x=0; x < Game.Settings.Engine.WindowSize.x; x++)
         {
-            Console.SetCursorPosition(idx.x, idx.y);
-            Instance.screenBuffer.TryGetValue(idx, out SceneObject? v);
-            if (v != null)
+            for (int y = 0; y < Game.Settings.Engine.WindowSize.y; y++)
             {
-                Console.ForegroundColor = v.ForegroundColor;
-                Console.BackgroundColor = v.BackgroundColor;
-                // Console.Write(v.name);
-                // Console.Write(v.GetType());
-                // Console.Write(v.ZIndex);
-                Console.Write(v.Display);
-                Console.ResetColor();
+                var screen_coord = new Vec2i(x, y);
+                Console.SetCursorPosition(x,y);
+                if (Instance.screenBuffer.TryGetValue(screen_coord, out var v))
+                {
+                    Console.ForegroundColor = v.ForegroundColor;
+                    Console.BackgroundColor = v.BackgroundColor;
+                    // Console.Write(v.name);
+                    // Console.Write(v.GetType());
+                    // Console.Write(v.ZIndex);
+                    Console.Write(v.Display);
+                    Console.ResetColor();
+                }
             }
         }
     }
@@ -105,46 +109,81 @@ public class RenderServer
     /// </summary>
     private void Render()
     {
-        var new_screen_buffer = new Dictionary<Vec2i, SceneObject>();
+        var new_screenBuffer = new Dictionary<Vec2i, Pixel>();
         var rBufferCopy = new List<SceneObject>(registered_buffer);
+        // we go through each object in the registered buffer.
         foreach(var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
-        //foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.x >= 0 && obj.Position.y >= 0 && obj.Position.x < Console.WindowWidth && obj.Position.y < Console.WindowHeight))
         {
-            new_screen_buffer.TryAdd(obj.Position, obj);
-            if(new_screen_buffer.TryGetValue(obj.Position, out SceneObject v))
+            // for the length of the string we create pixels
+            for (int i = 0; i < obj.Display.Length; i++)
             {
-                if(obj.ZIndex > v.ZIndex)
-                    new_screen_buffer[obj.Position] = obj;
-                // if the old screen buffer has a key for this position 
-                // and the object in the new buffer is the same, 
-                // we dont need to render it again because its already there   
-                if (screenBuffer.ContainsKey(obj.Position) && obj.id == v.id)
+                var screen_coord = obj.Position + Vec2i.RIGHT * i;
+                var pixel = new Pixel(obj.Display[i],obj);
+                // we add the pixel to the new screen buffer
+                // if that fails, there is already a pixel
+                // and we check if the pixel.ZIndex is higher than
+                // the z-index of the current pixel
+                if (new_screenBuffer.TryAdd(screen_coord, pixel)) continue;
+                if (pixel.ZIndex > new_screenBuffer[screen_coord].ZIndex)
                 {
-                    screenBuffer.Remove(obj.Position);
+                    // z-index of current obj is higher, so we set the pixel to the new value
+                    new_screenBuffer[screen_coord] = pixel;
                 }
             }
         }
-        
-        
-        // clean up screen by removing pixels left in the old screen buffer
-        foreach (var pos in screenBuffer.Keys)
+        // now we can go through the old screen buffer to see if any pixel are different
+        // from the new buffer.
+        // if a pixel is different it is because something has moved. so we need to find out
+        // what the pixel should look like now. if there is no object to render, we write ' '
+        // with the appropriate colors. else we draw the pixel of the object.
+        foreach (Vec2i oldPixelCoord in screenBuffer.Keys)
         {
-            Console.SetCursorPosition(pos.x, pos.y);
-            for (int i = 0; i < screenBuffer[pos].Display.Length; i++) // bug: this is a refernce to an object. the display length could have changed
+            if (!new_screenBuffer.TryGetValue(oldPixelCoord, out Pixel oldPixel))
             {
-                Console.ResetColor();
+                Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
                 Console.Write(" ");
             }
         }
-        // now we just add all pixels to the buffer to render
-        // todo: we dont need to add all pixels, only the pixels that have changed
-        screenBuffer = new_screen_buffer;
+        screenBuffer = new_screenBuffer;
     }
 
     public static void ClearScene()
     {
         Console.Clear();
-        Instance.screenBuffer = new Dictionary<Vec2i, SceneObject>();
+        Instance.screenBuffer = new Dictionary<Vec2i, Pixel>();
         Instance.registered_buffer = new List<SceneObject>();
+    }
+
+    private struct Pixel
+    {
+        public readonly ConsoleColor ForegroundColor;
+        public readonly ConsoleColor BackgroundColor;
+        public readonly char Display;
+        public readonly int ZIndex;
+        public readonly SceneObject? Owner;
+
+        public Pixel(char _display, SceneObject? _owner = null)
+        {
+            if (_owner != null)
+            {
+                ForegroundColor = _owner.Color;
+                BackgroundColor = _owner.BackgroundColor;
+                Display = _display;
+                ZIndex = _owner.ZIndex;
+            }
+            Owner = _owner;
+        }
+
+        public static bool operator ==(Pixel a, Pixel b)
+        {
+            return a.ForegroundColor == b.ForegroundColor && a.BackgroundColor == b.BackgroundColor &&
+                   a.Display == b.Display;
+        }
+        
+        public static bool operator !=(Pixel a, Pixel b)
+        {
+            return !(a == b);
+        }
+        public static Pixel Default => new Pixel(' ');
     }
 }

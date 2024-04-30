@@ -70,7 +70,7 @@ public class Level : SceneObject {
         };
         for(int i = 0; i < fence_coords.Length;i++)
         {
-            PhysicsObject key_fence = new PhysicsObject(fence_coords[i] + key.Position," ");
+            PhysicsObject key_fence = new PhysicsObject(fence_coords[i] + key.Position);
             key_fence.BackgroundColor = key.BackgroundColor;
             key_fence.Visible = true;
             key_fence.ZIndex = -10;
@@ -110,8 +110,11 @@ public class Level : SceneObject {
                     PhysicsObject wall_piece;
                     if (pos == door_pos) 
                     {
-                        wall_piece = new PhysicsObject(pos,"D");
-                        wall_piece.ProcessEnabled = true;
+                        wall_piece = new PhysicsObject(pos)
+                        {
+                            Display = "D",
+                            ProcessEnabled = true
+                        };
                         wall_piece.ProcessAction = () => {
                             if(Game.FrameCount % 16 == 0)
                                 wall_piece.BackgroundColor = key.BackgroundColor;
@@ -120,17 +123,20 @@ public class Level : SceneObject {
                         door = wall_piece;
                         door_spawn = wall_piece.Position;
                         wall_piece.name = "theoneandonly";
-                        key.ForegroundColor = ConsoleColor.Black;
+                        key.Color = ConsoleColor.Black;
 
                         key.Visible = true;
                         add_child(key);
                     }
                     else
                     {
-                        wall_piece = new PhysicsObject(pos, "█");
-                        wall_piece.Mass = 1000;
-                        wall_piece.BackgroundColor = ConsoleColor.Blue;
-                        wall_piece.ForegroundColor = ConsoleColor.Blue;
+                        wall_piece = new PhysicsObject(pos)
+                        {
+                            Display = "█",
+                            Mass = 1000,
+                            BackgroundColor = ConsoleColor.Blue,
+                            Color = ConsoleColor.Blue
+                        };
 
                     }
                     wall_piece.Visible = true;

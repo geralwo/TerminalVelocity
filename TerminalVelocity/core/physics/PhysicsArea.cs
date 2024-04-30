@@ -5,6 +5,6 @@ public class PhysicsArea : PhysicsObject
     public PhysicsArea()
     {
         IsSolid = false;
-        PhysicsServer.Instance.add_collider(this);
+        PhysicsServer.AddCollider(this);
     }
 }

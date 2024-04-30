@@ -17,7 +17,7 @@ public class PhysicsObject : SceneObject
     /// <summary>
     ///  The Velocity of this object
     /// </summary>
-    public Vec2i Velocity { get; set; } = new Vec2i();
+    public Vec2i Velocity { get; set; } = Vec2i.ZERO;
     /// <summary>
     /// Mass property. Not used at the moment.
     /// </summary>
@@ -26,116 +26,81 @@ public class PhysicsObject : SceneObject
     /// <summary>
     /// If IsSolid is true the object is added to the PhysicsServer, else it gets removed from the PhysicsServer
     /// </summary>
-    public bool IsSolid
+public bool IsSolid
     {
         get => solid;
         set { 
             solid = value;
             if(solid)
             {
-                PhysicsServer.Instance.add_collider(this);
+                PhysicsServer.AddCollider(this);
             } 
             else
             {
-                PhysicsServer.Instance.remove_collider(this);
+                PhysicsServer.RemoveCollider(this);
             }
         }
     }
-    /// <summary>
-    /// Uses the objects Velocity to move and collide with the world.<br />
-    /// Let's you add velocity when calling it with a Vec2i _direction.
-    /// </summary>
-    /// <param name="_direction">Vec2i _directions adds Velocity to Velocity</param>
-    /// <returns>True if the object moved freely, False when it collides</returns>
-    public bool MoveAndCollide(Vec2i _direction)
+    private Vec2i[]? collisionShape;
+    public Vec2i[] CollisionShape
     {
-        Velocity += _direction;
-        PhysicsServer.CollisionInfo col = PhysicsServer.Instance.colliding(this);
-        if(col.colliders.Count == 0)
-        {
-            Teleport(Velocity);
-            Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
-            return true;
-        }
-        foreach (var colItem in col.colliders.Where(colItem => colItem != this))
-        {
-            if (colItem is PhysicsArea)
-            {
-                Teleport(Velocity);
-                Velocity = Vec2i.ZERO;
-                return true;
-                
-            }
-            else if (colItem.IsSolid)
-            {
-                Velocity = Vec2i.ZERO;
-                return false;
-            }
-        }
-        
-        throw new Exception($"something strange happened in move_and_collide: {this.name} {this.GetType()}");
+        get => CreateCollisionShape();
     }
-    /// <summary>
-    /// Uses the objects Velocity to move and collide with the world.
-    /// </summary>
-    /// <returns>True if it moved freely, False when it collides</returns>
-    public bool MoveAndCollide()
+    private string display = "█";
+    public override string Display
     {
-        if (Velocity == Vec2i.ZERO)
-            return true;
-        PhysicsServer.CollisionInfo col = PhysicsServer.Instance.colliding(this);
-        
-        if(col.colliders.Count == 0)
+        get => display;
+        set
         {
-            Position += Velocity;
-            //move(Velocity);
-            Velocity = Vec2i.ZERO; // this is currently needed because the velocity is not affected by anything
-            return true;
+            // collision with no space makes no sense
+            if (string.IsNullOrEmpty(value))
+                throw new Exception("Display cannot be empty when creating CollisionShape.");
+            display = value;
         }
-        foreach (var colItem in col.colliders.Where(colItem => colItem != this))
-        {
-            if (colItem is PhysicsArea)
-            {
-                Teleport(Velocity);
-                Velocity = Vec2i.ZERO;
-                return true;
-                
-            }
-            else if (colItem.IsSolid)
-            {
-                Velocity = Vec2i.ZERO;
-                return false;
-            }
-        }
-        
-        return true;
     }
-    /// <summary>
-    /// Teleports object to position
-    /// </summary>
-    /// <param name="_direction"></param>
-    public void Teleport(Vec2i _direction)
+    
+    public bool IsColliding = false;
+    public PhysicsObject()
     {
-        Position +=  _direction;
+        IsSolid = solid;
     }
 
-    public PhysicsObject() : base()
-    {
-        PhysicsServer.Instance.add_collider(this);
-    }
 
-    public PhysicsObject(Vec2i _position, string _icon) : this()
+    public PhysicsObject(Vec2i _position) : this()
     {
         Position = _position;
-        Display = _icon;
     }
     /// <summary>
-    /// A function to override when you want to do things with the objects involved in the collision<br />
-    /// PhysicsServer.CollisionInfo is passed as Parameter
+    /// Creates an Vec2i Array of offsets that represent the shape of the object
+    /// </summary>
+    /// <returns>Vec2i[Display.Length]</returns>
+    /// <exception cref="Exception"></exception>
+    public Vec2i[] CreateCollisionShape()
+    {
+        // return shape if the old shape still fits
+        if(collisionShape != null && collisionShape.Length == Display.Length)
+            return collisionShape;
+        // create new shape
+        collisionShape = new Vec2i[Display.Length];
+        collisionShape[0] = Vec2i.ZERO;
+        for (int i = 1; i < Display.Length; i++)
+        {
+            collisionShape[i] = Vec2i.RIGHT * i;
+        }
+        return collisionShape;
+    }
+
+    public void Teleport(Vec2i _direction)
+    {
+        Position += _direction;
+    }
+    /// <summary>
+    /// A function to override when you want to do things on collision.<br />
+    /// PhysicsServer.CollisionInfo is a struct containing the objects involved in the collision
     /// </summary>
     /// <param name="collisionInfo"></param>
     public virtual void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
-        return;
+        CollisionAction?.Invoke();
     }
 }

@@ -18,16 +18,17 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
   {
     Character = _character;
     Character.Position = _position;
+    Character.CreateCollisionShape();
     Character.ProcessEnabled = true;
     Character.name = "playerBody";
     Character.ProcessAction += OnProcess;
+    Character.ZIndex = 10;
     Input.KeyPressed += OnInput;
   }
 
   void OnProcess()
   {
-    Character.MoveAndCollide();
-    if(Character.HP < 0)
+    if (Character.HP < 0)
     {
       Dispose();
     }
@@ -38,30 +39,33 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
     switch (key)
     {
       case ConsoleKey.UpArrow:
-        if (Character.Velocity == Vec2i.ZERO)
+        if(Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.UP * playerSpeed;
         break;
       case ConsoleKey.DownArrow:
-        if (Character.Velocity == Vec2i.ZERO)
+        if(Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.DOWN * playerSpeed;
         break;
       case ConsoleKey.LeftArrow:
-        if (Character.Velocity == Vec2i.ZERO)
+        if(Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.LEFT * playerSpeed;
         break;
       case ConsoleKey.RightArrow:
-        if (Character.Velocity == Vec2i.ZERO)
+        if(Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.RIGHT * playerSpeed;
         break;
       case ConsoleKey.T:
         Character.Attack(this.Character);
         Character.Position = Vec2i.ONE * 5;
         break;
+      case ConsoleKey.R:
+        Character.GetNodeByName("rat").BackgroundColor = ConsoleColor.Red;
+        PhysicsServer.ToggleQuadTreeVisuals();
+        break;
     }
   }
-
     public void Dispose()
-    {
-        Character.Dispose();
-    }
+  {
+    Character.Dispose();
+  }
 }

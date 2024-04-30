@@ -8,24 +8,21 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         get => hp;
         set {
             hp = value;
-            if(HP < 0)
-            {
-                Display = "X";
-            }
         }
     }
     public int AD = 33;
-    public Ork()
+    public Ork() : base()
     {
         BackgroundColor = ConsoleColor.DarkGreen;
-        ForegroundColor = ConsoleColor.Green;
-        Display = "ô";
+        Color = ConsoleColor.Green;
+        Display = "ôk";
+
     }
 
 
     public void Attack(IAttackble target)
     {
-        target.HP -= AD;
+        target.TakeDamage(AD);
     }
 
     public void DefensiveMove()

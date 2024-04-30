@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+﻿#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 #pragma warning disable CA1050 // Declare types in namespaces
 namespace TerminalVelocity;
@@ -33,6 +30,11 @@ public struct Vec2i
         return new Vec2i(a.x - b, a.y - b);
     }
 
+    public static Vec2i operator -(Vec2i a)
+    {
+        return new Vec2i(-a.x, -a.y);
+    }
+
 
     public static Vec2i operator *(Vec2i a, int b)
     {
@@ -50,7 +52,7 @@ public struct Vec2i
     }
     public static bool operator ==(Vec2i a, Vec2i b)
     {
-        return (a.x == b.x && a.y == b.y);
+        return a.x == b.x && a.y == b.y;
     }
 
     public static bool operator !=(Vec2i a, Vec2i b)
@@ -66,6 +68,16 @@ public struct Vec2i
     public static bool operator >(Vec2i a, Vec2i b)
     {
         return Math.Abs(a.x) > Math.Abs(b.x) && Math.Abs(a.y) > Math.Abs(b.y);
+    }
+    
+    public static bool operator <(Vec2i a, int b)
+    {
+        return a.x < b && a.y < b;
+    }
+
+    public static bool operator >(Vec2i a, int b)
+    {
+        return Math.Abs(a.x) > b && Math.Abs(a.y) > b;
     }
 
     public static Vec2i operator <<(Vec2i a, int b)
@@ -102,7 +114,7 @@ public struct Vec2i
 
     public double magnitude()
     {
-        return Math.Sqrt(this.x * this.x + this.y * this.y);
+        return Math.Sqrt(x * x + y * y);
     }
     public bool IsInBoundsOf(AABB _aabb)
     {
@@ -111,7 +123,7 @@ public struct Vec2i
 
     public bool IsInBoundsOf(Vec2i _size)
     {
-        return new AABB(_size).Contains(this);
+        return this.x <= _size.x && this.y <= _size.y && this.x >= 0 && this.y >= 0;
     }
 
     public static readonly Vec2i[] CardinalDirections = [Vec2i.DOWN, Vec2i.UP, Vec2i.LEFT, Vec2i.RIGHT];
@@ -129,5 +141,9 @@ public struct Vec2i
     public static readonly Vec2i LEFT = new Vec2i(-1, 0);
     public static readonly Vec2i RIGHT = new Vec2i(1, 0);
 
-
+    public static Vec2i Random(int _maxExclusive)
+    {
+        var rng = new Random();
+        return new Vec2i(rng.Next(_maxExclusive),rng.Next(_maxExclusive));
+    }
 }

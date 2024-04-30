@@ -54,11 +54,11 @@ public class SettingsScene : Scene
 
 
 
-        title_lvl_size.ForegroundColor = ConsoleColor.Green;
-        value_lvl_size.ForegroundColor = ConsoleColor.Red;
+        title_lvl_size.Color = ConsoleColor.Green;
+        value_lvl_size.Color = ConsoleColor.Red;
 
-        title_player_char.ForegroundColor = ConsoleColor.Green;
-        value_player_char.ForegroundColor = ConsoleColor.Red;
+        title_player_char.Color = ConsoleColor.Green;
+        value_player_char.Color = ConsoleColor.Red;
 
         add_child(title_lvl_size);
         add_child(value_lvl_size);
@@ -147,14 +147,14 @@ public class SettingsScene : Scene
         if (Children[menuIndex].name == value_player_char.name)
         {
             Children[menuIndex].BackgroundColor = ConsoleColor.White;
-            Children[menuIndex].ForegroundColor = ConsoleColor.Black;
+            Children[menuIndex].Color = ConsoleColor.Black;
             char input = Console.ReadKey().KeyChar;
             if (!char.IsControl(input))
             {
                 Game.Beep(2254, 200);
                 player_char = input.ToString();
                 Children[menuIndex].BackgroundColor = ConsoleColor.Green;
-                Children[menuIndex].ForegroundColor = ConsoleColor.Black;
+                Children[menuIndex].Color = ConsoleColor.Black;
                 Children[menuIndex].Display = player_char.ToString();
             }
             else
@@ -188,12 +188,12 @@ public class SettingsScene : Scene
             {
                 if (i == menuIndex)
                 {
-                    Children[i].ForegroundColor = ConsoleColor.Black;
+                    Children[i].Color = ConsoleColor.Black;
                     Children[i].BackgroundColor = ConsoleColor.Green;
                 }
                 else
                 {
-                    Children[i].ForegroundColor = ConsoleColor.White;
+                    Children[i].Color = ConsoleColor.White;
                     Children[i].BackgroundColor = ConsoleColor.Black;
                 }
             }

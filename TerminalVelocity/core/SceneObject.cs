@@ -1,10 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
-using System.Data.Common;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
-
-namespace TerminalVelocity;
+﻿namespace TerminalVelocity;
 public class SceneObject : IDisposable
 {
 
@@ -104,7 +98,7 @@ public class SceneObject : IDisposable
                 {
                     SceneObject subText = new SceneObject(str[i].PadRight(longest_str));
                     subText.Position = Vec2i.DOWN * i;
-                    subText.ForegroundColor = this.ForegroundColor;
+                    subText.Color = this.Color;
                     subText.BackgroundColor = this.BackgroundColor;
                     subText.name = $"{this.name}_{i}";
 
@@ -138,7 +132,7 @@ public class SceneObject : IDisposable
     /// <summary>
     /// Sets the foreground color for the object
     /// </summary>
-    public ConsoleColor ForegroundColor
+    public ConsoleColor Color
     {
         get { return foregroundColor; }
         set
@@ -146,7 +140,7 @@ public class SceneObject : IDisposable
             foregroundColor = value;
             if (break_text)
             {
-                Children.ForEach(child => child.ForegroundColor = ForegroundColor);
+                Children.ForEach(child => child.Color = Color);
             }
         }
     }
@@ -265,12 +259,14 @@ public class SceneObject : IDisposable
     /// </summary>
     /// <param name="_child">SceneObject</param>
     /// <returns></returns>
-    public bool add_child(SceneObject _child)
+    public virtual bool add_child<T>(T _child) where T : SceneObject
     {
         _child.Parent = this;
         _child.Position += this.position;
         _child.ZIndex += this.ZIndex;
         _child.Visible = _child.Visible;
+        // if (_child is PhysicsObject physicsObject)
+        //     _ = physicsObject.IsSolid; // call the getter to set collisionshape 
         Children.Add(_child);
         _child.OnStart();
         return true;
@@ -319,9 +315,30 @@ public class SceneObject : IDisposable
     /// <returns>SceneObject or null</returns>
     public SceneObject? GetNodeById(Guid _id)
     {
-        if (this.id == _id) { return this; }
-        Children.ForEach(child => { child.GetNodeById(_id); });
+        if (this.id == _id)
+            return this;
+        foreach(var _child in Children)
+        {
+            if(_child.id == _id)
+                return _child;
+        }
         return Parent?.GetNodeById(_id);
+    }
+    /// <summary>
+    /// Tries to return the first object with the specified name
+    /// </summary>
+    /// <param name="_name"></param>
+    /// <returns>SceneObject or null</returns>
+    public SceneObject? GetNodeByName(string _name)
+    {
+        if (this.name == _name) 
+            return this;
+        foreach(var _child in Children)
+        {
+            if(_child.name == _name)
+                return _child;
+        }
+        return Parent?.GetNodeByName(_name);
     }
 
     /// <summary>
@@ -391,7 +408,7 @@ public class SceneObject : IDisposable
             }
             if (this is PhysicsObject || this is PhysicsArea)
             {
-                PhysicsServer.Instance.remove_collider((PhysicsObject)this);
+                PhysicsServer.RemoveCollider(this as PhysicsObject);
             }
         }
         InputEnabled = false;

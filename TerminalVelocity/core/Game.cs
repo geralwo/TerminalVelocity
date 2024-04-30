@@ -75,6 +75,7 @@ public class Game
         {
 
             Input.get_input();
+            PhysicsServer.Step();
             // new Thread(() => {
             //    ProcessTick?.Invoke();
             // }).Start();

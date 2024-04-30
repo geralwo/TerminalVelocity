@@ -13,7 +13,7 @@ public class GameScene : Scene
         p.Position = l.player_spawn;
         p.name = "player";
         p.BackgroundColor = ConsoleColor.White;
-        p.ForegroundColor = ConsoleColor.Red;
+        p.Color = ConsoleColor.Red;
         p.ZIndex = 10;
         
         add_child(l);

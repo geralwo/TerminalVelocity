@@ -29,7 +29,7 @@ public class MainMenu : Scene
 
 		SceneObject banner = new SceneObject(true);
         banner.name = "banner";
-        banner.ForegroundColor = ConsoleColor.Black;
+        banner.Color = ConsoleColor.Black;
         banner.BackgroundColor = ConsoleColor.Red;
 		banner.Display = """                                                  
  _____                        _____               

@@ -27,12 +27,12 @@ public class SelectBox : SceneObject
 			{
 				if (i == menuIndex)
 				{
-					Children[i].ForegroundColor = HighlightForegroundColor;
+					Children[i].Color = HighlightForegroundColor;
 					Children[i].BackgroundColor = HighlightBackgroundColor;
 				}
 				else
 				{
-                    Children[i].ForegroundColor = DefaultForegroundColor;
+                    Children[i].Color = DefaultForegroundColor;
                     Children[i].BackgroundColor = DefaultBackgroundColor;
                 }
 			}
