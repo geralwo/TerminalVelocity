@@ -83,7 +83,7 @@ public class Game
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
-
+        TerminalVelocity.core.Debug.PrintToFile("./log.txt");
         _finished();
     }
     /// <summary>

@@ -23,7 +23,9 @@ public class MainScene : Scene
         // };
         // add_child(rat);
         // add_child(rat2);
-        add_child(new PhysicsObject(new Vec2i(8,5)));
+        PhysicsObject staticObject = new PhysicsObject(new Vec2i(2,0));
+        staticObject.name = "staticBody";
+        add_child(staticObject);
         InputEnabled = true;
     }
     public override void OnInput(ConsoleKey key)

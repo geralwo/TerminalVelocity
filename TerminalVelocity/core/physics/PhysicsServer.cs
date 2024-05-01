@@ -46,70 +46,75 @@ public class PhysicsServer
 		}
 	}
 	//private static List<SceneObject> debugCols = new List<SceneObject>();
+	static string debugMsg = "";
 	public static void Step()
 	{
-		// foreach (var debug_col in debugCols)
-		// {
-		// 	Game.CurrentScene.remove_child(debug_col);
-		// }
-		//debugCols = new List<SceneObject>();
-		CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 1);
+        // foreach (var debug_col in debugCols)
+        // {
+        // 	Game.CurrentScene.remove_child(debug_col);
+        // }
+        //debugCols = new List<SceneObject>();
+
+        CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 8);
 		foreach (var obj in Instance.Colliders)
 		{
-			// in Step() we go through each object and insert it into the quad tree.
-			// we want to only check for collisions on objects that have a velocity != 0
+            debugMsg = "";
+            debugMsg += $"[{obj.name}: {obj.Position} {obj.Velocity} {obj.IsColliding}]\n";
+
+            // in Step() we go through each object and insert it into the quad tree.
+            // we want to only check for collisions on objects that have a velocity != 0
+            if (obj.IsColliding)
+			{
+				obj.Velocity = Vec2i.ZERO;
+			}
 			if (obj.Velocity != 0)
 			{
 				checkCollision(obj);
+				obj.Position += obj.Velocity;
+				obj.Velocity = obj.Velocity.StepToZero();
 			}
-			foreach (Vec2i _colShapeOffset in obj.CollisionShape)
-			{
-				var posInTree = obj.Position + _colShapeOffset;
-				if(CollisionTree.Insert(posInTree, obj))
-					obj.Color = ConsoleColor.DarkMagenta;
-			}
+            debugMsg += $"  inserting {obj.CollisionShape.Length} shape(s) into CollisionTree\n";
+            foreach (Vec2i _colShapeOffset in obj.CollisionShape)
+            {
+                var posInTree = obj.Position + _colShapeOffset;
+                debugMsg += "    Shape: " + _colShapeOffset + " => " + (_colShapeOffset + obj.Position) + $"into {posInTree}\n";
+                if (CollisionTree.Insert(posInTree, obj)) ;
+                //	obj.Color = ConsoleColor.DarkMagenta;
+            }
+
+            debugMsg += "\n";
+            TerminalVelocity.core.Debug.AddDebugEntry(debugMsg);
 		}
 	}
 
 	private static void checkCollision(PhysicsObject obj)
 	{
+		debugMsg += "\n  checking collison for" + obj.name + "\n";
         CollisionInfo colinfo = new CollisionInfo();
 		//obj.BackgroundColor = ConsoleColor.Blue;
 		colinfo.colliders.Add(obj);
 		var newPosition = obj.Position + obj.Velocity;
 		// We check for every position in the obj.CollisionShape
-		bool collisionDetected = false;
 		foreach (Vec2i _colShapeOffset in obj.CollisionShape)
 		{
-			var positionToCheck = _colShapeOffset + newPosition;
+            var positionToCheck = _colShapeOffset + newPosition;
+            debugMsg += $"    checking position {positionToCheck}\n";
 			if (CollisionTree.Query(positionToCheck, out SceneObject[] queryResult))
 			{
-				foreach(PhysicsObject collider in queryResult)
+                debugMsg += $"collision tree gives result for {positionToCheck}";
+                foreach (PhysicsObject collider in queryResult)
 				{
 					if(collider.id != obj.id)
 					{
+						debugMsg += "\n[!] obj collided!";
 						colinfo.colliders.Add(collider);
-						collider.BackgroundColor = ConsoleColor.Red;
+						obj.IsColliding = true;
 						collider.OnCollision(colinfo);
-						obj.BackgroundColor = ConsoleColor.Red;
-						obj.Velocity = Vec2i.ZERO;
-						collisionDetected = true;
+						obj.OnCollision(colinfo);
 						break;
 					}
 				}
 			}
-		}
-		if (!collisionDetected)
-		{
-			obj.IsColliding = false;
-			obj.Position = newPosition;
-			obj.Velocity = obj.Velocity.StepToZero();
-		}
-		else
-		{
-			obj.Position = obj.Position;
-			obj.IsColliding = true;
-			obj.Velocity = Vec2i.ZERO;
 		}
 	}
 
