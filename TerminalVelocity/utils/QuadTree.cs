@@ -105,28 +105,30 @@ public class QuadTree
         return vis;
     }
 
-    public SceneObject[] Query(Vec2i _position)
+    public bool Query(Vec2i position, out SceneObject[] queryResult)
     {
-        List<SceneObject> query_result = new List<SceneObject>();
+        List<SceneObject> queryResultList = new List<SceneObject>();
 
-        if(Aabb.Contains(_position))
+        if (Aabb.Contains(position))
         {
-            if(Items.TryGetValue(_position,out SceneObject? v))
+            if (Items.TryGetValue(position, out SceneObject? sceneObject))
             {
-                if (v != null)
-                {
-                    query_result.Add(v);
-                    return query_result.ToArray();
-                }
+                queryResultList.Add(sceneObject);
             }
-            if(Divided && SubTrees != null)
+
+            if (Divided)
             {
-                foreach(var qt in SubTrees)
+                foreach (var subtree in SubTrees)
                 {
-                    query_result.AddRange(qt.Query(_position));
+                    if (subtree.Query(position, out SceneObject[] subTreeResult))
+                    {
+                        queryResultList.AddRange(subTreeResult);
+                    }
                 }
             }
         }
-        return query_result.ToArray();
+
+        queryResult = queryResultList.ToArray();
+        return queryResult.Length > 0;
     }
 }

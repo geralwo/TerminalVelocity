@@ -15,6 +15,12 @@ public struct Vec2i
         this.y = _y;
     }
 
+    public Vec2i(Vec2i other)
+    {
+        this.x = other.x;
+        this.y = other.y;
+    }
+
     public static Vec2i operator +(Vec2i a, Vec2i b)
     {
         return new Vec2i(a.x + b.x, a.y + b.y);
@@ -60,6 +66,16 @@ public struct Vec2i
         return !(a == b);
     }
 
+    public static bool operator ==(Vec2i a, int b)
+    {
+        return a.x == b && a.y == b;
+    }
+
+    public static bool operator !=(Vec2i a, int b)
+    {
+        return !(a == b);
+    }
+
     public static bool operator <(Vec2i a, Vec2i b)
     {
         return Math.Abs(a.x) < Math.Abs(b.x) && Math.Abs(a.y) < Math.Abs(b.y);
@@ -69,7 +85,7 @@ public struct Vec2i
     {
         return Math.Abs(a.x) > Math.Abs(b.x) && Math.Abs(a.y) > Math.Abs(b.y);
     }
-    
+
     public static bool operator <(Vec2i a, int b)
     {
         return a.x < b && a.y < b;
@@ -79,12 +95,12 @@ public struct Vec2i
     {
         return Math.Abs(a.x) > b && Math.Abs(a.y) > b;
     }
-    
+
     public static bool operator <=(Vec2i a, Vec2i b)
     {
         return a.x <= b.x && a.y <= b.y;
     }
-    
+
     public static bool operator >=(Vec2i a, Vec2i b)
     {
         return a.x >= b.x && a.y >= b.x;
@@ -142,6 +158,34 @@ public struct Vec2i
         get { return CardinalDirections[new Random().Next(0, CardinalDirections.Length)]; }
     }
 
+    public Vec2i StepToZero(int _stepSize = 1)
+    {
+        var result = new Vec2i(this);
+        if (this.x != 0)
+        {
+            result.x += (this.x > 0) ? -_stepSize : _stepSize;
+        }
+
+        if (this.y != 0)
+        {
+            result.y += (this.y > 0) ? -_stepSize : _stepSize;
+        }
+        return result;
+    }
+
+    public Vec2i StepToPosition(Vec2i _desiredPos, int _stepSize = 1)
+    {
+        var result = new Vec2i(this);
+
+        int stepX = Math.Min(_stepSize, Math.Abs(this.x - _desiredPos.x));
+        result.x += (this.x > _desiredPos.x) ? -stepX : stepX;
+
+        int stepY = Math.Min(_stepSize, Math.Abs(this.y - _desiredPos.y));
+        result.y += (this.y > _desiredPos.y) ? -stepY : stepY;
+
+        return result;
+    }
+
 
     public static readonly Vec2i ZERO = new Vec2i(0, 0);
     public static readonly Vec2i ONE = new Vec2i(1, 1);
@@ -154,6 +198,6 @@ public struct Vec2i
     public static Vec2i Random(int _maxExclusive)
     {
         var rng = new Random();
-        return new Vec2i(rng.Next(_maxExclusive),rng.Next(_maxExclusive));
+        return new Vec2i(rng.Next(_maxExclusive), rng.Next(_maxExclusive));
     }
 }

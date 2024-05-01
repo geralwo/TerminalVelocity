@@ -59,7 +59,7 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
         Character.Position = Vec2i.ONE * 5;
         break;
       case ConsoleKey.R:
-        Character.GetNodeByName("rat").BackgroundColor = ConsoleColor.Red;
+        //Character.GetNodeByName("rat").BackgroundColor = ConsoleColor.Red;
         PhysicsServer.ToggleQuadTreeVisuals();
         break;
     }

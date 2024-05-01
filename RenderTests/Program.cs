@@ -70,6 +70,22 @@ public class RenderTestScene : Scene
                     }
                 }
             }
+            else if (Game.RunTime > 10 * 1000 && Game.RunTime < 13 * 1000)
+            {
+                foreach (SceneObject child in testWavePatternScene.Children)
+                {
+                    if(child.Position <= Game.Settings.Engine.WindowSize && child.Position >= Vec2i.ZERO)
+                        child.Position = child.Position.StepToZero();
+                }
+            }
+            else if (Game.RunTime > 13 * 1000 && Game.RunTime < 15 * 1000)
+            {
+                foreach (SceneObject child in testWavePatternScene.Children)
+                {
+                    if(child.Position <= Game.Settings.Engine.WindowSize && child.Position >= Vec2i.ZERO)
+                        child.Position = child.Position.StepToPosition(Vec2i.Random(Game.Settings.Engine.WindowSize.y));
+                }
+            }
             else Game.Quit = true;
         };
         for (int x = 0; x < Game.Settings.Engine.WindowSize.x; x++)
