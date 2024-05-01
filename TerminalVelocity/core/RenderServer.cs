@@ -138,10 +138,14 @@ public class RenderServer
         // with the appropriate colors. else we draw the pixel of the object.
         foreach (Vec2i oldPixelCoord in screenBuffer.Keys)
         {
-            if (!new_screenBuffer.TryGetValue(oldPixelCoord, out Pixel oldPixel))
+            if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize))
             {
-                Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
-                Console.Write(" ");
+                if (!new_screenBuffer.TryGetValue(oldPixelCoord, out _))
+                {
+                    if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)) // on windows the max needs to be one else it crashes?
+                    Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
+                    Console.Write(" ");
+                }
             }
         }
         screenBuffer = new_screenBuffer;
