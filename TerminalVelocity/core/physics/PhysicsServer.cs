@@ -63,6 +63,19 @@ public class PhysicsServer
 			return false;
 		}
 	}
+
+	public static bool RemoveCollider<T>(T obj) where T : SceneObject
+	{
+		if(obj is PhysicsObject po)
+		{
+			return Instance.Colliders.Remove(po);
+		}
+		if(obj is PhysicsArea pa)
+		{
+			return Instance.Colliders.Remove(pa);
+		}
+		return false;
+	}
 	public static void Step()
 	{
 		Stopwatch stopwatch= Stopwatch.StartNew();

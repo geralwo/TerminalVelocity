@@ -26,7 +26,7 @@ public class GameScene : Scene
     {
         if(Game.CurrentScene == this && l.ready)
         {
-            if(p.Position == l.key.Position)
+            if(p.Position == l.key?.Position)
             {
                 if (l.door != null && l.key != null)
                 {

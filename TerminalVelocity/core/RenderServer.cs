@@ -82,6 +82,10 @@ public class RenderServer
         get => Instance.frame_completed;
     }
 
+    public static int FrameTimeInMicroseconds {
+        get => Instance.frameTime.Elapsed.Microseconds;
+    }
+
     private Stopwatch? frameTime;
     public static void DrawBuffer()
     {
@@ -209,6 +213,18 @@ public class RenderServer
         public static bool operator !=(Pixel a, Pixel b)
         {
             return !(a == b);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Pixel other)
+                return this.ForegroundColor == other.ForegroundColor && this.BackgroundColor == other.BackgroundColor && this.Display == other.Display;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.BackgroundColor, this.ForegroundColor, this.Display);
         }
         public static Pixel Default => new Pixel(' ');
     }

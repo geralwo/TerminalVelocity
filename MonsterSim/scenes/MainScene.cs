@@ -12,7 +12,6 @@ public class MainScene : Scene
         };
         Rat rat2 = new Rat(new Vec2i(40,5));
         rat2.name = "rat2";
-        rat2.Display = ".::-";
         rat2.ProcessAction += () => {         
             rat2.MovementAbility();
         };

@@ -194,7 +194,9 @@ public class Game
             str += $"total frames   : {Game.FrameCount}\n";
             str += $"total run time : {Game.RunTime} ms\n";
             str += $"average fps    : {Game.FrameCount / (Game.RunTime / 1000)}\n";
-            str += $"render items   : {RenderServer.Count()}";
+            str += $"render items   : {RenderServer.Count()}\n";
+            str += $"last frameTime : {RenderServer.FrameTimeInMicroseconds}µs\n";
+            str += $"window size    : {Game.Settings.Engine.WindowSize}\n";
             return str;
         }
     }

@@ -23,14 +23,6 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         } 
     }
 
-    public override void OnProcess()
-    {
-        if(this.Velocity.x < 0)
-            Display = ".::-";
-        else if (this.Velocity.x > 0)
-            Display = "-::.";
-    }
-
     public int AD { get; set;} = 3;
     public void Attack(IAttackble target)
     {
@@ -52,20 +44,11 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     bool flip = false;
     public void MovementAbility()
     {
-        // if(Position == next_goal_position)
-        //     next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
-        if(Game.RunTime % 1000 < 15)
+        if(Game.RunTime % 500 < 15)
         {
-            if(flip)
-            {
-                Velocity -= Vec2i.Random(2);
-                flip = !flip;
-            }
-            else
-            {
-                Velocity += Vec2i.Random(2);
-                flip = !flip;
-            }
+            if(Position == next_goal_position)
+                next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
+            Position += Position.StepToPosition(next_goal_position).Normalized;
 
         }
             

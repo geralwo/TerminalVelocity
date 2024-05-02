@@ -406,10 +406,7 @@ public class SceneObject : IDisposable
                     child.Dispose();
                 }
             }
-            if (this is PhysicsObject || this is PhysicsArea)
-            {
-                PhysicsServer.RemoveCollider(this as PhysicsObject);
-            }
+            PhysicsServer.RemoveCollider(this);
         }
         InputEnabled = false;
         ProcessEnabled = false;

@@ -1,6 +1,6 @@
 using TerminalVelocity;
 
-public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble
+public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble, IBrain
 {
     private int hp = 100;
 
@@ -14,6 +14,8 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         }
     }
     public int AD {get;set;} = 33;
+    Guid IBrain.id { get => id; set {} }
+
     public Ork() : base()
     {
         BackgroundColor = ConsoleColor.DarkGreen;
@@ -23,7 +25,7 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
 
     public void Attack()
     {
-        new GroundSlam(Position,new Vec2i(3,3),this);
+        new GroundSlam<Ork>(Position,new Vec2i(5,3),this);
     }
 
     public void DefensiveMove(ref int damage)
@@ -46,5 +48,15 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void Attack(IAttackble target)
     {
         Attack();
+    }
+
+    public void Move(Vec2i _position)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void InteractWith<T>(T target)
+    {
+        throw new NotImplementedException();
     }
 }
