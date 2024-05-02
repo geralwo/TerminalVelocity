@@ -48,7 +48,7 @@ public class PhysicsObject : SceneObject
     {
         get => CreateCollisionShape();
     }
-    private string display = "█";
+    private string display = " ";
     public override string Display
     {
         get => display;

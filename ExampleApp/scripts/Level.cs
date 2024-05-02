@@ -19,10 +19,11 @@ public class Level : SceneObject {
         Visible = false;
         name = "level";
     }
-    
+    HashSet<Vec2i> usedPositions = new HashSet<Vec2i>();
     public void generate_level()
     {
 
+        
         ConsoleColor key_color = Game.GetRandomConsoleColor(ConsoleColor.Black);
         key = new SceneObject();
         key.ProcessEnabled = true;
@@ -32,6 +33,7 @@ public class Level : SceneObject {
         };
         key.Display = "k";
         key.Position = get_random_cell_in_bounds();
+        usedPositions.Add(key.Position);
         key.ZIndex = 1;
 
         for(int i = 0; i < size.x / 2;i++)
@@ -46,6 +48,7 @@ public class Level : SceneObject {
                 f = new ColorField(Game.GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
             }
             AddChild(f);
+            usedPositions.Add(f.Position);
         }
         key.BackgroundColor = key_color;
         AddChild(key);
@@ -71,10 +74,12 @@ public class Level : SceneObject {
         for(int i = 0; i < fence_coords.Length;i++)
         {
             PhysicsObject key_fence = new PhysicsObject(fence_coords[i] + key.Position);
+            key_fence.Display = " ";
             key_fence.BackgroundColor = key.BackgroundColor;
             key_fence.Visible = true;
             key_fence.ZIndex = -10;
             key_fence.name = key_color.ToString();
+            usedPositions.Add(fence_coords[i] + key.Position);
             AddChild(key_fence);
         }
 
@@ -100,6 +105,7 @@ public class Level : SceneObject {
             default:
                 return;
         }
+        usedPositions.Add(door_pos);
         for (int y = 0; y < size.y; y++)
         {
             for (int x = 0; x < size.x; x++)
@@ -123,16 +129,12 @@ public class Level : SceneObject {
                         door = wall_piece;
                         door_spawn = wall_piece.Position;
                         wall_piece.name = "theoneandonly";
-                        key.Color = ConsoleColor.Black;
-
-                        key.Visible = true;
-                        AddChild(key);
                     }
                     else
                     {
                         wall_piece = new PhysicsObject(pos)
                         {
-                            Display = "█",
+                            Display = " ",
                             Mass = 1000,
                             BackgroundColor = ConsoleColor.Blue,
                             Color = ConsoleColor.Blue
@@ -140,6 +142,7 @@ public class Level : SceneObject {
 
                     }
                     wall_piece.Visible = true;
+                    usedPositions.Add(wall_piece.Position);
                     AddChild(wall_piece);
                 }
             }
@@ -148,8 +151,15 @@ public class Level : SceneObject {
     }
     private Vec2i get_random_cell_in_bounds()
     {
-        Vec2i random_cell = new Vec2i(RandomNumberGenerator.GetInt32(1,size.x-1),RandomNumberGenerator.GetInt32(1,size.y-1));
-        return random_cell;
+        Vec2i randomCell;
+        do
+        {
+            randomCell = new Vec2i(
+                RandomNumberGenerator.GetInt32(1, size.x-1),
+                RandomNumberGenerator.GetInt32(1, size.y-1)
+            );
+        } while (usedPositions.Contains(randomCell));
+        return randomCell;
     }
 
     private void place_player_spawn()

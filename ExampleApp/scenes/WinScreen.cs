@@ -23,6 +23,5 @@ public class WinScreen : Scene
     public override void OnProcess()
     {
         banner.BackgroundColor = Game.GetRandomConsoleColor();
-        Thread.Sleep(533);
     }
 }

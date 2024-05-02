@@ -1,4 +1,6 @@
-﻿namespace TerminalVelocity;
+﻿using System.Linq;
+
+namespace TerminalVelocity;
 
 public class PhysicsServer
 {
@@ -146,9 +148,11 @@ public class PhysicsServer
 					{
 						if (collider.id != obj.id)
 						{
-							TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
+							if(obj.CollisionIgnoreFilter.Contains(collider.name)) continue;
+							var ignoreNames = obj.CollisionIgnoreFilter.Where(x => true);
+							TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} [{string.Join(", ", ignoreNames)}] collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
 							colinfo.colliders.Add(collider);
-							if(collider is not PhysicsArea && !obj.CollisionIgnoreFilter.Contains(collider.name))
+							if(collider is not PhysicsArea)
 							{
 								obj.Velocity = Vec2i.ZERO;
 								obj.IsColliding = true;
