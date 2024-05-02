@@ -9,7 +9,7 @@ public class WinScreen : Scene
         banner.Display = "\n Congratulations! \n You have made it! \n Press ENTER key to go to the main menu \n";
         banner.center_xy();
         banner.Position += Vec2i.UP;
-        add_child(banner);
+        AddChild(banner);
         InputEnabled = true;
         ProcessEnabled = true;
     }

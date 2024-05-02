@@ -102,7 +102,7 @@ public class SceneObject : IDisposable
                     subText.BackgroundColor = this.BackgroundColor;
                     subText.name = $"{this.name}_{i}";
 
-                    this.add_child(subText);
+                    this.AddChild(subText);
                 }
             }
             else
@@ -259,7 +259,7 @@ public class SceneObject : IDisposable
     /// </summary>
     /// <param name="_child">SceneObject</param>
     /// <returns></returns>
-    public virtual bool add_child<T>(T _child) where T : SceneObject
+    public virtual bool AddChild<T>(T _child) where T : SceneObject
     {
         _child.Parent = this;
         _child.Position += this.position;
@@ -280,7 +280,7 @@ public class SceneObject : IDisposable
         Visible = Visible; // hack: else nothing is visible
     }
 
-    public bool remove_child(SceneObject _child)
+    public bool RemoveChild(SceneObject _child)
     {
         if (_child == this)
         {

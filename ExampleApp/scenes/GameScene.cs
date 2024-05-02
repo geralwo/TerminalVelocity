@@ -16,8 +16,8 @@ public class GameScene : Scene
         p.Color = ConsoleColor.Red;
         p.ZIndex = 10;
         
-        add_child(l);
-        add_child(p);
+        AddChild(l);
+        AddChild(p);
         InputEnabled = true;
         ProcessEnabled = true;
     }

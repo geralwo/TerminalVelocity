@@ -15,7 +15,7 @@ public class SelectBoxTest : Scene
         exit.ProcessAction = () => Game.Quit = true;
         s.add_child(action);
         s.add_child(exit);
-        add_child(s);
+        AddChild(s);
         InputEnabled = true;
     }
 

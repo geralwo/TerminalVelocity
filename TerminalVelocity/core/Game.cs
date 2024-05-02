@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace TerminalVelocity;
 public class Game
 {
@@ -35,12 +37,12 @@ public class Game
             if (current_scene != null)
             {
                 CurrentScene.unload();
-                root.remove_child(CurrentScene);
+                root.RemoveChild(CurrentScene);
                 RenderServer.ClearScene();
                 GC.Collect();
             }
             current_scene = value;
-            root.add_child(CurrentScene);
+            root.AddChild(CurrentScene);
         }
     }
     /// <summary>
@@ -68,12 +70,14 @@ public class Game
     /// Main Game loop <br />
     /// It's currently a single threaded loop which breaks when Game.Quit is set the true.
     /// </summary>
-    public void Run()
+    private bool logEnabled = true;
+    public void Run(Scene _startScene)
     {
+        Game.CurrentScene = _startScene;
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!Quit)
         {
-
+            TerminalVelocity.core.Debug.AddDebugEntry($"Frame {Game.FrameCount}",this);
             Input.get_input();
             PhysicsServer.Step();
             // new Thread(() => {
@@ -83,7 +87,7 @@ public class Game
             render();
             RunTime = (int)stopwatch.ElapsedMilliseconds;
         }
-
+        TerminalVelocity.core.Debug.PrintToFile("./log.txt");
         _finished();
     }
     /// <summary>
@@ -91,17 +95,22 @@ public class Game
     /// </summary>
     private static void _finished()
     {
-        Console.Clear(); // when we quit be nice and clear screen
-        Console.CursorVisible = true;
+        while(!RenderServer.IsReady)
+        {
+            Console.Clear(); // when we quit be nice and clear screen
+            Console.CursorVisible = true;
+        }
     }
     /// <summary>
     /// Calls RenderServer.DrawBuffer, adds one to the frame count and sleeps for an amount of milliseconds to limit FPS
     /// </summary>
     private void render()
     {
-        RenderServer.DrawBuffer();
-        FrameCount++;
-        Thread.Sleep(1000 / Game.Settings.Engine.MaxFps); // needs to be because
+        if(RenderServer.IsReady)
+        {
+            RenderServer.DrawBuffer();
+        }
+        //Thread.Sleep(1000 / Game.Settings.Engine.MaxFps); // needs to be because
     }
 
 
@@ -164,9 +173,19 @@ public class Game
     {
         Console.ResetColor();
         Console.Clear();
-        Console.WriteLine($"total frames   : {Game.FrameCount}");
-        Console.WriteLine($"total run time : {Game.RunTime} ms");
-        Console.WriteLine($"average fps    : {Game.FrameCount / (Game.RunTime / 1000)}");
-        Console.WriteLine($"render items   : {RenderServer.Count()}");
+        Console.WriteLine(EngineStats);
+    }
+
+    public static string EngineStats
+    {
+        get {
+            string str = "";
+            str += $"{DateTime.Now}\n";
+            str += $"total frames   : {Game.FrameCount}\n";
+            str += $"total run time : {Game.RunTime} ms\n";
+            str += $"average fps    : {Game.FrameCount / (Game.RunTime / 1000)}\n";
+            str += $"render items   : {RenderServer.Count()}";
+            return str;
+        }
     }
 }

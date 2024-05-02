@@ -26,22 +26,24 @@ public class PhysicsObject : SceneObject
     /// <summary>
     /// If IsSolid is true the object is added to the PhysicsServer, else it gets removed from the PhysicsServer
     /// </summary>
-public bool IsSolid
+    public bool IsSolid
     {
         get => solid;
-        set { 
+        set
+        {
             solid = value;
-            if(solid)
+            if (solid)
             {
+                CreateCollisionShape();
                 PhysicsServer.AddCollider(this);
-            } 
+            }
             else
             {
                 PhysicsServer.RemoveCollider(this);
             }
         }
     }
-    private Vec2i[]? collisionShape;
+    private Vec2i[]? collisionShape = null;
     public Vec2i[] CollisionShape
     {
         get => CreateCollisionShape();
@@ -56,13 +58,15 @@ public bool IsSolid
             if (string.IsNullOrEmpty(value))
                 throw new Exception("Display cannot be empty when creating CollisionShape.");
             display = value;
+            CreateCollisionShape();
         }
     }
-    
+
     public bool IsColliding = false;
     public PhysicsObject()
     {
         IsSolid = solid;
+        CreateCollisionShape();
     }
 
 
@@ -78,12 +82,11 @@ public bool IsSolid
     public Vec2i[] CreateCollisionShape()
     {
         // return shape if the old shape still fits
-        if(collisionShape != null && collisionShape.Length == Display.Length)
+        if (collisionShape != null && collisionShape.Length == Display.Length)
             return collisionShape;
         // create new shape
         collisionShape = new Vec2i[Display.Length];
-        collisionShape[0] = Vec2i.ZERO;
-        for (int i = 1; i < Display.Length; i++)
+        for (int i = 0; i < Display.Length; i++)
         {
             collisionShape[i] = Vec2i.RIGHT * i;
         }

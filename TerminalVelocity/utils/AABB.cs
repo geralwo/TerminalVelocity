@@ -64,7 +64,7 @@ public struct AABB
                     SceneObject line = new SceneObject(global_pos,":");
                     line.BackgroundColor = rndc;
                     line.ZIndex = z;
-                    bounds.add_child(line);
+                    bounds.AddChild(line);
                 }
                 
             }

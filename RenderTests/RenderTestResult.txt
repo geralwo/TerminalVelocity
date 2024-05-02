@@ -1,0 +1,5 @@
+02.05.2024 06:35:24
+total frames   : 610
+total run time : 14512 ms
+average fps    : 43
+render items   : 1

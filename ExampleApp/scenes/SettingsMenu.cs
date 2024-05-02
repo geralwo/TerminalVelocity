@@ -60,21 +60,21 @@ public class SettingsScene : Scene
         title_player_char.Color = ConsoleColor.Green;
         value_player_char.Color = ConsoleColor.Red;
 
-        add_child(title_lvl_size);
-        add_child(value_lvl_size);
+        AddChild(title_lvl_size);
+        AddChild(value_lvl_size);
 
-        add_child(title_player_char);
-        add_child(value_player_char);
+        AddChild(title_player_char);
+        AddChild(value_player_char);
 
-        add_child(title_audio_enabled);
-        add_child(value_audio_enabled);
+        AddChild(title_audio_enabled);
+        AddChild(value_audio_enabled);
 
         string legend_text = "Esc to go back to main menu\nEnter to change highlighted value";
         SceneObject legend = new SceneObject(false);
 
         legend.Position = new Vec2i(0, Console.WindowHeight - 3);
         legend.Display = legend_text;
-        add_child(legend);
+        AddChild(legend);
     }
 
     private void get_input()
