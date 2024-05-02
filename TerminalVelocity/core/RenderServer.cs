@@ -103,10 +103,10 @@ public class RenderServer
                     {
                         Console.ForegroundColor = v.ForegroundColor;
                         Console.BackgroundColor = v.BackgroundColor;
-                        Console.Write(v.Owner?.name);
+                        //Console.Write(v.Owner?.name[0]);
                         // Console.Write(v.GetType());
                         // Console.Write(v.ZIndex);
-                        // Console.Write(v.Display);
+                        Console.Write(v.Display);
                         Console.ResetColor();
                     }
                 }
@@ -163,7 +163,7 @@ public class RenderServer
                 if (!new_screenBuffer.TryGetValue(oldPixelCoord, out _))
                 {
                     if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)) // on windows the max needs to be one else it crashes?
-                    Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
+                        Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
                     Console.Write(" ");
                 }
             }
