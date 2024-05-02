@@ -1,4 +1,0 @@
-total frames   : 731
-total run time : 14555 ms
-average fps    : 52
-render items   : 1
