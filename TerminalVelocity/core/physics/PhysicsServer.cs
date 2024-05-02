@@ -144,11 +144,11 @@ public class PhysicsServer
 					// Process collision results
 					foreach (PhysicsObject collider in queryResult)
 					{
-						if (collider.id != obj.id)
+						if (collider.id != obj.id && !obj.CollisionIgnoreFilter.Contains(collider.name))
 						{
 							TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
 							colinfo.colliders.Add(collider);
-							if(collider is not PhysicsArea && !obj.CollisionIgnoreFilter.Contains(collider.name))
+							if(collider is not PhysicsArea)
 							{
 								obj.Velocity = Vec2i.ZERO;
 								obj.IsColliding = true;

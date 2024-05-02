@@ -103,10 +103,10 @@ public class RenderServer
                     {
                         Console.ForegroundColor = v.ForegroundColor;
                         Console.BackgroundColor = v.BackgroundColor;
-                        // Console.Write(v.name);
+                        Console.Write(v.Owner?.name);
                         // Console.Write(v.GetType());
                         // Console.Write(v.ZIndex);
-                        Console.Write(v.Display);
+                        // Console.Write(v.Display);
                         Console.ResetColor();
                     }
                 }
