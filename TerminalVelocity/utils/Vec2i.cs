@@ -200,4 +200,9 @@ public struct Vec2i
         var rng = new Random();
         return new Vec2i(rng.Next(_maxExclusive), rng.Next(_maxExclusive));
     }
+        public static Vec2i Random(Vec2i _maxExclusive)
+    {
+        var rng = new Random();
+        return new Vec2i(rng.Next(_maxExclusive.x), rng.Next(_maxExclusive.y));
+    }
 }

@@ -40,7 +40,7 @@ public class MainMenu : Scene
 """;
 		banner.center_xy();
 		banner.Position = banner.Position + Vec2i.UP * 8;
-		add_child(banner);	
+		AddChild(banner);	
 		
 		extras.ProcessAction = () => Game.CurrentScene = new ExtrasScene();
 		play.ProcessAction = () => Game.CurrentScene = new GameScene("new game");
@@ -59,7 +59,7 @@ public class MainMenu : Scene
             Game.Quit = true;
 		};
         selectables.pad_and_recenter();
-		add_child(selectables);
+		AddChild(selectables);
 		selectables.center_xy();
     }
 

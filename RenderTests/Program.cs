@@ -1,12 +1,17 @@
-﻿using TerminalVelocity;
+﻿using System.Diagnostics;
+using TerminalVelocity;
 Game g = new Game();
-Game.CurrentScene = new RenderTestScene("RenderTestScene");
-g.Run();
+//Game.CurrentScene = new RenderTestScene("RenderTestScene");
+g.Run(new RenderTestScene("RenderTestScene"));
 Game.PrintEngineStats();
-
+string path = Directory.GetCurrentDirectory();
+string filePath = Path.Combine(path, $"RenderTestResult.txt");
+using (StreamWriter sw = File.CreateText(filePath))
+{
+    sw.WriteLine(Game.EngineStats);
+}
 public class RenderTestScene : Scene
 {
-    private List<SceneObject> testObjects = new List<SceneObject>();
     public RenderTestScene(string _name) : base(_name)
     {
         InputEnabled = true;
@@ -43,7 +48,7 @@ public class RenderTestScene : Scene
                     random.ProcessAction += () => { random.BackgroundColor = Game.GetRandomConsoleColor(); };
                     random.Position = new Vec2i(x, y);
                     random.BackgroundColor = Game.GetRandomConsoleColor();
-                    testPatternScene.add_child(random);
+                    testPatternScene.AddChild(random);
                 }
             }
         }
@@ -75,15 +80,15 @@ public class RenderTestScene : Scene
                 foreach (SceneObject child in testWavePatternScene.Children)
                 {
                     if(child.Position <= Game.Settings.Engine.WindowSize && child.Position >= Vec2i.ZERO)
-                        child.Position = child.Position.StepToZero();
+                        child.Position = child.Position.StepToPosition(Vec2i.Random(Game.Settings.Engine.WindowSize));
                 }
             }
-            else if (Game.RunTime > 13 * 1000 && Game.RunTime < 15 * 1000)
+            else if (Game.RunTime > 13 * 1000 && Game.RunTime < 14.5 * 1000)
             {
                 foreach (SceneObject child in testWavePatternScene.Children)
                 {
                     if(child.Position <= Game.Settings.Engine.WindowSize && child.Position >= Vec2i.ZERO)
-                        child.Position = child.Position.StepToPosition(Vec2i.Random(Game.Settings.Engine.WindowSize.y));
+                        child.Position = child.Position.StepToZero();
                 }
             }
             else Game.Quit = true;
@@ -96,7 +101,7 @@ public class RenderTestScene : Scene
                 SceneObject random = new SceneObject(" ");
                 random.Position = new Vec2i(x, y);
                 random.BackgroundColor = rxc;
-                testWavePatternScene.add_child(random);
+                testWavePatternScene.AddChild(random);
             }
         }
         return testWavePatternScene;

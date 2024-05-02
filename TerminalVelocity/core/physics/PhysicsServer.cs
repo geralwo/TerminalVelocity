@@ -46,72 +46,118 @@ public class PhysicsServer
 		}
 	}
 	//private static List<SceneObject> debugCols = new List<SceneObject>();
-	static string debugMsg = "";
 	public static void Step()
 	{
-        // foreach (var debug_col in debugCols)
-        // {
-        // 	Game.CurrentScene.remove_child(debug_col);
-        // }
-        //debugCols = new List<SceneObject>();
+		// foreach (var debug_col in debugCols)
+		// {
+		// 	Game.CurrentScene.remove_child(debug_col);
+		// }
+		//debugCols = new List<SceneObject>();
 
-        CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 8);
+		CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
 		foreach (var obj in Instance.Colliders)
 		{
-            debugMsg = "";
-            debugMsg += $"[{obj.name}: {obj.Position} {obj.Velocity} {obj.IsColliding}]\n";
 
-            // in Step() we go through each object and insert it into the quad tree.
-            // we want to only check for collisions on objects that have a velocity != 0
-            if (obj.IsColliding)
+			TerminalVelocity.core.Debug.AddImportantEntry($"Going through {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
+
+			// in Step() we go through each object and insert it into the quad tree.
+			// we want to only check for collisions on objects that have a velocity != 0
+			TerminalVelocity.core.Debug.AddDebugEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
+			var collisionShape = obj.CollisionShape;
+			for (int i = 0; i < collisionShape.Length; i++)
 			{
-				obj.Velocity = Vec2i.ZERO;
+				var posInTree = obj.Position + collisionShape[i];
+				TerminalVelocity.core.Debug.AddDebugEntry("Inserting Shape " + collisionShape[i] + " into " + posInTree, Instance);
+				CollisionTree.Insert(posInTree, obj);
 			}
-			if (obj.Velocity != 0)
-			{
+		}
+		foreach (var obj in Instance.Colliders)
+		{
+			obj.IsColliding = false;
+			if (obj.Velocity != Vec2i.ZERO)
 				checkCollision(obj);
-				obj.Position += obj.Velocity;
-				obj.Velocity = obj.Velocity.StepToZero();
-			}
-            debugMsg += $"  inserting {obj.CollisionShape.Length} shape(s) into CollisionTree\n";
-            foreach (Vec2i _colShapeOffset in obj.CollisionShape)
-            {
-                var posInTree = obj.Position + _colShapeOffset;
-                debugMsg += "    Shape: " + _colShapeOffset + " => " + (_colShapeOffset + obj.Position) + $"into {posInTree}\n";
-                if (CollisionTree.Insert(posInTree, obj)) ;
-                //	obj.Color = ConsoleColor.DarkMagenta;
-            }
-
-            debugMsg += "\n";
-            TerminalVelocity.core.Debug.AddDebugEntry(debugMsg);
+			obj.Position += obj.Velocity;
+			obj.Velocity = obj.Velocity.StepToZero();
 		}
 	}
 
+	// private static void checkCollision(PhysicsObject obj)
+	// {
+	// 	TerminalVelocity.core.Debug.AddImportantEntry("Checking collison for " + obj.name, Instance);
+	// 	CollisionInfo colinfo = new CollisionInfo();
+	// 	//obj.BackgroundColor = ConsoleColor.Blue;
+	// 	colinfo.colliders.Add(obj);
+	// 	var newPosition = obj.Position + obj.Velocity;
+	// 	// We check for every position in the obj.CollisionShape
+	// 	foreach (Vec2i _colShapeOffset in obj.CollisionShape)
+	// 	{
+	// 		var positionToCheck = _colShapeOffset + newPosition;
+	// 		TerminalVelocity.core.Debug.AddDebugEntry($"Checking position {positionToCheck} for collisions", Instance);
+	// 		if (CollisionTree.Query(positionToCheck, out PhysicsObject[] queryResult))
+	// 		{
+	// 			TerminalVelocity.core.Debug.AddDebugEntry($"CollisionTree returns result for position {positionToCheck}", Instance);
+	// 			foreach (var res in queryResult)
+	// 			{
+	// 				TerminalVelocity.core.Debug.AddDebugEntry($"{res.name}", Instance);
+	// 			}
+	// 			foreach (PhysicsObject collider in queryResult)
+	// 			{
+	// 				if (collider.id != obj.id)
+	// 				{
+	// 					TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} collided with {collider.name} at {obj.Position}", obj);
+	// 					colinfo.colliders.Add(collider);
+	// 					obj.Velocity = Vec2i.ZERO;
+	// 					obj.IsColliding = true;
+	// 					collider.IsColliding = true;
+	// 					collider.OnCollision(colinfo);
+	// 					obj.OnCollision(colinfo);
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 	private static void checkCollision(PhysicsObject obj)
 	{
-		debugMsg += "\n  checking collison for" + obj.name + "\n";
-        CollisionInfo colinfo = new CollisionInfo();
+		TerminalVelocity.core.Debug.AddImportantEntry("Checking collision for " + obj.name, Instance);
+
+		// Keep track of points that have already been queried
+		var queriedPositions = new HashSet<Vec2i>();
+		var newPosition = obj.Position + obj.Velocity;
+		CollisionInfo colinfo = new CollisionInfo();
 		//obj.BackgroundColor = ConsoleColor.Blue;
 		colinfo.colliders.Add(obj);
-		var newPosition = obj.Position + obj.Velocity;
-		// We check for every position in the obj.CollisionShape
-		foreach (Vec2i _colShapeOffset in obj.CollisionShape)
+		foreach (Vec2i shapeOffset in obj.CollisionShape)
 		{
-            var positionToCheck = _colShapeOffset + newPosition;
-            debugMsg += $"    checking position {positionToCheck}\n";
-			if (CollisionTree.Query(positionToCheck, out SceneObject[] queryResult))
+			var positionToCheck = shapeOffset + newPosition;
+
+			// Only query if this position hasn't been checked already
+			if (!queriedPositions.Contains(positionToCheck))
 			{
-                debugMsg += $"collision tree gives result for {positionToCheck}";
-                foreach (PhysicsObject collider in queryResult)
+				queriedPositions.Add(positionToCheck);
+
+				TerminalVelocity.core.Debug.AddDebugEntry($"Checking position {positionToCheck} for collisions", Instance);
+
+				if (CollisionTree.Query(positionToCheck, out PhysicsObject[] queryResult))
 				{
-					if(collider.id != obj.id)
+					// Process collision results
+					foreach (PhysicsObject collider in queryResult)
 					{
-						debugMsg += "\n[!] obj collided!";
-						colinfo.colliders.Add(collider);
-						obj.IsColliding = true;
-						collider.OnCollision(colinfo);
-						obj.OnCollision(colinfo);
-						break;
+						if (collider.id != obj.id)
+						{
+							TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
+							colinfo.colliders.Add(collider);
+							if(collider is not PhysicsArea && !obj.CollisionIgnoreFilter.Contains(collider.name))
+							{
+								obj.Velocity = Vec2i.ZERO;
+								obj.IsColliding = true;
+								collider.IsColliding = true;
+							}
+							obj.OnCollision(colinfo);
+							collider.OnCollision(colinfo);
+							break; // No need to continue if collision is detected
+						}
 					}
 				}
 			}
@@ -137,7 +183,7 @@ public class PhysicsServer
 			quadTreeVisuals = CollisionTree.Visualize();
 		else
 		{
-			Game.CurrentScene.remove_child(quadTreeVisuals);
+			Game.CurrentScene.RemoveChild(quadTreeVisuals);
 			quadTreeVisuals = null;
 		}
 	}

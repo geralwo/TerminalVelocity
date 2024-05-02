@@ -34,6 +34,7 @@ public class PhysicsObject : SceneObject
             solid = value;
             if (solid)
             {
+                CreateCollisionShape();
                 PhysicsServer.AddCollider(this);
             }
             else
@@ -42,7 +43,7 @@ public class PhysicsObject : SceneObject
             }
         }
     }
-    private Vec2i[]? collisionShape;
+    private Vec2i[]? collisionShape = null;
     public Vec2i[] CollisionShape
     {
         get => CreateCollisionShape();
@@ -57,6 +58,7 @@ public class PhysicsObject : SceneObject
             if (string.IsNullOrEmpty(value))
                 throw new Exception("Display cannot be empty when creating CollisionShape.");
             display = value;
+            CreateCollisionShape();
         }
     }
 
@@ -64,6 +66,7 @@ public class PhysicsObject : SceneObject
     public PhysicsObject()
     {
         IsSolid = solid;
+        CreateCollisionShape();
     }
 
 

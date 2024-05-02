@@ -18,7 +18,6 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
   {
     Character = _character;
     Character.Position = _position;
-    Character.CreateCollisionShape();
     Character.ProcessEnabled = true;
     Character.name = "playerBody";
     Character.ProcessAction += OnProcess;
@@ -40,7 +39,13 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
     {
       case ConsoleKey.UpArrow:
         if(Character.Velocity == Vec2i.ZERO)
+        {
           Character.Velocity = Vec2i.UP * playerSpeed;
+          
+          {
+            
+          }
+        }
         break;
       case ConsoleKey.DownArrow:
         if(Character.Velocity == Vec2i.ZERO)

@@ -14,7 +14,7 @@ public class ExtrasScene : Scene
         s.add_child(qtTest);
         s.add_child(selectBoxTest);
         s.pad_and_recenter();
-        add_child(s);
+        AddChild(s);
     }
 
     public override void OnInput(ConsoleKey key)

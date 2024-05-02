@@ -10,10 +10,9 @@ public class ColorField : PhysicsArea
 
     public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
-        throw new Exception("lol");
         collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj => {
             obj.CollisionIgnoreFilter.Clear();
-            obj.BackgroundColor = this.BackgroundColor;
+            obj.BackgroundColor = this.Color;
             obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
             obj.Color = ConsoleColor.Black;
         });

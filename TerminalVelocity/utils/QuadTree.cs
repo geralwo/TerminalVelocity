@@ -1,134 +1,145 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
-namespace TerminalVelocity;
-
-public class QuadTree
+namespace TerminalVelocity
 {
-    public AABB Aabb;
-    public int Capacity;
-    public Dictionary<Vec2i,SceneObject> Items = new Dictionary<Vec2i,SceneObject>();
-    public bool Divided { get; private set; } = false;
-    public QuadTree[] SubTrees = new QuadTree[4];
+    public class QuadTree
+    {
+        public static int DefaultCapacity = 16;
+        public AABB Aabb { get; private set; } // Ensure this property is properly set
+        public int Capacity { get; set; } = DefaultCapacity; // Settable property
+        public Dictionary<Vec2i,PhysicsObject> Items { get; private set; } = new Dictionary<Vec2i,PhysicsObject>();
+        public bool Divided { get; private set; } = false; // Private setter to prevent external modification
+        public QuadTree[] SubTrees { get; private set; } = new QuadTree[4]; // Avoid null pointer issues
 
-    public QuadTree()
-    {
-    }
-    public QuadTree(Vec2i _position, Vec2i _size, int _capacity)
-    {
-        Capacity = _capacity;
-        Aabb.Position = _position;
-        Aabb.Size = _size;
-    }
+        // Default constructor that initializes the AABB to avoid NullReferenceException
+        public QuadTree()
+        {
+            Aabb = new AABB(); // Default AABB initialization, adjust if needed
+        }
 
-    public bool Insert(Vec2i _position, SceneObject obj)
-    {
-        if (!Aabb.Contains(obj.Position))
+        public QuadTree(Vec2i position, Vec2i size, int capacity)
+        {
+            Capacity = capacity;
+            Aabb = new AABB(position, size); // Ensure AABB is initialized
+        }
+        public QuadTree(Vec2i position, Vec2i size)
+        {
+            Aabb = new AABB(position, size); // Ensure AABB is initialized
+        }
+
+        public bool Insert(Vec2i position, PhysicsObject obj)
+        {
+            if (!Aabb.Contains(obj.Position))
+            {
+                TerminalVelocity.core.Debug.AddDebugEntry($"Position {obj.Position} is out of bounds for object {obj.name}  <- {Aabb.Center}", this);
+                return false;
+            }
+
+            if (!Divided && Items.Count < Capacity)
+            {
+                if(Items.TryAdd(position,obj))
+                {
+                    TerminalVelocity.core.Debug.AddImportantEntry($"Inserted object {obj.name} at {position} <- {Aabb.Center}", this);
+                    return true;
+                }
+                else Subdivide();
+            }
+
+            if (!Divided)
+            {
+                Subdivide();
+            }
+
+            // Insert into appropriate sub-quadtree
+            foreach (var subtree in SubTrees)
+            {
+                if (subtree.Aabb.Contains(obj.Position) && subtree.Insert(position, obj))
+                {
+                    return true;
+                }
+            }
+
+            TerminalVelocity.core.Debug.AddDebugEntry($"failed to insert object {obj.name} <- {Aabb.Center}", this);
             return false;
-        if (!Divided && Items.Count < Capacity)
-        {
-            Items.TryAdd(obj.Position,obj);
-            return true;
         }
-        if (!Divided)
-            Subdivide();
 
-        foreach (QuadTree qt in SubTrees)
+        private void Subdivide()
         {
-            if (qt.Insert(obj.Position,obj))
+            var halfSize = Aabb.Size / 2;
+
+            var remainderX = Aabb.Size.x % 2;
+            var remainderY = Aabb.Size.y % 2;
+
+            for (var i = 0; i < 4; i++)
             {
-                return true;
+                var offset = new Vec2i(
+                    (i & 1) * halfSize.x,
+                    ((i >> 1) & 1) * halfSize.y
+                );
+
+                var childWidth = halfSize.x + (i % 2 == 0 ? remainderX : 0);
+                var childHeight = halfSize.y + (i >= 2 ? remainderY : 0);
+
+                var childPosition = Aabb.Position + offset;
+
+                SubTrees[i] = new QuadTree(childPosition, new Vec2i(childWidth, childHeight), Capacity);
             }
-        }
-        return false;
-    }
 
-    private void Subdivide()
-    {
-        var half_dim = Aabb.Size / 2;
-
-        var remainderX = Aabb.Size.x % 2;
-        var remainderY = Aabb.Size.y % 2;
-
-        for (var i = 0; i < 4; i++)
-        {
-            #region bitwise expl
-            // (i & 1) is a bitwise AND operation between the integer variable i and the constant 1.
-            // In binary representation, 1 is 00000001. When you perform a bitwise AND operation with any number and 1, it will keep only the least significant bit of that number.
-            // Here's what happens:
-            //     If the least significant bit of i is 1, the result will be 1.
-            //     If the least significant bit of i is 0, the result will be 0.
-            // In essence, (i & 1) checks if i is odd or even. If i is odd, the result will be 1; if i is even, the result will be 0.
-
-
-            //     ((i >> 1) & 1) is a bit more complex but follows a similar logic.
-            //     - i >> 1: This is a bitwise right shift operation. It shifts all the bits of i one place to the right.
-            //      For example:
-            //          If i is 5 (101 in binary), i >> 1 would result in 2 (10 in binary).
-            //          If i is 8 (1000 in binary), i >> 1 would result in 4 (100 in binary).
-            //     - & 1: This is a bitwise AND operation with 1, similar to the explanation in the previous message.
-            //      So, ((i >> 1) & 1) essentially checks the bit that is shifted out by the right shift operation. It checks if the bit that was originally in the second least significant position of i (after shifting) is 1 or 0.
-            //      If it's 1, the result will be 1.
-            //      If it's 0, the result will be 0.
-
-            // This operation is commonly used to extract specific bits from a binary representation. In the context of your original code, it's used to determine if the second least significant bit of i is set or not.
-            #endregion
-            var offset = new Vec2i(
-                (i & 1) * half_dim.x,
-                ((i >> 1) & 1) * half_dim.y
-            );
-
-            // we do this for odd divisions so the childs cover the whole parent when an axis is odd
-            var childWidth = half_dim.x + (i % 2 == 0 ? remainderX : 0);
-            var childHeight = half_dim.y + (i >= 2 ? remainderY : 0);
-
-            var child_pos = Aabb.Position + offset;
-            SubTrees[i] = new QuadTree(child_pos, new Vec2i(childWidth, childHeight), Capacity);
+            Divided = true;
         }
 
-        Divided = true;
-    }
-
-    public SceneObject Visualize(int z = 0)
-    {
-        var vis = new SceneObject();
-        vis.Visible = false;
-        var ab = this.Aabb.GetVisual(z);
-        vis.add_child(ab);
-        //vis.add_child(new SceneObject(this.Aabb.Center,Items.Count.ToString()));
-        vis.add_child(new SceneObject(this.Aabb.Center, Aabb.Size.ToString()));
-        if (Divided)
+        public SceneObject Visualize(int z = 0)
         {
-            for (int i = 0; i < 4; i++)
+            var vis = new SceneObject { Visible = false };
+            var visAabb = Aabb.GetVisual(z);
+            vis.AddChild(visAabb);
+            foreach (var item in Items.Keys)
             {
-                vis.add_child(SubTrees[i].Visualize(z + 1));
+                SceneObject i = new SceneObject("x");
+                i.Color = ConsoleColor.Green;
+                i.Position = Items[item].Position;
+                vis.AddChild(i);
             }
-        }
-        return vis;
-    }
-
-    public bool Query(Vec2i position, out SceneObject[] queryResult)
-    {
-        List<SceneObject> queryResultList = new List<SceneObject>();
-
-        if (Aabb.Contains(position))
-        {
-            if (Items.TryGetValue(position, out SceneObject? sceneObject))
-            {
-                queryResultList.Add(sceneObject);
-            }
+            // Add quadtree size and information
+            vis.AddChild(new SceneObject(Aabb.Center, Aabb.Size.ToString()));
 
             if (Divided)
             {
-                foreach (var subtree in SubTrees)
+                for (int i = 0; i < 4; i++)
                 {
-                    if (subtree.Query(position, out SceneObject[] subTreeResult))
+                    vis.AddChild(SubTrees[i].Visualize(z + 1));
+                }
+            }
+
+            return vis;
+        }
+
+        public bool Query(Vec2i position, out PhysicsObject[] queryResult)
+        {
+
+            var result = new List<PhysicsObject>();
+            if (Aabb.Contains(position))
+            {
+                if(Items.ContainsKey(position))
+                    result.Add(Items[position]);
+
+                if (Divided)
+                {
+                    foreach (var subtree in SubTrees)
                     {
-                        queryResultList.AddRange(subTreeResult);
+                        if (subtree.Query(position, out var subtreeResults))
+                        {
+                            result.AddRange(subtreeResults);
+                        }
                     }
                 }
             }
-        }
 
-        queryResult = queryResultList.ToArray();
-        return queryResult.Length > 0;
+            queryResult = result.ToArray();
+            TerminalVelocity.core.Debug.AddDebugEntry($"Query result length: {queryResult.Length}", this);
+            return queryResult.Length > 0;
+        }
     }
 }

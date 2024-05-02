@@ -16,8 +16,8 @@ public class QuadTreeTest : Scene
         InputEnabled = true;
         qt = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize, 8);
         qt_vis = qt.Visualize();
-        add_child(qt_vis);
-        add_child(cursor);
+        AddChild(qt_vis);
+        AddChild(cursor);
         cursor.center_xy();
     }
     
@@ -38,12 +38,12 @@ public class QuadTreeTest : Scene
                 cursor.Position += Vec2i.RIGHT;
                 break;
             case ConsoleKey.Enter:
-                SceneObject n = new SceneObject(cursor.Position," ");
-                n.BackgroundColor = Game.GetRandomConsoleColor();
+                PhysicsObject n = new PhysicsObject(cursor.Position);
+                n.Color = Game.GetRandomConsoleColor();
                 if(qt.Insert(n.Position,n))
                 {
-                    remove_child(qt_vis);
-                    add_child(n);
+                    RemoveChild(qt_vis);
+                    AddChild(n);
                     qt_vis = qt.Visualize();
                 }
                 break;

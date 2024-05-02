@@ -45,10 +45,10 @@ public class Level : SceneObject {
             {
                 f = new ColorField(Game.GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
             }
-            add_child(f);
+            AddChild(f);
         }
         key.BackgroundColor = key_color;
-        add_child(key);
+        AddChild(key);
         EscapeRoomSettings.KeyColor = key_color;
 
         Vec2i[] fence_coords = {
@@ -75,7 +75,7 @@ public class Level : SceneObject {
             key_fence.Visible = true;
             key_fence.ZIndex = -10;
             key_fence.name = key_color.ToString();
-            add_child(key_fence);
+            AddChild(key_fence);
         }
 
         // place walls around
@@ -126,7 +126,7 @@ public class Level : SceneObject {
                         key.Color = ConsoleColor.Black;
 
                         key.Visible = true;
-                        add_child(key);
+                        AddChild(key);
                     }
                     else
                     {
@@ -140,7 +140,7 @@ public class Level : SceneObject {
 
                     }
                     wall_piece.Visible = true;
-                    add_child(wall_piece);
+                    AddChild(wall_piece);
                 }
             }
         }

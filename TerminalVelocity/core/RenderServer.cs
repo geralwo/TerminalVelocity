@@ -6,6 +6,8 @@ using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Linq;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace TerminalVelocity;
 
@@ -74,27 +76,45 @@ public class RenderServer
     /// <summary>
     /// Draws the screenBuffer to the terminal
     /// </summary>
+    private bool frame_completed = true;
+    public static bool IsReady
+    {
+        get => Instance.frame_completed;
+    }
+
+    private int frameTimeInMs;
+    public static int FrameTimeInMs {
+        get => Instance.frameTimeInMs;
+    }
+
+    private Stopwatch frameTime;
     public static void DrawBuffer()
     {
-        Instance.Render();
-        for (int x=0; x < Game.Settings.Engine.WindowSize.x; x++)
-        {
-            for (int y = 0; y < Game.Settings.Engine.WindowSize.y; y++)
+            Instance.frame_completed = false;
+            Instance.frameTime = System.Diagnostics.Stopwatch.StartNew();
+            Instance.Render();
+            for (int x=0; x < Game.Settings.Engine.WindowSize.x; x++)
             {
-                var screen_coord = new Vec2i(x, y);
-                Console.SetCursorPosition(x,y);
-                if (Instance.screenBuffer.TryGetValue(screen_coord, out var v))
+                for (int y = 0; y < Game.Settings.Engine.WindowSize.y; y++)
                 {
-                    Console.ForegroundColor = v.ForegroundColor;
-                    Console.BackgroundColor = v.BackgroundColor;
-                    // Console.Write(v.name);
-                    // Console.Write(v.GetType());
-                    // Console.Write(v.ZIndex);
-                    Console.Write(v.Display);
-                    Console.ResetColor();
+                    var screen_coord = new Vec2i(x, y);
+                    Console.SetCursorPosition(x,y);
+                    if (Instance.screenBuffer.TryGetValue(screen_coord, out var v))
+                    {
+                        Console.ForegroundColor = v.ForegroundColor;
+                        Console.BackgroundColor = v.BackgroundColor;
+                        // Console.Write(v.name);
+                        // Console.Write(v.GetType());
+                        // Console.Write(v.ZIndex);
+                        Console.Write(v.Display);
+                        Console.ResetColor();
+                    }
                 }
             }
-        }
+            Instance.frameTimeInMs = (int)Instance.frameTime.ElapsedMilliseconds;
+            Instance.frame_completed = true;
+            Game.FrameCount++;
+            TerminalVelocity.core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {FrameTimeInMs}ms",Instance);
     }
     /// <summary>
     /// Creates the screenBuffer to be rendered in RenderServer.DrawBuffer()<br />
