@@ -127,7 +127,7 @@ public class RenderServer
         var new_screenBuffer = new Dictionary<Vec2i, Pixel>();
         var rBufferCopy = new List<SceneObject>(registered_buffer);
         // we go through each object in the registered buffer.
-        foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
+        foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)))
         {
             if(obj is PhysicsArea area)
             {
@@ -170,7 +170,6 @@ public class RenderServer
         {
                 if (!new_screenBuffer.TryGetValue(oldPixelCoord, out Pixel p))
                 {
-                    //if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)) // on windows the max needs to be one else it crashes?
                     Console.SetCursorPosition(oldPixelCoord.x, oldPixelCoord.y);
                     Console.Write(" ");
                 }

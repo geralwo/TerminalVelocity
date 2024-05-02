@@ -1,8 +1,10 @@
-﻿namespace TerminalVelocity;
+﻿
+namespace TerminalVelocity;
 public struct Vec2i
 {
     public int x;
     public int y;
+
     public Vec2i(int _x = 0, int _y = 0)
     {
         this.x = _x;
@@ -127,12 +129,7 @@ public struct Vec2i
         return dot_result;
     }
 
-    public Vec2i distance_to(Vec2i other)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double magnitude()
+    public double Magnitude()
     {
         return Math.Sqrt(x * x + y * y);
     }
@@ -156,12 +153,20 @@ public struct Vec2i
     {
         get
         {
-            int magnitude = (int)this.magnitude();
+            double magnitude = this.Magnitude();
             if (magnitude == 0) // Avoid division by zero
                 throw new InvalidOperationException("Cannot normalize a zero vector.");
-            return new Vec2i(x / magnitude, y / magnitude);
+
+            // Normalize using floating-point arithmetic
+            double normalizedX = x / magnitude;
+            double normalizedY = y / magnitude;
+
+            // Convert back to integer-based coordinates by rounding
+            int roundedX = (int)Math.Round(normalizedX);
+            int roundedY = (int)Math.Round(normalizedY);
+
+            return new Vec2i(roundedX, roundedY);
         }
-        private set {}
     }
     public Vec2i StepToZero(int _stepSize = 1)
     {
@@ -189,6 +194,11 @@ public struct Vec2i
         result.y += (this.y > _desiredPos.y) ? -stepY : stepY;
 
         return result;
+    }
+
+    public Vec2i DirectionTo(Vec2i other)
+    {
+        return new Vec2i(other.x - this.x, other.y - this.y);
     }
 
 
@@ -258,15 +268,40 @@ public struct Vec2i
     }
 
     public override bool Equals(object? obj)
-        {
-            if (obj is Vec2i other)
-                return this.x == other.x && this.y == other.y;
+    {
+        if (obj is Vec2i other)
+            return this.x == other.x && this.y == other.y;
 
-            return false;
-        }
+        return false;
+    }
 
-        public override int GetHashCode()
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(x, y);
+    }
+
+    public static Vec2i FromCKI(ConsoleKeyInfo dir)
+    {
+        switch(dir.Key)
         {
-            return HashCode.Combine(x, y);
+            case ConsoleKey.UpArrow:
+                return Vec2i.UP;
+            case ConsoleKey.DownArrow:
+                return Vec2i.DOWN;
+            case ConsoleKey.LeftArrow:
+                return Vec2i.LEFT;
+            case ConsoleKey.RightArrow:
+                return Vec2i.RIGHT;
+            case ConsoleKey.W:
+                return Vec2i.UP;
+            case ConsoleKey.S:
+                return Vec2i.DOWN;
+            case ConsoleKey.A:
+                return Vec2i.LEFT;
+            case ConsoleKey.D:
+                return Vec2i.RIGHT;
+            default:
+                return Vec2i.ZERO;
         }
+    }
 }

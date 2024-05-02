@@ -1,6 +1,7 @@
 using System;
+using Microsoft.VisualBasic;
 using TerminalVelocity;
-public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble
+public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble, ICharacter
 {
   public T Character { get; private set; } // aka RigidBody
   int playerSpeed = 1;
@@ -38,35 +39,40 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
     switch (key)
     {
       case ConsoleKey.UpArrow:
-        if(Character.Velocity == Vec2i.ZERO)
+        if (Character.Velocity == Vec2i.ZERO)
         {
           Character.Velocity = Vec2i.UP * playerSpeed;
-          
+
           {
-            
+
           }
         }
         break;
       case ConsoleKey.DownArrow:
-        if(Character.Velocity == Vec2i.ZERO)
+        if (Character.Velocity == Vec2i.ZERO)
+        {
           Character.Velocity = Vec2i.DOWN * playerSpeed;
+          if (Input.LastKeyPressed.Modifiers.HasFlag(ConsoleModifiers.Shift))
+            Character.MovementAbility();
+        }
         break;
       case ConsoleKey.LeftArrow:
-        if(Character.Velocity == Vec2i.ZERO)
+        if (Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.LEFT * playerSpeed;
+        if (Input.LastKeyPressed.Modifiers.HasFlag(ConsoleModifiers.Shift))
+          Character.MovementAbility();
         break;
       case ConsoleKey.RightArrow:
-        if(Character.Velocity == Vec2i.ZERO)
+        if (Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.RIGHT * playerSpeed;
+        if (Input.LastKeyPressed.Modifiers.HasFlag(ConsoleModifiers.Shift))
+            Character.MovementAbility();
         break;
       case ConsoleKey.Q:
-        var oldc = Character.BackgroundColor;
-        Character.BackgroundColor = ConsoleColor.Red;
-        Character.Attack(Character);
-        Character.BackgroundColor = oldc;
+        Character.AttackWith(0,Character);
         break;
-      case ConsoleKey.T:
-        Character.Position = Vec2i.ONE * 5;
+      case ConsoleKey.W:
+        Character.AttackWith(1,Character);
         break;
       case ConsoleKey.R:
         //Character.GetNodeByName("rat").BackgroundColor = ConsoleColor.Red;
@@ -74,7 +80,7 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
         break;
     }
   }
-    public void Dispose()
+  public void Dispose()
   {
     Character.Dispose();
   }

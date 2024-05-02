@@ -9,7 +9,7 @@ public class Input
     /// <summary>
     /// The last key that was pressed. Lags behind by one input
     /// </summary>
-    public static ConsoleKey LastKeyPressed;
+    public static ConsoleKeyInfo LastKeyPressed;
     static Input()
     {
         
@@ -21,11 +21,11 @@ public class Input
     {
         if(Console.KeyAvailable)
         {
-            ConsoleKey key = Console.ReadKey(true).Key;
-            if (key != ConsoleKey.None)
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            if (keyInfo.Key != ConsoleKey.None)
             {
-                KeyPressed?.Invoke(key);
-                LastKeyPressed = key;
+                KeyPressed?.Invoke(keyInfo.Key);
+                LastKeyPressed = keyInfo;
             }
             while (Console.KeyAvailable) // flush input
                 Console.ReadKey(true);

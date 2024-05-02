@@ -59,4 +59,9 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         HP -= damage;
         hpLeft = HP;
     }
+
+    public void AttackWith(int slot, IAttackble? target)
+    {
+        throw new NotImplementedException();
+    }
 }

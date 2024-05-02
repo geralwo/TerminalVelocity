@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using TerminalVelocity;
 
-public class GroundSlam<T> : PhysicsArea where T : IBrain
+public class GroundSlam<T> : PhysicsArea where T : ICharacter
 {
     public Vec2i EffectLocation;
     public Vec2i EffectSize;
@@ -19,7 +19,7 @@ public class GroundSlam<T> : PhysicsArea where T : IBrain
             {
                 this.Dispose();
             }
-            if (timer.ElapsedMilliseconds % 200 < 15)
+            if (timer.ElapsedMilliseconds % 50 < 15)
             {
                 PhysicsServer.CheckCollision(this);
             }
@@ -27,7 +27,7 @@ public class GroundSlam<T> : PhysicsArea where T : IBrain
             {
                 new Thread(() => {
                     BackgroundColor = ConsoleColor.Red;
-                    Thread.Sleep(150);
+                    Thread.Sleep(133);
                     if(flash)
                         flash = false;
                 }).Start();
@@ -56,7 +56,7 @@ public class GroundSlam<T> : PhysicsArea where T : IBrain
             if(collision is IAttackble attackble)
             {
                 TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {this.name}",Creator);
-                attackble.TakeDamage((int)(Creator.AD * 1.3), out _);
+                attackble.TakeDamage((int)(Creator.AD * 0.3), out _);
             }
         }
     }
