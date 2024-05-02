@@ -1,11 +1,5 @@
-﻿#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
-#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning disable CA1050 // Declare types in namespaces
-namespace TerminalVelocity;
+﻿namespace TerminalVelocity;
 public struct Vec2i
-#pragma warning restore CA1050 // Declare types in namespaces
-#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 {
     public int x;
     public int y;
@@ -158,6 +152,17 @@ public struct Vec2i
         get { return CardinalDirections[new Random().Next(0, CardinalDirections.Length)]; }
     }
 
+    public Vec2i Normalized
+    {
+        get
+        {
+            int magnitude = (int)this.magnitude();
+            if (magnitude == 0) // Avoid division by zero
+                throw new InvalidOperationException("Cannot normalize a zero vector.");
+            return new Vec2i(x / magnitude, y / magnitude);
+        }
+        private set {}
+    }
     public Vec2i StepToZero(int _stepSize = 1)
     {
         var result = new Vec2i(this);
@@ -200,9 +205,68 @@ public struct Vec2i
         var rng = new Random();
         return new Vec2i(rng.Next(_maxExclusive), rng.Next(_maxExclusive));
     }
-        public static Vec2i Random(Vec2i _maxExclusive)
+    public static Vec2i Random(Vec2i _maxExclusive)
     {
         var rng = new Random();
         return new Vec2i(rng.Next(_maxExclusive.x), rng.Next(_maxExclusive.y));
     }
+
+    public static List<Vec2i> GetLine(Vec2i start, Vec2i end)
+    {
+        var line = new List<Vec2i>();
+
+        int x1 = start.x;
+        int y1 = start.y;
+        int x2 = end.x;
+        int y2 = end.y;
+
+        // Calculate the differences and signs
+        int dx = Math.Abs(x2 - x1);
+        int dy = Math.Abs(y2 - y1);
+        int sx = x1 < x2 ? 1 : -1;
+        int sy = y1 < y2 ? 1 : -1;
+
+        // Bresenham's algorithm error terms
+        int err = dx - dy;
+
+        // While we have not reached the end point
+        while (true)
+        {
+            // Add the current point to the line
+            line.Add(new Vec2i(x1, y1));
+
+            // If we've reached the end point, break
+            if (x1 == x2 && y1 == y2)
+                break;
+
+            // Calculate the error term for the next point
+            int e2 = 2 * err;
+
+            if (e2 > -dy)
+            {
+                err -= dy;
+                x1 += sx; // Move horizontally
+            }
+            if (e2 < dx)
+            {
+                err += dx;
+                y1 += sy; // Move vertically
+            }
+        }
+
+        return line;
+    }
+
+    public override bool Equals(object? obj)
+        {
+            if (obj is Vec2i other)
+                return this.x == other.x && this.y == other.y;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(x, y);
+        }
 }

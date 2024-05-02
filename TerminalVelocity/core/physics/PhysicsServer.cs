@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Principal;
 
 namespace TerminalVelocity;
 
@@ -35,6 +38,19 @@ public class PhysicsServer
 
 	}
 
+	public static bool AddCollider(PhysicsArea obj)
+	{
+		foreach(Vec2i area_coord in obj.CollisionShape)
+		{
+			if (obj == null || Instance.Colliders.Contains(obj))
+			{
+				return false;
+			}
+			Instance.Colliders.Add(obj);
+		}
+		return true;
+	}
+
 	public static bool RemoveCollider(PhysicsObject obj)
 	{
 		if (Instance.Colliders.Contains(obj))
@@ -47,21 +63,14 @@ public class PhysicsServer
 			return false;
 		}
 	}
-	//private static List<SceneObject> debugCols = new List<SceneObject>();
 	public static void Step()
 	{
-		// foreach (var debug_col in debugCols)
-		// {
-		// 	Game.CurrentScene.remove_child(debug_col);
-		// }
-		//debugCols = new List<SceneObject>();
-
+		Stopwatch stopwatch= Stopwatch.StartNew();
 		CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
-		foreach (var obj in Instance.Colliders)
+		var colDup = new List<PhysicsObject>(Instance.Colliders);
+		foreach (var obj in colDup)
 		{
-
 			TerminalVelocity.core.Debug.AddImportantEntry($"Going through {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
-
 			// in Step() we go through each object and insert it into the quad tree.
 			// we want to only check for collisions on objects that have a velocity != 0
 			TerminalVelocity.core.Debug.AddDebugEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
@@ -73,7 +82,7 @@ public class PhysicsServer
 				CollisionTree.Insert(posInTree, obj);
 			}
 		}
-		foreach (var obj in Instance.Colliders)
+		foreach (var obj in colDup)
 		{
 			obj.IsColliding = false;
 			if (obj.Velocity != Vec2i.ZERO)
@@ -81,44 +90,8 @@ public class PhysicsServer
 			obj.Position += obj.Velocity;
 			obj.Velocity = obj.Velocity.StepToZero();
 		}
+		TerminalVelocity.core.Debug.AddDebugEntry($"Step took {stopwatch.Elapsed.Microseconds}µs",Instance);
 	}
-
-	// private static void checkCollision(PhysicsObject obj)
-	// {
-	// 	TerminalVelocity.core.Debug.AddImportantEntry("Checking collison for " + obj.name, Instance);
-	// 	CollisionInfo colinfo = new CollisionInfo();
-	// 	//obj.BackgroundColor = ConsoleColor.Blue;
-	// 	colinfo.colliders.Add(obj);
-	// 	var newPosition = obj.Position + obj.Velocity;
-	// 	// We check for every position in the obj.CollisionShape
-	// 	foreach (Vec2i _colShapeOffset in obj.CollisionShape)
-	// 	{
-	// 		var positionToCheck = _colShapeOffset + newPosition;
-	// 		TerminalVelocity.core.Debug.AddDebugEntry($"Checking position {positionToCheck} for collisions", Instance);
-	// 		if (CollisionTree.Query(positionToCheck, out PhysicsObject[] queryResult))
-	// 		{
-	// 			TerminalVelocity.core.Debug.AddDebugEntry($"CollisionTree returns result for position {positionToCheck}", Instance);
-	// 			foreach (var res in queryResult)
-	// 			{
-	// 				TerminalVelocity.core.Debug.AddDebugEntry($"{res.name}", Instance);
-	// 			}
-	// 			foreach (PhysicsObject collider in queryResult)
-	// 			{
-	// 				if (collider.id != obj.id)
-	// 				{
-	// 					TerminalVelocity.core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} collided with {collider.name} at {obj.Position}", obj);
-	// 					colinfo.colliders.Add(collider);
-	// 					obj.Velocity = Vec2i.ZERO;
-	// 					obj.IsColliding = true;
-	// 					collider.IsColliding = true;
-	// 					collider.OnCollision(colinfo);
-	// 					obj.OnCollision(colinfo);
-	// 					break;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	private static void checkCollision(PhysicsObject obj)
 	{
@@ -160,12 +133,75 @@ public class PhysicsServer
 							}
 							obj.OnCollision(colinfo);
 							collider.OnCollision(colinfo);
+							if(obj is not PhysicsArea)
 							break; // No need to continue if collision is detected
 						}
 					}
 				}
 			}
 		}
+	}
+
+	public static void CheckCollision(PhysicsArea obj)
+	{
+		TerminalVelocity.core.Debug.Log("Checking area collision for " + obj.name, Instance);
+
+		// Keep track of points that have already been queried
+		var queriedPositions = new HashSet<Vec2i>();
+		var newPosition = obj.Position + obj.Velocity;
+		CollisionInfo colinfo = new CollisionInfo();
+		//obj.BackgroundColor = ConsoleColor.Blue;
+		colinfo.colliders.Add(obj);
+		foreach (Vec2i shapeOffset in obj.CollisionShape)
+		{
+			var positionToCheck = shapeOffset + newPosition;
+
+			// Only query if this position hasn't been checked already
+			if (!queriedPositions.Contains(positionToCheck))
+			{
+				queriedPositions.Add(positionToCheck);
+
+				TerminalVelocity.core.Debug.Log($"Checking {positionToCheck} for collisions", Instance);
+
+				if (CollisionTree.Query(positionToCheck, out PhysicsObject[] queryResult))
+				{
+					// Process collision results
+					foreach (PhysicsObject collider in queryResult)
+					{
+						if (collider.id != obj.id)
+						{
+							if(obj.CollisionIgnoreFilter.Contains(collider.name)) continue;
+							var ignoreNames = obj.CollisionIgnoreFilter.Where(x => true);
+							TerminalVelocity.core.Debug.Log($"OBJECT COLLISION: obj {obj.name} {obj.Position} [{string.Join(", ", ignoreNames)}] collided with {collider.name} {collider.Position}", obj);
+							colinfo.colliders.Add(collider);
+							if(collider is not PhysicsArea)
+							{
+								obj.Velocity = Vec2i.ZERO;
+								obj.IsColliding = true;
+								collider.IsColliding = true;
+							}
+							obj.OnCollision(colinfo);
+							collider.OnCollision(colinfo);
+							if(obj is not PhysicsArea)
+							break; // No need to continue if collision is detected
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static void Raycast(Vec2i from, Vec2i to, out CollisionInfo result)
+	{
+		var colResult = new CollisionInfo();
+		Vec2i.GetLine(from,to).ForEach(x => {
+			if(CollisionTree.Query(x, out PhysicsObject[] queryResult))
+				foreach(var obj in queryResult)
+				{
+					colResult.colliders.Add(obj);
+				}
+		});
+		result = colResult;
 	}
 
 	public struct CollisionInfo

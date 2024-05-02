@@ -1,4 +1,4 @@
 public interface IDefensiveMove
 {
-    void DefensiveMove();
+    void DefensiveMove(ref int number);
 }

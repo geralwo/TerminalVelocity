@@ -59,8 +59,13 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
         if(Character.Velocity == Vec2i.ZERO)
           Character.Velocity = Vec2i.RIGHT * playerSpeed;
         break;
+      case ConsoleKey.Q:
+        var oldc = Character.BackgroundColor;
+        Character.BackgroundColor = ConsoleColor.Red;
+        Character.Attack(Character);
+        Character.BackgroundColor = oldc;
+        break;
       case ConsoleKey.T:
-        Character.Attack(this.Character);
         Character.Position = Vec2i.ONE * 5;
         break;
       case ConsoleKey.R:

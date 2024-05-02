@@ -73,11 +73,12 @@ public class Game
     private bool logEnabled = true;
     public void Run(Scene _startScene)
     {
+        TerminalVelocity.core.Debug.CurrentLogLevel = Game.Settings.Engine.Log;
         Game.CurrentScene = _startScene;
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         while (!Quit)
         {
-            TerminalVelocity.core.Debug.AddDebugEntry($"Frame {Game.FrameCount}",this);
+            var frameStart = stopwatch.ElapsedMilliseconds;
             Input.get_input();
             PhysicsServer.Step();
             // new Thread(() => {
@@ -85,7 +86,16 @@ public class Game
             // }).Start();
             ProcessTick?.Invoke();
             render();
+            var frameEnd = stopwatch.ElapsedMilliseconds;
+            var frameDuration = frameEnd - frameStart;
+
+            if (frameDuration < Game.Settings.Engine.MaxFps)
+            {
+                Thread.Sleep(Game.Settings.Engine.MaxFps - (int)frameDuration);
+            }
+
             RunTime = (int)stopwatch.ElapsedMilliseconds;
+            
         }
         TerminalVelocity.core.Debug.PrintToFile("./log.txt");
         _finished();

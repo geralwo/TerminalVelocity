@@ -1,8 +1,9 @@
+using System.Collections;
 using System.Runtime.CompilerServices;
 
 namespace TerminalVelocity;
 
-public struct AABB
+public struct AABB : IEnumerable<Vec2i>
 {
     public Vec2i Position = Vec2i.ZERO;
     public Vec2i Size = Vec2i.ZERO;
@@ -11,7 +12,7 @@ public struct AABB
 
     public Vec2i Center => Position + Size / 2;
 
-    public AABB(){}
+    public AABB() { }
 
     public AABB(AABB _aabb)
     {
@@ -41,13 +42,13 @@ public struct AABB
         return _pos.x >= Position.x && _pos.x <= End.x &&
                _pos.y >= Position.y && _pos.y <= End.y;
     }
-    
+
     public bool Contains(AABB _aabb)
     {
         return _aabb.Position.x >= Position.x && _aabb.End.x <= End.x &&
                _aabb.Position.y >= Position.y && _aabb.End.y <= End.y;
     }
-    
+
     public SceneObject GetVisual(int z = 0)
     {
         var bounds = new SceneObject();
@@ -57,19 +58,35 @@ public struct AABB
         {
             for (int x = 0; x < Size.x; x++)
             {
-                if (y == 0 || x == 0 || x == Size.x -1 || y == Size.y - 1)
+                if (y == 0 || x == 0 || x == Size.x - 1 || y == Size.y - 1)
                 {
                     Vec2i offset = new Vec2i(x, y);
                     Vec2i global_pos = Position + offset;
-                    SceneObject line = new SceneObject(global_pos,":");
+                    SceneObject line = new SceneObject(global_pos, ":");
                     line.BackgroundColor = rndc;
                     line.ZIndex = z;
                     bounds.AddChild(line);
                 }
-                
+
             }
         }
         return bounds;
     }
-    
+
+    public IEnumerator<Vec2i> GetEnumerator()
+    {
+        // Iterate over all points within the bounding box
+        for (int x = Position.x; x < Position.x + Size.x; x++)
+        {
+            for (int y = Position.y; y < Position.y + Size.y; y++)
+            {
+                yield return new Vec2i(x, y);
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

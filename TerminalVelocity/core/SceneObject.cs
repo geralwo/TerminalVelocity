@@ -192,7 +192,7 @@ public class SceneObject : IDisposable
     /// </summary>
     public List<SceneObject> Children = new List<SceneObject>();
 
-
+    public bool GlobalPosition = false;
     private Vec2i position = Vec2i.ZERO;
     /// <summary>
     /// Represents the global position
@@ -204,7 +204,7 @@ public class SceneObject : IDisposable
         {
             Vec2i offset = position - value;
             position = value;
-            Children.ForEach(child => child.Position -= offset);
+            Children.Where(child => !child.GlobalPosition).ToList().ForEach(child => child.Position -= offset);
         }
     }
     public SceneObject()

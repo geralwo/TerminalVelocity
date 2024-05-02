@@ -1,4 +1,4 @@
 public interface IMovementAbility
 {
-    void Move();
+    void MovementAbility();
 }

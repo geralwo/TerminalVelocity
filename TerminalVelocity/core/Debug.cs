@@ -5,26 +5,25 @@ using System.IO;
 namespace TerminalVelocity.core;
 public class Debug
 {
-    private static readonly Debug instance = new Debug(); // Singleton pattern
+    private static readonly Debug instance = new Debug();
     private static readonly object lockObject = new object(); // For thread safety
     private static readonly LinkedList<string> debugEntries = new LinkedList<string>(); // Maintains insertion order
     private static int longestPrefix = 0;
-
-    // Default maximum log size and default logging level
     private static int maxLogSize = 1000;
-    private static LogLevel currentLogLevel = LogLevel.Error; // Default to logging errors
+    private static LogLevel currentLogLevel = LogLevel.Game; // Default to logging game logs
 
-    private Debug() { } // Private constructor to enforce singleton pattern
+    private Debug() { }
 
-    public static Debug Instance => instance; // Singleton accessor
+    public static Debug Instance => instance;
 
     // Enum for logging levels
     public enum LogLevel
     {
         None,
+        Game,
         Error,
         Important,
-        Debug // Log all levels
+        Everything // Log all levels
     }
 
     // Property to set/get the maximum log size
@@ -33,7 +32,7 @@ public class Debug
         get => maxLogSize;
         set
         {
-            if (value > 0) // Ensure positive max size
+            if (value > 0)
             {
                 lock (lockObject)
                 {
@@ -98,11 +97,12 @@ public class Debug
                 longestPrefix = prefix.Length;
         }
 
-        return prefix.PadLeft(longestPrefix) + " " + suffix;
+        return prefix.PadLeft(longestPrefix) + " " + suffix + " ";
     }
 
     // Functions to add specific types of log entries
-    public static void AddDebugEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Debug, "   ");
+    public static void Log(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Game, "App");
+    public static void AddDebugEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Everything, "   ");
 
     public static void AddImportantEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Important, " ! ");
 

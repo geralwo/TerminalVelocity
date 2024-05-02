@@ -82,39 +82,30 @@ public class RenderServer
         get => Instance.frame_completed;
     }
 
-    private int frameTimeInMs;
-    public static int FrameTimeInMs {
-        get => Instance.frameTimeInMs;
-    }
-
-    private Stopwatch frameTime;
+    private Stopwatch? frameTime;
     public static void DrawBuffer()
     {
-            Instance.frame_completed = false;
-            Instance.frameTime = System.Diagnostics.Stopwatch.StartNew();
-            Instance.Render();
-            for (int x=0; x < Game.Settings.Engine.WindowSize.x; x++)
+        Instance.frame_completed = false;
+        Instance.frameTime = System.Diagnostics.Stopwatch.StartNew();
+        Instance.Render();
+
+        foreach (var kvp in Instance.screenBuffer)
+        {
+            var screen_coord = kvp.Key;
+            var pixel = kvp.Value;
+
+            if (screen_coord.IsInBoundsOf(Game.Settings.Engine.WindowSize))
             {
-                for (int y = 0; y < Game.Settings.Engine.WindowSize.y; y++)
-                {
-                    var screen_coord = new Vec2i(x, y);
-                    Console.SetCursorPosition(x,y);
-                    if (Instance.screenBuffer.TryGetValue(screen_coord, out var v))
-                    {
-                        Console.ForegroundColor = v.ForegroundColor;
-                        Console.BackgroundColor = v.BackgroundColor;
-                        //Console.Write(v.Owner?.name[0]);
-                        // Console.Write(v.GetType());
-                        // Console.Write(v.ZIndex);
-                        Console.Write(v.Display);
-                        Console.ResetColor();
-                    }
-                }
+                Console.SetCursorPosition(screen_coord.x, screen_coord.y);
+                Console.ForegroundColor = pixel.ForegroundColor;
+                Console.BackgroundColor = pixel.BackgroundColor;
+                Console.Write(pixel.Display);
+                Console.ResetColor();
             }
-            Instance.frameTimeInMs = (int)Instance.frameTime.ElapsedMilliseconds;
-            Instance.frame_completed = true;
-            Game.FrameCount++;
-            TerminalVelocity.core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {FrameTimeInMs}ms",Instance);
+        }
+        Instance.frame_completed = true;
+        Game.FrameCount++;
+        core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {Instance.frameTime.Elapsed.Microseconds}µs", Instance);
     }
     /// <summary>
     /// Creates the screenBuffer to be rendered in RenderServer.DrawBuffer()<br />
@@ -132,13 +123,28 @@ public class RenderServer
         var new_screenBuffer = new Dictionary<Vec2i, Pixel>();
         var rBufferCopy = new List<SceneObject>(registered_buffer);
         // we go through each object in the registered buffer.
-        foreach(var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
+        foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
         {
+            if(obj is PhysicsArea area)
+            {
+                var p = new Pixel(' ',obj);
+                foreach(var local_coord in area.CollisionShape)
+                {
+                    var screenPosition = obj.Position + local_coord;
+                    if(!screenPosition.IsInBoundsOf(Game.Settings.Engine.WindowSize)) continue;
+                    if (new_screenBuffer.TryAdd(screenPosition, p)) continue;
+                    if (obj.ZIndex > new_screenBuffer[screenPosition].ZIndex)
+                    {
+                        // z-index of current obj is higher, so we set the pixel to the new value
+                        new_screenBuffer[screenPosition] = p;
+                    }
+                }
+            }
             // for the length of the string we create pixels
             for (int i = 0; i < obj.Display.Length; i++)
             {
                 var screen_coord = obj.Position + Vec2i.RIGHT * i;
-                var pixel = new Pixel(obj.Display[i],obj);
+                var pixel = new Pixel(obj.Display[i], obj);
                 // we add the pixel to the new screen buffer
                 // if that fails, there is already a pixel
                 // and we check if the pixel.ZIndex is higher than
@@ -158,15 +164,12 @@ public class RenderServer
         // with the appropriate colors. else we draw the pixel of the object.
         foreach (Vec2i oldPixelCoord in screenBuffer.Keys)
         {
-            if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize))
-            {
-                if (!new_screenBuffer.TryGetValue(oldPixelCoord, out _))
+                if (!new_screenBuffer.TryGetValue(oldPixelCoord, out Pixel p))
                 {
-                    if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)) // on windows the max needs to be one else it crashes?
-                        Console.SetCursorPosition(oldPixelCoord.x,oldPixelCoord.y);
+                    //if (oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize - 1)) // on windows the max needs to be one else it crashes?
+                    Console.SetCursorPosition(oldPixelCoord.x, oldPixelCoord.y);
                     Console.Write(" ");
                 }
-            }
         }
         screenBuffer = new_screenBuffer;
     }
@@ -200,10 +203,9 @@ public class RenderServer
 
         public static bool operator ==(Pixel a, Pixel b)
         {
-            return a.ForegroundColor == b.ForegroundColor && a.BackgroundColor == b.BackgroundColor &&
-                   a.Display == b.Display;
+            return a.ForegroundColor == b.ForegroundColor && a.BackgroundColor == b.BackgroundColor && a.Display == b.Display;
         }
-        
+
         public static bool operator !=(Pixel a, Pixel b)
         {
             return !(a == b);

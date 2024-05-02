@@ -2,7 +2,7 @@ using TerminalVelocity;
 
 public class ColorField : PhysicsArea
 {
-    public ColorField(ConsoleColor _color, Vec2i _position)
+    public ColorField(ConsoleColor _color, Vec2i _position) : base(_position, Vec2i.ONE)
     {
         BackgroundColor = _color;
         Display = " ";
