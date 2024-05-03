@@ -1,5 +1,5 @@
 using TerminalVelocity;
-
+using TerminalVelocity.UI;
 public class ExtrasScene : Scene
 {
     SelectBox s = new SelectBox();
@@ -11,8 +11,8 @@ public class ExtrasScene : Scene
 
         qtTest.ProcessAction = () => Game.CurrentScene = new QuadTreeTest();
         selectBoxTest.ProcessAction = () => Game.CurrentScene = new SelectBoxTest();
-        s.add_child(qtTest);
-        s.add_child(selectBoxTest);
+        s.AddChild(qtTest);
+        s.AddChild(selectBoxTest);
         s.pad_and_recenter();
         AddChild(s);
     }

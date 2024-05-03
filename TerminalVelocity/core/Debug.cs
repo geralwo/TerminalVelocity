@@ -6,13 +6,16 @@ namespace TerminalVelocity.core;
 public class Debug
 {
     private static readonly Debug instance = new Debug();
-    private static readonly object lockObject = new object(); // For thread safety
-    private static readonly LinkedList<string> debugEntries = new LinkedList<string>(); // Maintains insertion order
-    private static int longestPrefix = 0;
-    private static int maxLogSize = 1000;
-    private static LogLevel currentLogLevel = LogLevel.Game; // Default to logging game logs
+    private readonly object lockObject = new object(); // For thread safety
+    private readonly LinkedList<string> debugEntries = new LinkedList<string>(); // Maintains insertion order
+    private int longestPrefix = 0;
+    private int maxLogSize = 1000;
+    private LogLevel currentLogLevel;
 
-    private Debug() { }
+    public Debug(LogLevel _logLevel = LogLevel.Error)
+    { 
+        currentLogLevel = _logLevel;
+    }
 
     public static Debug Instance => instance;
 
@@ -29,15 +32,15 @@ public class Debug
     // Property to set/get the maximum log size
     public static int MaxLogSize
     {
-        get => maxLogSize;
+        get => Instance.maxLogSize;
         set
         {
             if (value > 0)
             {
-                lock (lockObject)
+                lock (Instance.lockObject)
                 {
-                    maxLogSize = value;
-                    TrimLogSize(); // Trim entries if needed
+                    Instance.maxLogSize = value;
+                    Instance.TrimLogSize(); // Trim entries if needed
                 }
             }
         }
@@ -46,23 +49,23 @@ public class Debug
     // Property to get/set the current logging level
     public static LogLevel CurrentLogLevel
     {
-        get => currentLogLevel;
+        get => Instance.currentLogLevel;
         set
         {
             if (Enum.IsDefined(typeof(LogLevel), value))
             {
-                currentLogLevel = value;
+                Instance.currentLogLevel = value;
             }
         }
     }
 
     // Function to ensure log size stays within the maximum limit
-    private static void TrimLogSize()
+    private void TrimLogSize()
     {
         lock (lockObject) // Ensure thread safety
         {
             // While the log has more entries than allowed, remove the oldest ones
-            while (debugEntries.Count >= maxLogSize)
+            while (debugEntries.Count >= Instance.maxLogSize)
             {
                 debugEntries.RemoveFirst(); // Remove the oldest entry
             }
@@ -70,9 +73,9 @@ public class Debug
     }
 
     // Function to add an entry to the log
-    private static void AddEntry(string _entry, object sender, LogLevel requiredLevel, string suffix = "")
+    private void AddEntry(string _entry, object sender, LogLevel requiredLevel, string suffix = "")
     {
-        if (currentLogLevel < requiredLevel) return; // Early exit if the logging level doesn't permit this entry
+        if (Instance.currentLogLevel < requiredLevel) return; // Early exit if the logging level doesn't permit this entry
 
         var prefix = CreatePrefix(sender, suffix);
         var entry = $"{DateTime.Now.ToLongTimeString()}: {prefix}{_entry}";
@@ -86,30 +89,30 @@ public class Debug
     }
 
     // Function to create a debug entry with a uniform prefix
-    private static string CreatePrefix(object sender, string suffix = "")
+    private string CreatePrefix(object sender, string suffix = "")
     {
         var className = sender.GetType().Name;
         var prefix = $"[{className}]";
 
         lock (lockObject) // Ensure thread safety
         {
-            if (prefix.Length > longestPrefix)
-                longestPrefix = prefix.Length;
+            if (prefix.Length > Instance.longestPrefix)
+                Instance.longestPrefix = prefix.Length;
         }
 
-        return prefix.PadLeft(longestPrefix) + " " + suffix + " ";
+        return prefix.PadLeft(Instance.longestPrefix) + " " + suffix + " ";
     }
 
     // Functions to add specific types of log entries
-    public static void Log(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Game, "App");
-    public static void AddDebugEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Everything, "   ");
+    public static void Log(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Game, "App");
+    public static void AddDebugEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Everything, "   ");
 
-    public static void AddImportantEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Important, " ! ");
+    public static void AddImportantEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Important, " ! ");
 
-    public static void AddErrorEntry(string _entry, object sender) => AddEntry(_entry, sender, LogLevel.Error, "!!!");
+    public static void AddErrorEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Error, "!!!");
 
     // Function to print the current log to a file
-    public static void PrintToFile(string filename)
+    public void printToFile(string filename)
     {
         var path = Directory.GetCurrentDirectory();
         var filePath = Path.Combine(path, filename);
@@ -132,4 +135,6 @@ public class Debug
             Console.WriteLine($"Error writing to file: {ex.Message}");
         }
     }
+
+    public static void PrintToFile(string filename) => Instance.printToFile(filename);
 }

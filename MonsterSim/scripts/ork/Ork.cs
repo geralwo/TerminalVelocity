@@ -36,7 +36,7 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         Attacks.Add(() =>
         {
             var dir = Console.ReadKey(true);
-            new Projectile(Position, Position + Vec2i.FromCKI(dir) * 100, this);
+            new Projectile(Position, Position + Vec2i.FromCKI(dir) * 100, this, Vec2i.ONE);
         });
     }
     int AttackActionIndex = 0;

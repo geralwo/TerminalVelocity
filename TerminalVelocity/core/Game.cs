@@ -24,6 +24,7 @@ public class Game
     /// </summary>
     private static Scene root = new Scene("root");
     private static Scene current_scene = new Scene("empty default Scene");
+    //private static StartScene startScene = new StartScene("defaultStartScene");
     /// <summary>
     /// Reference to the current executing scene.
     /// When changing this value, the old scene gets disposed, the screen is cleared<br />
@@ -70,8 +71,7 @@ public class Game
     /// Main Game loop <br />
     /// It's currently a single threaded loop which breaks when Game.Quit is set the true.
     /// </summary>
-    private bool logEnabled = true;
-    public void Run(Scene _startScene)
+    public void Run(StartScene _startScene)
     {
         TerminalVelocity.core.Debug.CurrentLogLevel = Game.Settings.Engine.Log;
         Game.CurrentScene = _startScene;

@@ -63,22 +63,9 @@ public class PhysicsServer
 			return false;
 		}
 	}
-
-	public static bool RemoveCollider<T>(T obj) where T : SceneObject
-	{
-		if(obj is PhysicsObject po)
-		{
-			return Instance.Colliders.Remove(po);
-		}
-		if(obj is PhysicsArea pa)
-		{
-			return Instance.Colliders.Remove(pa);
-		}
-		return false;
-	}
 	public static void Step()
 	{
-		Stopwatch stopwatch= Stopwatch.StartNew();
+		int startTime = Game.RunTime;
 		CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
 		var colDup = new List<PhysicsObject>(Instance.Colliders);
 		foreach (var obj in colDup)
@@ -103,7 +90,7 @@ public class PhysicsServer
 			obj.Position += obj.Velocity;
 			obj.Velocity = obj.Velocity.StepToZero();
 		}
-		TerminalVelocity.core.Debug.AddDebugEntry($"Step took {stopwatch.Elapsed.Microseconds}µs",Instance);
+		TerminalVelocity.core.Debug.AddImportantEntry($"Step took {startTime - Game.RunTime}µs",Instance);
 	}
 
 	private static void checkCollision(PhysicsObject obj)

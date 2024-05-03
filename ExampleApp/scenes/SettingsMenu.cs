@@ -18,8 +18,8 @@ public class SettingsScene : Scene
     private SceneObject title_audio_enabled;
     private SceneObject value_audio_enabled;
 
-    private SceneObject title_max_fps;
-    private SceneObject value_max_fps;
+    private SceneObject? title_max_fps;
+    private SceneObject? value_max_fps;
 
     public HashSet<String>custom_data = new HashSet<string>();
     private bool getting_input = false;

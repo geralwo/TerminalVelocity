@@ -1,89 +1,105 @@
-namespace TerminalVelocity;
+using System;
+using System.Collections.Generic;
 using TerminalVelocity;
 
-public class SelectBox : SceneObject
+namespace TerminalVelocity.UI
 {
-    public Vec2i Gap = Vec2i.ZERO;
-    public Vec2i FlowDirection = Vec2i.DOWN;
-    public ConsoleColor HighlightForegroundColor = ConsoleColor.Black;
-    public ConsoleColor HighlightBackgroundColor = ConsoleColor.White;
-
-    public ConsoleColor DefaultForegroundColor = ConsoleColor.White;
-    public ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
-
-    private int longest_str = 0;
-
-    public SelectBox()
+    public class SelectBox : SceneObject
     {
-        Visible = false;
-        ProcessEnabled = true;
-    }
+        public Vec2i Gap = Vec2i.ZERO;
+        public Vec2i FlowDirection = Vec2i.DOWN;
+        public ConsoleColor HighlightForegroundColor = ConsoleColor.Black;
+        public ConsoleColor HighlightBackgroundColor = ConsoleColor.Green;
 
-    int menuIndex = 0;
+        public ConsoleColor DefaultForegroundColor = ConsoleColor.White;
+        public ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
 
-    public override void OnProcess()
-    {
-			for(int i=0;i < Children.Count;i++)
-			{
-				if (i == menuIndex)
-				{
-					Children[i].Color = HighlightForegroundColor;
-					Children[i].BackgroundColor = HighlightBackgroundColor;
-				}
-				else
-				{
-                    Children[i].Color = DefaultForegroundColor;
+        private int longest_str = 0;
+
+        public SelectBox()
+        {
+            Visible = false;
+            ProcessEnabled = true;
+        }
+
+        private int menuIndex = 0;
+
+        public override void OnProcess()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (i == menuIndex)
+                {
+                    Children[i].Color           = HighlightForegroundColor;
+                    Children[i].BackgroundColor = HighlightBackgroundColor;
+                }
+                else
+                {
+                    Children[i].Color           = DefaultForegroundColor;
                     Children[i].BackgroundColor = DefaultBackgroundColor;
                 }
-			}
-    }
+            }
+        }
 
-    public new void add_child(SceneObject obj)
-    {
-        obj.Position += this.Position;
-        obj.Position += FlowDirection * Children.Count;
-        if(Children.Count > 0)
-            obj.Position += Gap * Children.Count;
-        Children.Add(obj);
-    }
-
-    public void next()
-    {
-        if(menuIndex < Children.Count - 1)
+        public void AddChild(SceneObject obj, int? index = null)
         {
-            menuIndex++;
+            if (index == null || index >= Children.Count)
+            {
+                // if no index append to the end
+                index = Children.Count;
+            }
+
+            // if index insert at the specified index
+            Children.Insert(index.Value, obj);
+
+            // reposition all items
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].Position = this.Position + FlowDirection * i + Gap * i;
+            }
+        }
+
+        public void Next()
+        {
+            if (menuIndex < Children.Count - 1)
+            {
+                menuIndex++;
+            }
+        }
+
+        public void Previous()
+        {
+            if (menuIndex > 0)
+            {
+                menuIndex--;
+            }
+        }
+
+        public void Select()
+        {
+            Children[menuIndex].ProcessAction?.Invoke();
+        }
+
+        public void PadAndRecenter()
+        {
+            int longest_str = 0;
+            Children.ForEach(
+                child =>
+                {
+                    if (child.Display.Length > longest_str)
+                        longest_str = child.Display.Length;
+                }
+            );
+
+            Children.ForEach(
+                child =>
+                {
+                    child.Display = child.Display.PadRight(longest_str);
+                }
+            );
+
+            center_xy();
+            Position += Vec2i.LEFT * (longest_str / 2);
         }
     }
-
-    public void previous()
-    {
-        if(menuIndex > 0)
-            menuIndex--;
-    }
-
-    public void select()
-    {
-        Children[menuIndex].ProcessAction?.Invoke();
-    }
-
-    public void pad_and_recenter()
-    {
-        // pad and recenter items
-        int longest_str = 0;
-        Children.ForEach(
-            child => {
-                if(child.Display.Length > longest_str)
-                    longest_str = child.Display.Length;
-            }
-        );
-        Children.ForEach(
-            child => {
-                child.Display = child.Display.PadRight(longest_str);
-            }
-        );
-        center_xy();
-        Position += Vec2i.LEFT * longest_str / 2;
-    }
-
-
 }
