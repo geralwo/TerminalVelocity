@@ -7,6 +7,7 @@ public class WinScreen : Scene
     {
         banner = new SceneObject(true);
         banner.Display = "\n Congratulations! \n You have made it! \n Press ENTER key to go to the main menu \n";
+        banner.Color = ConsoleColor.Black;
         banner.center_xy();
         banner.Position += Vec2i.UP;
         AddChild(banner);
@@ -22,6 +23,7 @@ public class WinScreen : Scene
 
     public override void OnProcess()
     {
+        if(Game.RunTime % 300 < 13)
         banner.BackgroundColor = Game.GetRandomConsoleColor();
     }
 }

@@ -5,16 +5,19 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
 {
     private int hp = 100;
 
-    public int HP {
+    public int HP
+    {
         get => hp;
-        set {
+        set
+        {
             hp = value;
-            if(hp < 0) {
+            if (hp < 0)
+            {
                 Dispose();
             }
         }
     }
-    public int AD {get;set;} = 33;
+    public int AD { get; set; } = 33;
 
     public string Name => name;
 
@@ -29,10 +32,11 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         BackgroundColor = ConsoleColor.DarkGreen;
         Color = ConsoleColor.Green;
         Display = "ô";
-        Attacks.Add(() => {new GroundSlam<Ork>(Position,new Vec2i(3,3),this);});
-        Attacks.Add(() => {
+        Attacks.Add(() => { new GroundSlam<Ork>(Position, new Vec2i(3, 3), this); });
+        Attacks.Add(() =>
+        {
             var dir = Console.ReadKey(true);
-            new Projectile(Position, Position +  Vec2i.FromCKI(dir) * 100,this);
+            new Projectile(Position, Position + Vec2i.FromCKI(dir) * 100, this);
         });
     }
     int AttackActionIndex = 0;
