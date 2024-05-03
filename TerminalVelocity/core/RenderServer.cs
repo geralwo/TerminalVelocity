@@ -1,30 +1,26 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 
 namespace TerminalVelocity
 {
     public class RenderServer
     {
         private static readonly Lazy<RenderServer> singleton = new(() => new RenderServer());
-        
+
         /// <summary>
         /// This is the screen buffer that gets drawn to the terminal
         /// </summary>
         private ConcurrentDictionary<Vec2i, Pixel> screenBuffer = new();
-        
+
         /// <summary>
         /// This is the buffer containing objects to render
         /// </summary>
         private List<SceneObject> registered_buffer = new();
-        
+
         private readonly object registeredBufferLock = new();
-        
+
         private RenderServer() { }
-        
+
         public static RenderServer Instance => singleton.Value;
 
         public static bool AddItem(SceneObject obj)
@@ -93,6 +89,9 @@ namespace TerminalVelocity
                 instance.frameTime.Stop();
                 instance.frame_completed = true;
                 Game.FrameCount++;
+                var _frameTimePad = Game.Settings.Engine.MaxFps - instance.frameTime.ElapsedMilliseconds;
+                if (instance.frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
+                    Thread.Sleep((int)_frameTimePad);
                 core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {instance.frameTime.Elapsed.Microseconds}µs", instance);
             }
         }
@@ -100,7 +99,7 @@ namespace TerminalVelocity
         private void Render()
         {
             var new_screenBuffer = new ConcurrentDictionary<Vec2i, Pixel>();
-            
+
             lock (registeredBufferLock)
             {
                 var rBufferCopy = new List<SceneObject>(registered_buffer);
@@ -109,7 +108,7 @@ namespace TerminalVelocity
                 {
                     if (obj is PhysicsArea area)
                     {
-                        var p = new Pixel(' ', obj);
+                        var p = new Pixel(area.Display[0], obj);
 
                         foreach (var local_coord in area.CollisionShape)
                         {
@@ -142,7 +141,7 @@ namespace TerminalVelocity
                     }
                 }
             }
-            
+
             // Clear old pixels that are no longer part of the new screen buffer
             foreach (var oldPixelCoord in screenBuffer.Keys)
             {

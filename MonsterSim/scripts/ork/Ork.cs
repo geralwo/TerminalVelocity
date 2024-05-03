@@ -1,24 +1,27 @@
 using System.Runtime.InteropServices;
 using TerminalVelocity;
 
-public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, IAttackble, ICharacter
+public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, ICreature
 {
     private int hp = 100;
 
-    public int HP {
+    public int HP
+    {
         get => hp;
-        set {
+        set
+        {
             hp = value;
-            if(hp < 0) {
+            if (hp < 0)
+            {
                 Dispose();
             }
         }
     }
-    public int AD {get;set;} = 33;
+    public int AD { get; set; } = 33;
 
     public string Name => name;
 
-    Guid ICharacter.id => id;
+    Guid ICreature.id => id;
 
     public int MovementSpeed => 1;
 
@@ -29,10 +32,11 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         BackgroundColor = ConsoleColor.DarkGreen;
         Color = ConsoleColor.Green;
         Display = "ô";
-        Attacks.Add(() => {new GroundSlam<Ork>(Position,new Vec2i(3,3),this);});
-        Attacks.Add(() => {
+        Attacks.Add(() => { new GroundSlam<Ork>(Position, new Vec2i(3, 3), this); });
+        Attacks.Add(() =>
+        {
             var dir = Console.ReadKey(true);
-            new Projectile(Position, Position +  Vec2i.FromCKI(dir) * 100,this);
+            new Projectile(Position, Position + Vec2i.FromCKI(dir) * 100, this);
         });
     }
     int AttackActionIndex = 0;
@@ -64,7 +68,7 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         hpLeft = HP;
     }
 
-    public void Attack(IAttackble target)
+    public void Attack(ICreature target)
     {
         Attack();
     }
@@ -84,7 +88,7 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         Velocity = position.Normalized * MovementSpeed;
     }
 
-    public void AttackWith(int slot, IAttackble? target)
+    public void AttackWith(int slot, ICreature? target)
     {
         Attacks[slot].Invoke();
     }

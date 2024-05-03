@@ -1,7 +1,7 @@
 using TerminalVelocity;
 public class SettingsScene : Scene
 {
-    public Vec2i lvl_size = new Vec2i(40,20);
+    public Vec2i lvl_size = new Vec2i(40, 20);
     public string player_char = "*";
     public bool audio_enabled = false;
     public int MaxFps;
@@ -11,17 +11,17 @@ public class SettingsScene : Scene
     // These could be simplified into a MenuItem class
     private SceneObject title_player_char;
     private SceneObject value_player_char;
-  
+
     private SceneObject title_lvl_size;
     private SceneObject value_lvl_size;
 
     private SceneObject title_audio_enabled;
     private SceneObject value_audio_enabled;
 
-    private SceneObject title_max_fps;
-    private SceneObject value_max_fps;
+    private SceneObject? title_max_fps;
+    private SceneObject? value_max_fps;
 
-    public HashSet<String>custom_data = new HashSet<string>();
+    public HashSet<String> custom_data = new HashSet<string>();
     private bool getting_input = false;
 
     public SettingsScene(string _name = "SettingsScene") : base(_name)
@@ -29,7 +29,7 @@ public class SettingsScene : Scene
         lvl_size = EscapeRoomSettings.RoomSize;
         player_char = EscapeRoomSettings.PlayerChar;
         audio_enabled = Game.Settings.Engine.AudioEnabled;
-        MaxFps = Game.Settings.Engine.MaxFps;
+        MaxFps = (int)Game.Settings.Engine.MaxFps;
 
         InputEnabled = true;
         ProcessEnabled = true;
@@ -41,7 +41,7 @@ public class SettingsScene : Scene
         value_lvl_size.Display = lvl_size.ToString();
 
 
-        title_player_char = new SceneObject(value_lvl_size.Position + Vec2i.DOWN,"Player char:");
+        title_player_char = new SceneObject(value_lvl_size.Position + Vec2i.DOWN, "Player char:");
         value_player_char = new SceneObject(title_player_char.Position + Vec2i.DOWN);
         value_player_char.Display = player_char.ToString();
         value_player_char.name = "settings_player_char";
@@ -80,7 +80,7 @@ public class SettingsScene : Scene
     private void get_input()
     {
         getting_input = true;
-        Game.Beep(1100,700);
+        Game.Beep(1100, 700);
         Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y);
         Console.BackgroundColor = ConsoleColor.Green;
         Console.ForegroundColor = ConsoleColor.Black;
@@ -89,8 +89,8 @@ public class SettingsScene : Scene
         // setting for level size
         if (Children[menuIndex].name == value_lvl_size.name)
         {
-            // asking for x input
-            x_input_loop:
+        // asking for x input
+        x_input_loop:
             Console.Clear();
             Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y - 1);
             Console.WriteLine($"pls enter the value for the x dimension [min: 10, max : {Console.WindowWidth}]");
@@ -110,9 +110,9 @@ public class SettingsScene : Scene
                     goto x_input_loop;
                 }
             }
-            
-            // asking for y input
-            y_input_loop:
+
+        // asking for y input
+        y_input_loop:
             Console.Clear();
             Console.SetCursorPosition(Children[menuIndex].Position.x, Children[menuIndex].Position.y - 1);
             Console.WriteLine($"pls enter the value for the y dimension [min: 10, max : {Console.WindowHeight}]");
@@ -121,7 +121,7 @@ public class SettingsScene : Scene
             int iy_dim = EscapeRoomSettings.RoomSize.y;
             if (y_dim != null)
             {
-                if(int.TryParse(y_dim, out int y_dim_int) && y_dim_int > 0 && y_dim_int <= Console.WindowHeight)
+                if (int.TryParse(y_dim, out int y_dim_int) && y_dim_int > 0 && y_dim_int <= Console.WindowHeight)
                 {
                     iy_dim = y_dim_int;
                     Game.Beep(2254, 200);
@@ -133,7 +133,7 @@ public class SettingsScene : Scene
                     goto y_input_loop;
                 }
             }
-            
+
 
             // Setting values in settings
             Vec2i new_size = new Vec2i(ix_dim, iy_dim);
@@ -143,7 +143,7 @@ public class SettingsScene : Scene
         }
 
         // setting for player character
-        
+
         if (Children[menuIndex].name == value_player_char.name)
         {
             Children[menuIndex].BackgroundColor = ConsoleColor.White;
@@ -215,7 +215,7 @@ public class SettingsScene : Scene
                     {
                         Game.Beep();
                     }
-                        
+
                     break;
                 case ConsoleKey.UpArrow:
                     if (!getting_input && menuIndex > 1)
@@ -226,15 +226,15 @@ public class SettingsScene : Scene
                     {
                         Game.Beep();
                     }
-                        
+
                     break;
                 case ConsoleKey.Enter:
-                    if(!getting_input)
+                    if (!getting_input)
                     {
-                        if(Children[menuIndex].name != value_audio_enabled.name) Game.Beep(1337,133);
-                        Children[menuIndex].ProcessAction.Invoke();
+                        if (Children[menuIndex].name != value_audio_enabled.name) Game.Beep(1337, 133);
+                        Children[menuIndex]?.ProcessAction?.Invoke();
                     }
-                        
+
                     break;
                 case ConsoleKey.Escape:
                     Game.Beep(1100, 200);

@@ -19,7 +19,7 @@ public class Game
     /// </summary>
     public static Settings Settings = new Settings();
     /// <summary>
-    /// The root scene of the game. Every object is a child of this. 
+    /// The root scene of the game. Every object is a child of this.
     /// <br /> You are not supposed to interact with this.
     /// </summary>
     private static Scene root = new Scene("root");
@@ -59,7 +59,8 @@ public class Game
     public long DeltaTime = 0;
     public Game()
     {
-        Console.CancelKeyPress += delegate {
+        Console.CancelKeyPress += delegate
+        {
             Console.Clear();
         };
         root.Visible = false;
@@ -68,21 +69,22 @@ public class Game
     }
     /// <summary>
     /// Main Game loop <br />
-    /// It's currently a single threaded loop which breaks when Game.Quit is set the true.
+    /// Input is its own thread to enable ConsoleReads.
+    /// PhysicsServer MainThread
+    /// RenderServer MainThread but with locks
     /// </summary>
-    private bool logEnabled = true;
     public void Run(Scene _startScene)
     {
-        TerminalVelocity.core.Debug.CurrentLogLevel = Game.Settings.Engine.Log;
         Game.CurrentScene = _startScene;
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        Input.StartInputListener();
         while (!Quit)
         {
             var frameStart = stopwatch.ElapsedMilliseconds;
-            Input.get_input();
             PhysicsServer.Step();
-            // new Thread(() => {
-            //    ProcessTick?.Invoke();
+            // new Thread(() =>
+            // {
+            //     ProcessTick?.Invoke();
             // }).Start();
             ProcessTick?.Invoke();
             render();
@@ -91,11 +93,11 @@ public class Game
 
             if (frameDuration < Game.Settings.Engine.MaxFps)
             {
-                Thread.Sleep(Game.Settings.Engine.MaxFps - (int)frameDuration);
+                Thread.Sleep((int)(Game.Settings.Engine.MaxFps - frameDuration));
             }
 
             RunTime = (int)stopwatch.ElapsedMilliseconds;
-            
+
         }
         TerminalVelocity.core.Debug.PrintToFile("./log.txt");
         _finished();
@@ -105,7 +107,7 @@ public class Game
     /// </summary>
     private static void _finished()
     {
-        while(!RenderServer.IsReady)
+        while (!RenderServer.IsReady)
         {
             Console.Clear(); // when we quit be nice and clear screen
             Console.CursorVisible = true;
@@ -116,7 +118,7 @@ public class Game
     /// </summary>
     private void render()
     {
-        if(RenderServer.IsReady)
+        if (RenderServer.IsReady)
         {
             RenderServer.DrawBuffer();
         }
@@ -129,7 +131,7 @@ public class Game
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.CursorVisible = false;
         Console.Clear();
-        Console.SetCursorPosition(0,0);
+        Console.SetCursorPosition(0, 0);
     }
     /// <summary>
     /// Cross platform Beep function.
@@ -188,7 +190,8 @@ public class Game
 
     public static string EngineStats
     {
-        get {
+        get
+        {
             string str = "";
             str += $"{DateTime.Now}\n";
             str += $"total frames   : {Game.FrameCount}\n";

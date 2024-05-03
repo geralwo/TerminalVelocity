@@ -23,33 +23,33 @@ public class SelectBox : SceneObject
 
     public override void OnProcess()
     {
-			for(int i=0;i < Children.Count;i++)
-			{
-				if (i == menuIndex)
-				{
-					Children[i].Color = HighlightForegroundColor;
-					Children[i].BackgroundColor = HighlightBackgroundColor;
-				}
-				else
-				{
-                    Children[i].Color = DefaultForegroundColor;
-                    Children[i].BackgroundColor = DefaultBackgroundColor;
-                }
-			}
+        for (int i = 0; i < Children.Count; i++)
+        {
+            if (i == menuIndex)
+            {
+                Children[i].Color = HighlightForegroundColor;
+                Children[i].BackgroundColor = HighlightBackgroundColor;
+            }
+            else
+            {
+                Children[i].Color = DefaultForegroundColor;
+                Children[i].BackgroundColor = DefaultBackgroundColor;
+            }
+        }
     }
 
-    public new void add_child(SceneObject obj)
+    public void add_child(SceneObject obj)
     {
         obj.Position += this.Position;
         obj.Position += FlowDirection * Children.Count;
-        if(Children.Count > 0)
+        if (Children.Count > 0)
             obj.Position += Gap * Children.Count;
         Children.Add(obj);
     }
 
     public void next()
     {
-        if(menuIndex < Children.Count - 1)
+        if (menuIndex < Children.Count - 1)
         {
             menuIndex++;
         }
@@ -57,7 +57,7 @@ public class SelectBox : SceneObject
 
     public void previous()
     {
-        if(menuIndex > 0)
+        if (menuIndex > 0)
             menuIndex--;
     }
 
@@ -71,13 +71,15 @@ public class SelectBox : SceneObject
         // pad and recenter items
         int longest_str = 0;
         Children.ForEach(
-            child => {
-                if(child.Display.Length > longest_str)
+            child =>
+            {
+                if (child.Display.Length > longest_str)
                     longest_str = child.Display.Length;
             }
         );
         Children.ForEach(
-            child => {
+            child =>
+            {
                 child.Display = child.Display.PadRight(longest_str);
             }
         );

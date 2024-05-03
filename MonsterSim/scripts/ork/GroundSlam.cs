@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using TerminalVelocity;
 
-public class GroundSlam<T> : PhysicsArea where T : ICharacter
+public class GroundSlam<T> : PhysicsArea where T : ICreature
 {
     public Vec2i EffectLocation;
     public Vec2i EffectSize;
@@ -23,21 +23,23 @@ public class GroundSlam<T> : PhysicsArea where T : ICharacter
             {
                 PhysicsServer.CheckCollision(this);
             }
-            if(flash)
+            if (flash)
             {
-                new Thread(() => {
+                new Thread(() =>
+                {
                     BackgroundColor = ConsoleColor.Red;
                     Thread.Sleep(133);
-                    if(flash)
+                    if (flash)
                         flash = false;
                 }).Start();
             }
             else
             {
-                new Thread(() => {
+                new Thread(() =>
+                {
                     BackgroundColor = ConsoleColor.Yellow;
                     Thread.Sleep(150);
-                    if(!flash)
+                    if (!flash)
                         flash = true;
 
                 }).Start();
@@ -53,10 +55,10 @@ public class GroundSlam<T> : PhysicsArea where T : ICharacter
     {
         foreach (PhysicsObject collision in collisionInfo.colliders.Where(x => x.id != this.id && x.id != Creator.id))
         {
-            if(collision is IAttackble attackble)
+            if (collision is ICreature attackble)
             {
-                TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {this.name}",Creator);
                 attackble.TakeDamage((int)(Creator.AD * 0.3), out _);
+                TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {this.name}", Creator);
             }
         }
     }

@@ -1,6 +1,6 @@
 using TerminalVelocity;
 
-public interface ICharacter : IAttackMove, IMovementAbility, IAttackble, IDefensiveMove
+public interface ICreature : IAttackMove, IMovementAbility, IDefensiveMove
 {
     string Name { get; }
     Guid id { get; }
@@ -9,4 +9,5 @@ public interface ICharacter : IAttackMove, IMovementAbility, IAttackble, IDefens
     public void MoveToPosition(Vec2i position);
 
     int MovementSpeed { get; }
+    public void TakeDamage(int damage, out int _HPremaining);
 }
