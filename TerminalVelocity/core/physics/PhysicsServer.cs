@@ -57,7 +57,6 @@ public class PhysicsServer
         lock (Instance.Colliders)
         {
             System.Diagnostics.Stopwatch time = System.Diagnostics.Stopwatch.StartNew();
-            int timer = Game.RunTime;
             CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
             var colDup = new List<PhysicsObject>(Instance.Colliders);
             foreach (var obj in colDup)

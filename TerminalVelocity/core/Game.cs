@@ -23,7 +23,7 @@ public class Game
     /// <br /> You are not supposed to interact with this.
     /// </summary>
     private static Scene root = new Scene("root");
-    private static Scene current_scene = new Scene("empty default Scene");
+    private static Scene current_scene;
     /// <summary>
     /// Reference to the current executing scene.
     /// When changing this value, the old scene gets disposed, the screen is cleared<br />
@@ -36,13 +36,13 @@ public class Game
         {
             if (current_scene != null)
             {
-                CurrentScene.unload();
-                root.RemoveChild(CurrentScene);
+                current_scene.unload();
+                root.RemoveChild(current_scene);
                 RenderServer.ClearScene();
                 GC.Collect();
             }
             current_scene = value;
-            root.AddChild(CurrentScene);
+            root.AddChild(current_scene);
         }
     }
     /// <summary>
@@ -52,22 +52,15 @@ public class Game
     /// <summary>
     /// RunTime in milliseconds since starting the game.
     /// </summary>
-    public static int RunTime = 0;
-    public static System.Diagnostics.Stopwatch RunTimeSW;
+    private System.Diagnostics.Stopwatch runTime = new System.Diagnostics.Stopwatch();
+    public static System.Diagnostics.Stopwatch RunTime = new System.Diagnostics.Stopwatch();
     /// <summary>
     /// Not implemented
     /// </summary>
     public long DeltaTime = 0;
     public Game()
     {
-        Console.CancelKeyPress += delegate
-        {
-            Console.Clear();
-        };
-        TerminalVelocity.core.Debug.CurrentLogLevel = Game.LogLevel;
         root.Visible = false;
-        _init_console();
-
     }
     /// <summary>
     /// Main Game loop <br />
@@ -77,25 +70,18 @@ public class Game
     /// </summary>
     public void Run(Scene _startScene)
     {
+        _init_console();
         core.Debug.CurrentLogLevel = Game.LogLevel;
         Game.CurrentScene = _startScene;
-        RunTimeSW = new System.Diagnostics.Stopwatch();
-        RunTimeSW.Start();
+        RunTime.Start();
         Input.StartInputListener();
         while (!Quit)
         {
-            new Thread(() =>
-            {
-                PhysicsServer.Step();
-                ProcessTick?.Invoke();
-            }).Start();
-            // ProcessTick?.Invoke();
-            render();
-
-            RunTime = (int)RunTimeSW.ElapsedMilliseconds;
-
+            PhysicsServer.Step();
+            ProcessTick?.Invoke();
+            RenderServer.DrawBuffer();
         }
-        RunTimeSW.Stop();
+        RunTime.Stop();
         TerminalVelocity.core.Debug.PrintToFile();
         _finished();
     }
@@ -122,6 +108,10 @@ public class Game
 
     private void _init_console()
     {
+        Console.CancelKeyPress += delegate
+        {
+            Console.Clear();
+        };
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.CursorVisible = false;
         Console.Clear();
@@ -189,11 +179,11 @@ public class Game
             string str = "";
             str += $"{DateTime.Now}\n";
             str += $"total frames   : {Game.FrameCount}\n";
-            str += $"total run time : {Game.RunTimeSW.ElapsedMilliseconds} ms\n";
-            str += $"average fps    : {Game.FrameCount / (Game.RunTimeSW.ElapsedMilliseconds / 1000)}\n";
+            str += $"average fps    : {Game.FrameCount / (Game.RunTime.ElapsedMilliseconds / 1000f)}\n";
             str += $"render items   : {RenderServer.Count()}\n";
             str += $"last frameTime : {RenderServer.FrameTimeInMicroseconds}µs\n";
-            str += $"window size    : {Game.Settings.Engine.WindowSize}\n";
+            str += $"window size    : {Game.Settings.Engine.WindowSize} => {Game.Settings.Engine.WindowSize.x * Game.Settings.Engine.WindowSize.y} Pixels\n";
+            str += $"total run time : {Game.RunTime.ElapsedMilliseconds} ms\n";
             return str;
         }
     }
