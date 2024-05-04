@@ -1,8 +1,8 @@
-5/3/2024 3:42:08 AM
-total frames   : 3721
-total run time : 14500 ms
-average fps    : 265
+5/4/2024 10:34:19 PM
+total frames   : 1028
+average fps    : 68.46943
 render items   : 1
-last frameTime : 248µs
-window size    : [165,8]
+last frameTime : 716µs
+window size    : [174,12] => 2088 Pixels
+total run time : 15014 ms
 
