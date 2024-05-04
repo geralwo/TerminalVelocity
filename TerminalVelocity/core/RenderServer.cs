@@ -64,14 +64,13 @@ namespace TerminalVelocity
 
         public static void DrawBuffer()
         {
-            var instance = Instance;
-            lock (instance)
+            lock (Instance)
             {
-                instance.frame_completed = false;
-                instance.frameTime = Stopwatch.StartNew();
-                instance.Render();
+                Instance.frame_completed = false;
+                Instance.frameTime = Stopwatch.StartNew();
+                Instance.Render();
 
-                foreach (var kvp in instance.screenBuffer)
+                foreach (var kvp in Instance.screenBuffer)
                 {
                     var screen_coord = kvp.Key;
                     var pixel = kvp.Value;
@@ -86,13 +85,13 @@ namespace TerminalVelocity
                     }
                 }
 
-                instance.frameTime.Stop();
-                instance.frame_completed = true;
+                Instance.frameTime.Stop();
+                Instance.frame_completed = true;
                 Game.FrameCount++;
-                var _frameTimePad = Game.Settings.Engine.MaxFps - instance.frameTime.ElapsedMilliseconds;
-                if (instance.frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
+                var _frameTimePad = Game.Settings.Engine.MaxFps - Instance.frameTime.ElapsedMilliseconds;
+                if (Instance.frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
                     Thread.Sleep((int)_frameTimePad);
-                core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {instance.frameTime.Elapsed.Microseconds}µs", instance);
+                core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {Instance.frameTime.Elapsed.Microseconds}µs", Instance);
             }
         }
 

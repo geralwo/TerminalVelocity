@@ -1,5 +1,5 @@
 using TerminalVelocity;
-
+using TerminalVelocity.UI;
 public class ExtrasScene : Scene
 {
     SelectBox s = new SelectBox();
@@ -11,31 +11,31 @@ public class ExtrasScene : Scene
 
         qtTest.ProcessAction = () => Game.CurrentScene = new QuadTreeTest();
         selectBoxTest.ProcessAction = () => Game.CurrentScene = new SelectBoxTest();
-        s.add_child(qtTest);
-        s.add_child(selectBoxTest);
-        s.pad_and_recenter();
+        s.AddChild(qtTest);
+        s.AddChild(selectBoxTest);
+        s.PadAndRecenter();
         AddChild(s);
     }
 
     public override void OnInput(ConsoleKey key)
     {
-		if(Game.CurrentScene == this)
-		{
-			switch(key)
-			{
-				case ConsoleKey.DownArrow:
-					s.next();
-					break;
-				case ConsoleKey.UpArrow:
-					s.previous();
-					break;
-				case ConsoleKey.Enter:
+        if (Game.CurrentScene == this)
+        {
+            switch (key)
+            {
+                case ConsoleKey.DownArrow:
+                    s.Next();
+                    break;
+                case ConsoleKey.UpArrow:
+                    s.Previous();
+                    break;
+                case ConsoleKey.Enter:
                     Game.Beep();
-                    s.select();
-					break;
-				default:
-					break;
-			}
-		}   
+                    s.Select();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

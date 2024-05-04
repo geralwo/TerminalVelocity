@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using TerminalVelocity;
-public class Level : SceneObject {
+public class Level : SceneObject
+{
     public Vec2i size = new Vec2i(8, 8);
     public Vec2i player_spawn = Vec2i.ZERO;
     public Vec2i door_spawn = Vec2i.ZERO;
@@ -14,7 +15,7 @@ public class Level : SceneObject {
     public Level(int x, int y)
     {
         size = EscapeRoomSettings.RoomSize;
-        size = new Vec2i(x,y);
+        size = new Vec2i(x, y);
         generate_level();
         Visible = false;
         name = "level";
@@ -22,13 +23,12 @@ public class Level : SceneObject {
     HashSet<Vec2i> usedPositions = new HashSet<Vec2i>();
     public void generate_level()
     {
-
-        
         ConsoleColor key_color = Game.GetRandomConsoleColor(ConsoleColor.Black);
         key = new SceneObject();
         key.ProcessEnabled = true;
-        key.ProcessAction = () => {
-            if(Game.FrameCount % 16 == 0)
+        key.ProcessAction = () =>
+        {
+            if (Game.FrameCount % 16 == 0)
                 key.BackgroundColor = Game.GetRandomConsoleColor();
         };
         key.Display = "k";
@@ -36,16 +36,16 @@ public class Level : SceneObject {
         usedPositions.Add(key.Position);
         key.ZIndex = 1;
 
-        for(int i = 0; i < size.x / 2;i++)
+        for (int i = 0; i < size.x / 2; i++)
         {
             ColorField f;
-            if(i % size.x / 4 == 0)
+            if (i % size.x / 4 == 0)
             {
-                f = new ColorField(key_color,get_random_cell_in_bounds());
+                f = new ColorField(key_color, get_random_cell_in_bounds());
             }
             else
             {
-                f = new ColorField(Game.GetRandomConsoleColor(ConsoleColor.Black),get_random_cell_in_bounds());
+                f = new ColorField(Game.GetRandomConsoleColor(ConsoleColor.Black), get_random_cell_in_bounds());
             }
             AddChild(f);
             usedPositions.Add(f.Position);
@@ -71,7 +71,7 @@ public class Level : SceneObject {
             Vec2i.DOWN * 2 + Vec2i.RIGHT * 1,
             Vec2i.DOWN * 2 + Vec2i.RIGHT * 2,
         };
-        for(int i = 0; i < fence_coords.Length;i++)
+        for (int i = 0; i < fence_coords.Length; i++)
         {
             PhysicsObject key_fence = new PhysicsObject(fence_coords[i] + key.Position);
             key_fence.Display = " ";
@@ -94,7 +94,7 @@ public class Level : SceneObject {
                 door_pos = new Vec2i(random.Next(1, size.x - 1), 0);
                 break;
             case 1: // Right
-                door_pos = new Vec2i(size.x - 1,random.Next(1, size.y - 1));
+                door_pos = new Vec2i(size.x - 1, random.Next(1, size.y - 1));
                 break;
             case 2: // Bottom
                 door_pos = new Vec2i(random.Next(1, size.x - 1), size.y - 1);
@@ -113,33 +113,29 @@ public class Level : SceneObject {
                 Vec2i pos = new Vec2i(x, y);
                 if (y == 0 || x == 0 || x == size.x - 1 || y == size.y - 1)
                 {
-                    PhysicsObject wall_piece;
-                    if (pos == door_pos) 
+                    PhysicsObject wall_piece = new PhysicsObject(pos)
                     {
-                        wall_piece = new PhysicsObject(pos)
+                        Display = " ",
+                        name = "Wall"
+                    };
+                    if (pos == door_pos)
+                    {
+                        wall_piece.Display = "D";
+                        wall_piece.ProcessEnabled = true;
+                        wall_piece.ProcessAction = () =>
                         {
-                            Display = "D",
-                            ProcessEnabled = true
-                        };
-                        wall_piece.ProcessAction = () => {
-                            if(Game.FrameCount % 16 == 0)
+                            if (Game.FrameCount % 16 == 0)
                                 wall_piece.BackgroundColor = key.BackgroundColor;
                         };
                         wall_piece.ZIndex = 2;
                         door = wall_piece;
                         door_spawn = wall_piece.Position;
-                        wall_piece.name = "theoneandonly";
+                        door.name = "Door";
                     }
                     else
                     {
-                        wall_piece = new PhysicsObject(pos)
-                        {
-                            Display = " ",
-                            Mass = 1000,
-                            BackgroundColor = ConsoleColor.Blue,
-                            Color = ConsoleColor.Blue
-                        };
-
+                        wall_piece.BackgroundColor = ConsoleColor.Blue;
+                        wall_piece.Color = ConsoleColor.Blue;
                     }
                     wall_piece.Visible = true;
                     usedPositions.Add(wall_piece.Position);
@@ -155,8 +151,8 @@ public class Level : SceneObject {
         do
         {
             randomCell = new Vec2i(
-                RandomNumberGenerator.GetInt32(1, size.x-1),
-                RandomNumberGenerator.GetInt32(1, size.y-1)
+                RandomNumberGenerator.GetInt32(1, size.x - 1),
+                RandomNumberGenerator.GetInt32(1, size.y - 1)
             );
         } while (usedPositions.Contains(randomCell));
         return randomCell;
@@ -179,6 +175,6 @@ public class Level : SceneObject {
 
     public bool Is_wall(int x, int y)
     {
-        return !Is_inside_bounds(x,y);
+        return !Is_inside_bounds(x, y);
     }
 }

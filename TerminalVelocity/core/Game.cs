@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace TerminalVelocity;
 public class Game
 {
@@ -6,12 +8,11 @@ public class Game
     /// </summary>
     public static event ProcessEvent? ProcessTick;
     public delegate void ProcessEvent();
-
+    public static LogLevel LogLevel = LogLevel.Game;
     /// <summary>
     /// If Game.Quit is set to true, the game loop breaks and the Game is terminated
     /// </summary>
     public static bool Quit = false;
-    public static LogLevel LogLevel = LogLevel.None; // init global logger to no logging
     /// <summary>
     /// Partial implementation of a Settings class to use for basic engine needs and game needs<br />
     /// - not finished -
@@ -52,6 +53,7 @@ public class Game
     /// RunTime in milliseconds since starting the game.
     /// </summary>
     public static int RunTime = 0;
+    public static System.Diagnostics.Stopwatch RunTimeSW;
     /// <summary>
     /// Not implemented
     /// </summary>
@@ -62,6 +64,7 @@ public class Game
         {
             Console.Clear();
         };
+        TerminalVelocity.core.Debug.CurrentLogLevel = Game.LogLevel;
         root.Visible = false;
         _init_console();
 
@@ -76,25 +79,23 @@ public class Game
     {
         core.Debug.CurrentLogLevel = Game.LogLevel;
         Game.CurrentScene = _startScene;
-        System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        RunTimeSW = new System.Diagnostics.Stopwatch();
+        RunTimeSW.Start();
         Input.StartInputListener();
         while (!Quit)
         {
-            var frameStart = stopwatch.ElapsedMilliseconds;
-            PhysicsServer.Step();
-            ProcessTick?.Invoke();
-            render();
-            var frameEnd = stopwatch.ElapsedMilliseconds;
-            var frameDuration = frameEnd - frameStart;
-
-            if (frameDuration < Game.Settings.Engine.MaxFps)
+            new Thread(() =>
             {
-                Thread.Sleep((int)(Game.Settings.Engine.MaxFps - frameDuration));
-            }
+                PhysicsServer.Step();
+                ProcessTick?.Invoke();
+            }).Start();
+            // ProcessTick?.Invoke();
+            render();
 
-            RunTime = (int)stopwatch.ElapsedMilliseconds;
+            RunTime = (int)RunTimeSW.ElapsedMilliseconds;
 
         }
+        RunTimeSW.Stop();
         TerminalVelocity.core.Debug.PrintToFile();
         _finished();
     }
@@ -103,8 +104,8 @@ public class Game
     /// </summary>
     private static void _finished()
     {
-        Console.CursorVisible = true;
         Console.Clear(); // when we quit be nice and clear screen
+        Console.CursorVisible = true;
     }
     /// <summary>
     /// Calls RenderServer.DrawBuffer, adds one to the frame count and sleeps for an amount of milliseconds to limit FPS
@@ -188,8 +189,8 @@ public class Game
             string str = "";
             str += $"{DateTime.Now}\n";
             str += $"total frames   : {Game.FrameCount}\n";
-            str += $"total run time : {Game.RunTime} ms\n";
-            str += $"average fps    : {Game.FrameCount / (Game.RunTime / 1000)}\n";
+            str += $"total run time : {Game.RunTimeSW.ElapsedMilliseconds} ms\n";
+            str += $"average fps    : {Game.FrameCount / (Game.RunTimeSW.ElapsedMilliseconds / 1000)}\n";
             str += $"render items   : {RenderServer.Count()}\n";
             str += $"last frameTime : {RenderServer.FrameTimeInMicroseconds}µs\n";
             str += $"window size    : {Game.Settings.Engine.WindowSize}\n";

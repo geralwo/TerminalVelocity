@@ -1,6 +1,4 @@
-namespace TerminalVelocity;
-using TerminalVelocity;
-
+namespace TerminalVelocity.UI;
 public class SelectBox : SceneObject
 {
     public Vec2i Gap = Vec2i.ZERO;
@@ -19,7 +17,7 @@ public class SelectBox : SceneObject
         ProcessEnabled = true;
     }
 
-    int menuIndex = 0;
+    private int menuIndex = 0;
 
     public override void OnProcess()
     {
@@ -38,16 +36,25 @@ public class SelectBox : SceneObject
         }
     }
 
-    public void add_child(SceneObject obj)
+    public void AddChild(SceneObject obj, int? index = null)
     {
-        obj.Position += this.Position;
-        obj.Position += FlowDirection * Children.Count;
-        if (Children.Count > 0)
-            obj.Position += Gap * Children.Count;
-        Children.Add(obj);
+        if (index == null || index >= Children.Count)
+        {
+            // Default behavior: append to the end
+            index = Children.Count;
+        }
+
+        // Insert at the specified index
+        Children.Insert(index.Value, obj);
+
+        // Reflow all items to ensure correct positioning
+        for (int i = 0; i < Children.Count; i++)
+        {
+            Children[i].Position = this.Position + FlowDirection * i + Gap * i;
+        }
     }
 
-    public void next()
+    public void Next()
     {
         if (menuIndex < Children.Count - 1)
         {
@@ -55,20 +62,22 @@ public class SelectBox : SceneObject
         }
     }
 
-    public void previous()
+    public void Previous()
     {
         if (menuIndex > 0)
+        {
             menuIndex--;
+        }
     }
 
-    public void select()
+    public void Select()
     {
         Children[menuIndex].ProcessAction?.Invoke();
     }
 
-    public void pad_and_recenter()
+    public void PadAndRecenter()
     {
-        // pad and recenter items
+        // Pad and recenter items
         int longest_str = 0;
         Children.ForEach(
             child =>
@@ -77,15 +86,15 @@ public class SelectBox : SceneObject
                     longest_str = child.Display.Length;
             }
         );
+
         Children.ForEach(
             child =>
             {
                 child.Display = child.Display.PadRight(longest_str);
             }
         );
+
         center_xy();
-        Position += Vec2i.LEFT * longest_str / 2;
+        Position += Vec2i.LEFT * (longest_str / 2);
     }
-
-
 }

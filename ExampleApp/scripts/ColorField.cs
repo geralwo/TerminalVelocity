@@ -7,11 +7,13 @@ public class ColorField : PhysicsArea
         BackgroundColor = _color;
         Display = " ";
         Position = _position;
+        name = _color.ToString();
     }
 
     public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
     {
-        collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj => {
+        collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj =>
+        {
             obj.CollisionIgnoreFilter.Clear();
             obj.BackgroundColor = this.BackgroundColor;
             obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
