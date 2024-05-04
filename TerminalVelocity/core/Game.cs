@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace TerminalVelocity;
 public class Game
 {
@@ -13,6 +11,7 @@ public class Game
     /// If Game.Quit is set to true, the game loop breaks and the Game is terminated
     /// </summary>
     public static bool Quit = false;
+    public static LogLevel LogLevel = LogLevel.None; // init global logger to no logging
     /// <summary>
     /// Partial implementation of a Settings class to use for basic engine needs and game needs<br />
     /// - not finished -
@@ -75,6 +74,7 @@ public class Game
     /// </summary>
     public void Run(Scene _startScene)
     {
+        core.Debug.CurrentLogLevel = Game.LogLevel;
         Game.CurrentScene = _startScene;
         System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
         Input.StartInputListener();
@@ -82,10 +82,6 @@ public class Game
         {
             var frameStart = stopwatch.ElapsedMilliseconds;
             PhysicsServer.Step();
-            // new Thread(() =>
-            // {
-            //     ProcessTick?.Invoke();
-            // }).Start();
             ProcessTick?.Invoke();
             render();
             var frameEnd = stopwatch.ElapsedMilliseconds;
@@ -99,7 +95,7 @@ public class Game
             RunTime = (int)stopwatch.ElapsedMilliseconds;
 
         }
-        TerminalVelocity.core.Debug.PrintToFile("./log.txt");
+        TerminalVelocity.core.Debug.PrintToFile();
         _finished();
     }
     /// <summary>
@@ -107,11 +103,8 @@ public class Game
     /// </summary>
     private static void _finished()
     {
-        while (!RenderServer.IsReady)
-        {
-            Console.Clear(); // when we quit be nice and clear screen
-            Console.CursorVisible = true;
-        }
+        Console.CursorVisible = true;
+        Console.Clear(); // when we quit be nice and clear screen
     }
     /// <summary>
     /// Calls RenderServer.DrawBuffer, adds one to the frame count and sleeps for an amount of milliseconds to limit FPS

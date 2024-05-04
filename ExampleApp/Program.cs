@@ -1,4 +1,4 @@
-﻿using TerminalVelocity;
+using TerminalVelocity;
 namespace ExampleApp;
 public class Program
 {
