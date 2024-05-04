@@ -25,21 +25,6 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         }
     }
 
-    public new string Display
-    {
-        get
-        {
-            if (Velocity.x < 0)
-                base.Display = ".::-";
-            else base.Display = "-::.";
-            return base.Display;
-        }
-        set
-        {
-            base.Display = value;
-        }
-    }
-
     public int AD { get; set; } = 25;
 
     public string Name => throw new NotImplementedException();
@@ -71,12 +56,14 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     bool flip = false;
     public void MovementAbility()
     {
+
         if (Game.RunTime.ElapsedMilliseconds % 500 < 15)
         {
             if (Position == next_goal_position)
                 next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
             Velocity = Position.DirectionTo(next_goal_position).Normalized;
-
+            if (Velocity.x < 0) Display = ".::-";
+            else Display = "-::.";
         }
 
     }
