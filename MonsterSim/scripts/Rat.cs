@@ -36,7 +36,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void Attack(ICreature target)
     {
         target.TakeDamage(AD, out var _targetHP);
-        TerminalVelocity.core.Debug.Log($"Rat attacks {target.Name} => HP left:{_targetHP}", this);
+        TerminalVelocity.core.Debug.Log($"Rat attacks {target} => HP left:{_targetHP}", this);
     }
 
     public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
@@ -45,23 +45,27 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         if (target != null)
             Attack(target);
     }
+    Path2D next_goal_position;
+    public override void OnStart()
+    {
+        next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
+    }
 
     public void DefensiveMove(ref int number)
     {
-        next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
+        next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
         HP += 5;
         MovementAbility();
     }
-    Vec2i next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
-    bool flip = false;
+
     public void MovementAbility()
     {
 
         if (Game.RunTime.ElapsedMilliseconds % 500 < 15)
         {
-            if (Position == next_goal_position)
-                next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
-            Velocity = Position.DirectionTo(next_goal_position).Normalized;
+            if (Position == next_goal_position.End)
+                next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
+            Velocity = Position.DirectionTo(next_goal_position.GetNextPoint()).Normalized;
             if (Velocity.x < 0) Display = ".::-";
             else Display = "-::.";
         }

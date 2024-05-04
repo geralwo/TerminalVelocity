@@ -1,4 +1,4 @@
-﻿
+
 namespace TerminalVelocity;
 public struct Vec2i
 {
@@ -155,7 +155,7 @@ public struct Vec2i
         {
             double magnitude = this.Magnitude();
             if (magnitude == 0) // Avoid division by zero
-                throw new InvalidOperationException("Cannot normalize a zero vector.");
+                return Vec2i.ZERO;
 
             // Normalize using floating-point arithmetic
             double normalizedX = x / magnitude;
@@ -282,7 +282,7 @@ public struct Vec2i
 
     public static Vec2i FromCKI(ConsoleKeyInfo dir)
     {
-        switch(dir.Key)
+        switch (dir.Key)
         {
             case ConsoleKey.UpArrow:
                 return Vec2i.UP;
