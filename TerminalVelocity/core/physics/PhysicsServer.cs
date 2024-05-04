@@ -72,32 +72,36 @@ public class PhysicsServer
     }
     public static void Step()
     {
-        int timer = Game.RunTime;
-        CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
-        var colDup = new List<PhysicsObject>(Instance.Colliders);
-        foreach (var obj in colDup)
+        lock (Instance)
         {
-            core.Debug.AddImportantEntry($"Going through {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
-            // in Step() we go through each object and insert it into the quad tree.
-            // we want to only check for collisions on objects that have a velocity != 0
-            core.Debug.AddImportantEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
-            var collisionShape = obj.CollisionShape;
-            for (int i = 0; i < collisionShape.Length; i++)
+            int timer = Game.RunTime;
+            CollisionTree = new QuadTree(Vec2i.ZERO, Game.Settings.Engine.WindowSize);
+            var colDup = new List<PhysicsObject>(Instance.Colliders);
+            foreach (var obj in colDup)
             {
-                var posInTree = obj.Position + collisionShape[i];
-                core.Debug.AddImportantEntry("Inserting Shape " + collisionShape[i] + " into " + posInTree, Instance);
-                CollisionTree.Insert(posInTree, obj);
+                if (obj == null) continue;
+                core.Debug.AddImportantEntry($"Going through {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
+                // in Step() we go through each object and insert it into the quad tree.
+                // we want to only check for collisions on objects that have a velocity != 0
+                core.Debug.AddImportantEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
+                var collisionShape = obj.CollisionShape;
+                for (int i = 0; i < collisionShape.Length; i++)
+                {
+                    var posInTree = obj.Position + collisionShape[i];
+                    core.Debug.AddImportantEntry("Inserting Shape " + collisionShape[i] + " into " + posInTree, Instance);
+                    CollisionTree.Insert(posInTree, obj);
+                }
             }
+            foreach (var obj in colDup)
+            {
+                obj.IsColliding = false;
+                if (obj.Velocity != Vec2i.ZERO)
+                    checkCollision(obj);
+                obj.Position += obj.Velocity;
+                obj.Velocity = obj.Velocity.StepToZero();
+            }
+            core.Debug.AddImportantEntry($"Step took {Game.RunTime - timer}µs", Instance);
         }
-        foreach (var obj in colDup)
-        {
-            obj.IsColliding = false;
-            if (obj.Velocity != Vec2i.ZERO)
-                checkCollision(obj);
-            obj.Position += obj.Velocity;
-            obj.Velocity = obj.Velocity.StepToZero();
-        }
-        core.Debug.AddImportantEntry($"Step took {Game.RunTime - timer}µs", Instance);
     }
 
     private static void checkCollision(PhysicsObject obj)
