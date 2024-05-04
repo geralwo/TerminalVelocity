@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using TerminalVelocity;
 
 public class GroundSlam<T> : PhysicsArea where T : ICreature
@@ -19,7 +18,7 @@ public class GroundSlam<T> : PhysicsArea where T : ICreature
             {
                 this.Dispose();
             }
-            if (timer.ElapsedMilliseconds % 50 < 15)
+            if (timer.ElapsedMilliseconds % 250 < 10)
             {
                 PhysicsServer.CheckCollision(this);
             }
@@ -28,7 +27,7 @@ public class GroundSlam<T> : PhysicsArea where T : ICreature
                 new Thread(() =>
                 {
                     BackgroundColor = ConsoleColor.Red;
-                    Thread.Sleep(133);
+                    Thread.Sleep(125);
                     if (flash)
                         flash = false;
                 }).Start();

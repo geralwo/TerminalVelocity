@@ -25,7 +25,22 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         }
     }
 
-    public int AD { get; set; } = 3;
+    public new string Display
+    {
+        get
+        {
+            if (Velocity.x < 0)
+                base.Display = ".::-";
+            else base.Display = "-::.";
+            return base.Display;
+        }
+        set
+        {
+            base.Display = value;
+        }
+    }
+
+    public int AD { get; set; } = 25;
 
     public string Name => throw new NotImplementedException();
 
@@ -35,7 +50,8 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
 
     public void Attack(ICreature target)
     {
-        target.TakeDamage(AD, out _);
+        target.TakeDamage(AD, out var _targetHP);
+        TerminalVelocity.core.Debug.Log($"Rat attacks {target.Name} => HP left:{_targetHP}", this);
     }
 
     public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
@@ -47,17 +63,19 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
 
     public void DefensiveMove(ref int number)
     {
-        throw new NotImplementedException();
+        next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
+        HP += 5;
+        MovementAbility();
     }
     Vec2i next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
     bool flip = false;
     public void MovementAbility()
     {
-        if (Game.RunTime % 500 < 15)
+        if (Game.RunTime.ElapsedMilliseconds % 500 < 15)
         {
             if (Position == next_goal_position)
                 next_goal_position = Vec2i.Random(Game.Settings.Engine.WindowSize);
-            Position += Position.StepToPosition(next_goal_position).Normalized;
+            Velocity = Position.DirectionTo(next_goal_position).Normalized;
 
         }
 
@@ -67,6 +85,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     {
         HP -= damage;
         hpLeft = HP;
+        DefensiveMove(ref hpLeft);
     }
 
     public void AttackWith(int slot, ICreature? target)

@@ -72,7 +72,7 @@ public class Debug
         if (currentLogLevel < requiredLevel) return; // Early exit if the logging level doesn't permit this entry
 
         var prefix = CreatePrefix(sender, suffix);
-        var entry = $"{DateTime.Now.ToLongTimeString()}: {prefix}{_entry}";
+        var entry = $"{DateTime.Now.ToFileTimeUtc()}: {prefix}{_entry}";
 
         lock (lockObject) // Ensure thread safety
         {
