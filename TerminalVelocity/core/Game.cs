@@ -62,6 +62,8 @@ public class Game
     {
         Console.CancelKeyPress += delegate
         {
+            Game.Quit = true;
+            Console.CursorVisible = true;
             Console.Clear();
         };
         TerminalVelocity.core.Debug.CurrentLogLevel = Game.LogLevel;
@@ -77,23 +79,20 @@ public class Game
     /// </summary>
     public void Run(Scene _startScene)
     {
+        RunTimeSW = System.Diagnostics.Stopwatch.StartNew();
         core.Debug.CurrentLogLevel = Game.LogLevel;
         Game.CurrentScene = _startScene;
-        RunTimeSW = new System.Diagnostics.Stopwatch();
-        RunTimeSW.Start();
         Input.StartInputListener();
         while (!Quit)
         {
-            new Thread(() =>
-            {
-                PhysicsServer.Step();
-                ProcessTick?.Invoke();
-            }).Start();
-            // ProcessTick?.Invoke();
-            render();
-
-            RunTime = (int)RunTimeSW.ElapsedMilliseconds;
-
+            PhysicsServer.Step();
+            // new Thread(() =>
+            // {
+            //     ProcessTick?.Invoke();
+            // }).Start();
+            ProcessTick?.Invoke();
+            RenderServer.DrawBuffer();
+            Game.RunTime = (int)RunTimeSW.ElapsedMilliseconds;
         }
         RunTimeSW.Stop();
         TerminalVelocity.core.Debug.PrintToFile();
@@ -190,10 +189,11 @@ public class Game
             str += $"{DateTime.Now}\n";
             str += $"total frames   : {Game.FrameCount}\n";
             str += $"total run time : {Game.RunTimeSW.ElapsedMilliseconds} ms\n";
-            str += $"average fps    : {Game.FrameCount / (Game.RunTimeSW.ElapsedMilliseconds / 1000)}\n";
+            str += $"average fps    : {Game.FrameCount / RunTimeSW.Elapsed.TotalMilliseconds * 1000}\n";
+            str += $"min frameTime :  {Game.Settings.Engine.MaxFps}ms\n";
             str += $"render items   : {RenderServer.Count()}\n";
             str += $"last frameTime : {RenderServer.FrameTimeInMicroseconds}µs\n";
-            str += $"window size    : {Game.Settings.Engine.WindowSize}\n";
+            str += $"window size    : {Game.Settings.Engine.WindowSize} => {Game.Settings.Engine.WindowSize.x + Game.Settings.Engine.WindowSize.y} Pixels\n";
             return str;
         }
     }

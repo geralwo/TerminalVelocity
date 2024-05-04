@@ -23,26 +23,27 @@ namespace TerminalVelocity
 
         public static RenderServer Instance => singleton.Value;
 
-        public static bool AddItem(SceneObject obj)
+        public static bool AddItem(SceneObject obj) => Instance.addItem(obj);
+
+        private bool addItem(SceneObject obj)
         {
             var instance = Instance;
-            lock (instance.registeredBufferLock)
+            lock (registeredBufferLock)
             {
-                if (instance.registered_buffer.Contains(obj))
+                if (registered_buffer.Contains(obj))
                 {
                     return false;
                 }
-                instance.registered_buffer.Add(obj);
+                registered_buffer.Add(obj);
                 return true;
             }
         }
 
-        public static bool RemoveItem(SceneObject obj)
+        private bool removeItem(SceneObject obj)
         {
-            var instance = Instance;
-            lock (instance.registeredBufferLock)
+            lock (registeredBufferLock)
             {
-                return instance.registered_buffer.Remove(obj);
+                return registered_buffer.Remove(obj);
             }
         }
 
@@ -62,15 +63,18 @@ namespace TerminalVelocity
 
         private Stopwatch? frameTime;
 
-        public static void DrawBuffer()
-        {
-            lock (Instance)
-            {
-                Instance.frame_completed = false;
-                Instance.frameTime = Stopwatch.StartNew();
-                Instance.Render();
+        public static void DrawBuffer() => Instance.drawBuffer();
 
-                foreach (var kvp in Instance.screenBuffer)
+        public void drawBuffer()
+        {
+            lock (registeredBufferLock)
+            {
+                frame_completed = false;
+                frameTime = Stopwatch.StartNew();
+                int timer = Game.RunTime;
+                Render();
+
+                foreach (var kvp in screenBuffer)
                 {
                     var screen_coord = kvp.Key;
                     var pixel = kvp.Value;
@@ -85,13 +89,14 @@ namespace TerminalVelocity
                     }
                 }
 
-                Instance.frameTime.Stop();
+                frameTime.Stop();
+                int _frameTime = Game.RunTime - timer;
                 Instance.frame_completed = true;
                 Game.FrameCount++;
-                var _frameTimePad = Game.Settings.Engine.MaxFps - Instance.frameTime.ElapsedMilliseconds;
-                if (Instance.frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
+                var _frameTimePad = Game.Settings.Engine.MaxFps - _frameTime;
+                if (frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
                     Thread.Sleep((int)_frameTimePad);
-                core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {Instance.frameTime.Elapsed.Microseconds}µs", Instance);
+                core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {frameTime.Elapsed.Microseconds}µs", Instance);
             }
         }
 

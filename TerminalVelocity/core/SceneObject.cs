@@ -1,4 +1,4 @@
-﻿namespace TerminalVelocity;
+namespace TerminalVelocity;
 public class SceneObject : IDisposable
 {
 
@@ -34,7 +34,7 @@ public class SceneObject : IDisposable
         set
         {
             process_enabled = value;
-            if (process_enabled)
+            if (process_enabled && Parent != null)
             {
                 Game.ProcessTick += OnProcess;
             }
@@ -266,7 +266,7 @@ public class SceneObject : IDisposable
         _child.ZIndex += this.ZIndex;
         _child.Visible = _child.Visible;
         // if (_child is PhysicsObject physicsObject)
-        //     _ = physicsObject.IsSolid; // call the getter to set collisionshape 
+        //     _ = physicsObject.IsSolid; // call the getter to set collisionshape
         Children.Add(_child);
         _child.OnStart();
         return true;
@@ -278,6 +278,7 @@ public class SceneObject : IDisposable
     {
         Children.ForEach(child => child.OnStart());
         Visible = Visible; // hack: else nothing is visible
+        ProcessEnabled = ProcessEnabled;
     }
 
     public bool RemoveChild(SceneObject _child)
@@ -317,9 +318,9 @@ public class SceneObject : IDisposable
     {
         if (this.id == _id)
             return this;
-        foreach(var _child in Children)
+        foreach (var _child in Children)
         {
-            if(_child.id == _id)
+            if (_child.id == _id)
                 return _child;
         }
         return Parent?.GetNodeById(_id);
@@ -331,11 +332,11 @@ public class SceneObject : IDisposable
     /// <returns>SceneObject or null</returns>
     public SceneObject? GetNodeByName(string _name)
     {
-        if (this.name == _name) 
+        if (this.name == _name)
             return this;
-        foreach(var _child in Children)
+        foreach (var _child in Children)
         {
-            if(_child.name == _name)
+            if (_child.name == _name)
                 return _child;
         }
         return Parent?.GetNodeByName(_name);
@@ -382,6 +383,19 @@ public class SceneObject : IDisposable
         center_y();
     }
 
+    public static string PrintTree(SceneObject node, int indentLevel = 0)
+    {
+        // Indentation based on the level in the tree
+        string indent = new string(' ', indentLevel * 2); // 2 spaces per level
+        string result = $"{indent}- {node.name}\n";
+
+        // Recursively print all children with incremented indent
+        foreach (var child in node.Children)
+        {
+            result += PrintTree(child, indentLevel + 1); // Recursive call with increased indent
+        }
+        return result;
+    }
     public void Dispose()
     {
         Dispose(true);
