@@ -2,7 +2,7 @@ namespace TerminalVelocity;
 public class PhysicsServer
 {
     public static event OnCollision? OnCollisionEvent;
-    public delegate void OnCollision(PhysicsObject collider);
+    public delegate void OnCollision(CollisionInfo colInfo);
     private static PhysicsServer singleton = new PhysicsServer();
     private List<PhysicsObject> Colliders = new List<PhysicsObject>();
     private static QuadTree CollisionTree = new QuadTree();
@@ -94,9 +94,7 @@ public class PhysicsServer
         // Keep track of points that have already been queried
         var queriedPositions = new HashSet<Vec2i>();
         var newPosition = obj.Position + obj.Velocity;
-        CollisionInfo colinfo = new CollisionInfo();
-        //obj.BackgroundColor = ConsoleColor.Blue;
-        colinfo.colliders.Add(obj);
+
         foreach (Vec2i shapeOffset in obj.CollisionShape)
         {
             var positionToCheck = shapeOffset + newPosition;
@@ -115,6 +113,8 @@ public class PhysicsServer
                         if (collider.id != obj.id)
                         {
                             if (obj.CollisionIgnoreFilter.Contains(collider.name)) continue;
+                            CollisionInfo colinfo = new CollisionInfo();
+                            colinfo.colliders.Add(obj);
                             var ignoreNames = obj.CollisionIgnoreFilter.Where(x => true);
                             core.Debug.AddImportantEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} [{string.Join(", ", ignoreNames)}] collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
                             colinfo.colliders.Add(collider);
@@ -124,8 +124,8 @@ public class PhysicsServer
                                 obj.IsColliding = true;
                                 collider.IsColliding = true;
                             }
-                            obj.OnCollision(colinfo);
-                            collider.OnCollision(colinfo);
+                            obj.CollisionAction?.Invoke();
+                            collider.CollisionAction?.Invoke();
                             if (obj is not PhysicsArea)
                                 break; // No need to continue if collision is detected
                         }
