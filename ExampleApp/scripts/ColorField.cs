@@ -8,16 +8,15 @@ public class ColorField : PhysicsArea
         Display = " ";
         Position = _position;
         name = _color.ToString();
-    }
-
-    public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
-    {
-        collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj =>
+        CollisionAction += (CollisionInfo collisionInfo) =>
         {
-            obj.CollisionIgnoreFilter.Clear();
-            obj.BackgroundColor = this.BackgroundColor;
-            obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
-            obj.Color = ConsoleColor.Black;
-        });
+            collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj =>
+            {
+                obj.CollisionIgnoreFilter.Clear();
+                obj.BackgroundColor = this.BackgroundColor;
+                obj.CollisionIgnoreFilter.Add(this.BackgroundColor.ToString());
+                obj.Color = ConsoleColor.Black;
+            });
+        };
     }
 }

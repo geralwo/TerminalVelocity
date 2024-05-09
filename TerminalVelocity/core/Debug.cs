@@ -122,7 +122,7 @@ public class Debug
         }
     }
 
-    public static void Log(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Game, "App");
+    public static void Log(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Game, " x ");
     public static void AddDebugEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Everything, "   ");
     public static void AddImportantEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Important, " ! ");
     public static void AddErrorEntry(string _entry, object sender) => Instance.AddEntry(_entry, sender, LogLevel.Error, "!!!");

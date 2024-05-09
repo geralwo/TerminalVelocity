@@ -1,11 +1,11 @@
-﻿namespace TerminalVelocity;
+namespace TerminalVelocity;
 
 public class PhysicsObject : SceneObject
 {
     /// <summary>
     /// A function tha gets executed when a collision happens
     /// </summary>
-    public Action? CollisionAction;
+    public Action<CollisionInfo>? CollisionAction;
     /// <summary>
     /// Objects on the same layer collide - not implemented
     /// </summary>
@@ -102,8 +102,4 @@ public class PhysicsObject : SceneObject
     /// PhysicsServer.CollisionInfo is a struct containing the objects involved in the collision
     /// </summary>
     /// <param name="collisionInfo"></param>
-    public virtual void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
-    {
-        CollisionAction?.Invoke();
-    }
 }

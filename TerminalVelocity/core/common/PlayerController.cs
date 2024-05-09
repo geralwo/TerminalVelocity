@@ -1,8 +1,8 @@
-using TerminalVelocity;
-public class Player : PhysicsObject
+namespace TerminalVelocity;
+public partial class PlayerController : PhysicsObject
 {
     int playerSpeed = 1;
-    public Player(Vec2i _pos, string _display)
+    public PlayerController(Vec2i _pos, string _display)
     {
         Position = _pos;
         Display = _display;
@@ -11,7 +11,8 @@ public class Player : PhysicsObject
         name = "player";
     }
 
-    public override void OnInput(ConsoleKey key)
+    public new partial void OnInput(ConsoleKey key);
+    public new partial void OnInput(ConsoleKey key)
     {
         switch (key)
         {
@@ -30,9 +31,6 @@ public class Player : PhysicsObject
             case ConsoleKey.RightArrow:
                 if (this.Velocity == Vec2i.ZERO)
                     Velocity = Vec2i.RIGHT * playerSpeed;
-                break;
-            case ConsoleKey.T:
-                this.Position = Vec2i.ONE * 5;
                 break;
         }
     }

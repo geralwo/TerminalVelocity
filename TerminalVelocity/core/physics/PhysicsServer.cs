@@ -124,8 +124,8 @@ public class PhysicsServer
                                 obj.IsColliding = true;
                                 collider.IsColliding = true;
                             }
-                            obj.CollisionAction?.Invoke();
-                            collider.CollisionAction?.Invoke();
+                            obj.CollisionAction?.Invoke(colinfo);
+                            collider.CollisionAction?.Invoke(colinfo);
                             if (obj is not PhysicsArea)
                                 break; // No need to continue if collision is detected
                         }
@@ -173,8 +173,8 @@ public class PhysicsServer
                                 obj.IsColliding = true;
                                 collider.IsColliding = true;
                             }
-                            obj.OnCollision(colinfo);
-                            collider.OnCollision(colinfo);
+                            obj.CollisionAction?.Invoke(colinfo);
+                            collider.CollisionAction?.Invoke(colinfo);
                             if (obj is not PhysicsArea)
                                 break; // No need to continue if collision is detected
                         }
@@ -198,18 +198,6 @@ public class PhysicsServer
         result = colResult;
     }
 
-    public struct CollisionInfo
-    {
-        // CollisionInfo holds all the objects and information about the collision
-        public bool is_valid = true;
-
-        public List<PhysicsObject> colliders = new List<PhysicsObject>();
-
-        public CollisionInfo()
-        {
-        }
-    }
-
     private static SceneObject? quadTreeVisuals;
     public static void ToggleQuadTreeVisuals()
     {
@@ -221,5 +209,4 @@ public class PhysicsServer
             quadTreeVisuals = null;
         }
     }
-
 }

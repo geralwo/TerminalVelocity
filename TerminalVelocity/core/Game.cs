@@ -61,6 +61,7 @@ public class Game
     public Game()
     {
         root.Visible = false;
+        current_scene = new Scene("default Scene") { InputEnabled = true };
     }
     /// <summary>
     /// Main Game loop <br />
@@ -90,8 +91,8 @@ public class Game
     /// </summary>
     private static void _finished()
     {
-        Console.Clear(); // when we quit be nice and clear screen
         Console.CursorVisible = true;
+        Console.Clear(); // when we quit be nice and clear screen
     }
     /// <summary>
     /// Calls RenderServer.DrawBuffer, adds one to the frame count and sleeps for an amount of milliseconds to limit FPS

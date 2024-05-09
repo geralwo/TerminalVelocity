@@ -1,4 +1,4 @@
-﻿namespace TerminalVelocity;
+namespace TerminalVelocity;
 public class SceneObject : IDisposable
 {
 
@@ -192,7 +192,7 @@ public class SceneObject : IDisposable
     /// </summary>
     public List<SceneObject> Children = new List<SceneObject>();
 
-    public bool GlobalPosition = false;
+    public bool TopLevel = false;
     private Vec2i position = Vec2i.ZERO;
     /// <summary>
     /// Represents the global position
@@ -204,9 +204,28 @@ public class SceneObject : IDisposable
         {
             Vec2i offset = position - value;
             position = value;
-            Children.Where(child => !child.GlobalPosition).ToList().ForEach(child => child.Position -= offset);
+            Children.Where(child => !child.TopLevel).ToList().ForEach(child => child.Position -= offset);
         }
     }
+
+    public Vec2i GlobalPosition
+    {
+        get => GetGlobalPosition();
+    }
+
+    private Vec2i GetGlobalPosition()
+    {
+        var globalPosition = Vec2i.ZERO;
+        globalPosition += this.Position;
+        var currentParent = Parent;
+        while (currentParent != null)
+        {
+            globalPosition += currentParent.Position;
+            currentParent = currentParent.Parent;
+        }
+        return globalPosition;
+    }
+
     public SceneObject()
     {
         InputEnabled = false;
@@ -266,7 +285,7 @@ public class SceneObject : IDisposable
         _child.ZIndex += this.ZIndex;
         _child.Visible = _child.Visible;
         // if (_child is PhysicsObject physicsObject)
-        //     _ = physicsObject.IsSolid; // call the getter to set collisionshape 
+        //     _ = physicsObject.IsSolid; // call the getter to set collisionshape
         Children.Add(_child);
         _child.OnStart();
         return true;
@@ -317,9 +336,9 @@ public class SceneObject : IDisposable
     {
         if (this.id == _id)
             return this;
-        foreach(var _child in Children)
+        foreach (var _child in Children)
         {
-            if(_child.id == _id)
+            if (_child.id == _id)
                 return _child;
         }
         return Parent?.GetNodeById(_id);
@@ -331,11 +350,11 @@ public class SceneObject : IDisposable
     /// <returns>SceneObject or null</returns>
     public SceneObject? GetNodeByName(string _name)
     {
-        if (this.name == _name) 
+        if (this.name == _name)
             return this;
-        foreach(var _child in Children)
+        foreach (var _child in Children)
         {
-            if(_child.name == _name)
+            if (_child.name == _name)
                 return _child;
         }
         return Parent?.GetNodeByName(_name);
