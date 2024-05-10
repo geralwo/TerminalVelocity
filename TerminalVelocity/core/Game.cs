@@ -38,7 +38,7 @@ public class Game
             {
                 current_scene.unload();
                 root.RemoveChild(current_scene);
-                RenderServer.ClearScene();
+                RenderServer.Instance.clearScene();
                 GC.Collect();
             }
             current_scene = value;
