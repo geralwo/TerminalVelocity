@@ -10,7 +10,7 @@ public class ColorField : PhysicsArea
         name = _color.ToString();
         CollisionAction += (CollisionInfo collisionInfo) =>
         {
-            collisionInfo.colliders.FindAll(obj => obj != this).ForEach(obj =>
+            collisionInfo.Colliders.FindAll(obj => obj != this).ForEach(obj =>
             {
                 obj.CollisionIgnoreFilter.Clear();
                 obj.BackgroundColor = this.BackgroundColor;

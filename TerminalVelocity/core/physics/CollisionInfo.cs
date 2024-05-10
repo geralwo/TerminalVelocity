@@ -1,10 +1,12 @@
 namespace TerminalVelocity;
+/// <summary>
+/// Holds information about the objects that collided (excludes self)
+/// Members:<br />
+/// - Colliders List<PhysicsObject><br/>
+/// </summary>
 public struct CollisionInfo
 {
-    // CollisionInfo holds all the objects and information about the collision
-    public bool is_valid = true;
-
-    public List<PhysicsObject> colliders = new List<PhysicsObject>();
+    public List<PhysicsObject> Colliders = new List<PhysicsObject>();
 
     public CollisionInfo()
     {

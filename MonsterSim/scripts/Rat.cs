@@ -9,6 +9,8 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         Display = _icon;
         ProcessEnabled = true;
         name = "rat";
+        CollisionAction += OnCollision;
+        next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
     }
     int hp = 33;
     public int HP
@@ -27,7 +29,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
 
     public int AD { get; set; } = 25;
 
-    public string Name => throw new NotImplementedException();
+    public string Name => name;
 
     Guid ICreature.id => throw new NotImplementedException();
 
@@ -36,12 +38,12 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void Attack(ICreature target)
     {
         target.TakeDamage(AD, out var _targetHP);
-        TerminalVelocity.core.Debug.Log($"Rat attacks {target} => HP left:{_targetHP}", this);
+        TerminalVelocity.core.Debug.Log($"{this.name} attacks {target.Name}.HP -> {_targetHP}", this);
     }
 
-    public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
+    private void OnCollision(CollisionInfo collisionInfo)
     {
-        var target = collisionInfo.colliders.Where(collider => collider.id != this.id)?.First() as ICreature;
+        var target = collisionInfo.Colliders.Where(collider => collider.id != this.id)?.First() as ICreature;
         if (target != null)
             Attack(target);
     }
@@ -49,6 +51,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public override void OnStart()
     {
         next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
+        base.OnStart();
     }
 
     public void DefensiveMove(ref int number)
@@ -61,14 +64,14 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void MovementAbility()
     {
 
-        if (Game.RunTime.ElapsedMilliseconds % 500 < 15)
-        {
-            if (Position == next_goal_position.End)
-                next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
-            Velocity = Position.DirectionTo(next_goal_position.GetNextPoint()).Normalized;
-            if (Velocity.x < 0) Display = ".::-";
-            else Display = "-::.";
-        }
+        // if (Game.RunTime.ElapsedMilliseconds % 500 < 15)
+        // {
+        if (Position == next_goal_position.End)
+            next_goal_position = new Path2D(Position, Vec2i.Random(Game.Settings.Engine.WindowSize));
+        Velocity = Position.DirectionTo(next_goal_position.GetNextPoint()).Normalized;
+        if (Velocity.x < 0) Display = ".::-";
+        else Display = "-::.";
+        // }
 
     }
 

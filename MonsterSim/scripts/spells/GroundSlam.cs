@@ -18,10 +18,6 @@ public class GroundSlam<T> : PhysicsArea where T : ICreature
             {
                 this.Dispose();
             }
-            if (timer.ElapsedMilliseconds % 250 < 10)
-            {
-                PhysicsServer.CheckCollision(this);
-            }
             if (flash)
             {
                 new Thread(() =>
@@ -48,16 +44,17 @@ public class GroundSlam<T> : PhysicsArea where T : ICreature
         EffectLocation = center;
         EffectSize = radius;
         Creator = creator;
+        CollisionAction += OnCollision;
     }
 
-    public override void OnCollision(PhysicsServer.CollisionInfo collisionInfo)
+    private void OnCollision(CollisionInfo collisionInfo)
     {
-        foreach (PhysicsObject collision in collisionInfo.colliders.Where(x => x.id != this.id && x.id != Creator.id))
+        foreach (PhysicsObject collision in collisionInfo.Colliders.Where(x => x.id != this.id && x.id != Creator.id))
         {
             if (collision is ICreature attackble)
             {
                 attackble.TakeDamage((int)(Creator.AD * 0.3), out _);
-                TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {this.name}", Creator);
+                TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {Creator.Name} by {this.name}", Creator);
             }
         }
     }

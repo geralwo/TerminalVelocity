@@ -1,7 +1,5 @@
-using System;
-using Microsoft.VisualBasic;
 using TerminalVelocity;
-public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, ICreature
+public class Player<T> where T : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility, ICreature
 {
     public T Character { get; private set; } // aka RigidBody
     int playerSpeed = 1;
@@ -24,14 +22,17 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
         Character.ProcessAction += OnProcess;
         Character.ZIndex = 10;
         Input.KeyPressed += OnInput;
+        Character.OnStartAction = OnStart;
     }
 
     void OnProcess()
     {
-        if (Character.HP < 0)
-        {
-            Dispose();
-        }
+        return;
+    }
+
+    void OnStart()
+    {
+        Character.get_root().CustomData.Add("playerGUID", Character.id);
     }
 
     void OnInput(ConsoleKey key)
@@ -79,9 +80,5 @@ public class Player<T> : IDisposable where T : PhysicsObject, IAttackMove, IDefe
                 PhysicsServer.ToggleQuadTreeVisuals();
                 break;
         }
-    }
-    public void Dispose()
-    {
-        Character.Dispose();
     }
 }

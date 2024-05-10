@@ -36,7 +36,7 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
         Attacks.Add(() =>
         {
             var dir = Console.ReadKey(true);
-            new Projectile(Position, Position + Vec2i.FromCKI(dir) * 100, this);
+            new FireBall<Ork>(Position, Vec2i.FromCKI(dir), this);
         });
     }
     int AttackActionIndex = 0;
@@ -64,6 +64,8 @@ public class Ork : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void TakeDamage(int damage, out int hpLeft)
     {
         DefensiveMove(ref damage);
+        if (HP < 0)
+            Dispose();
         HP -= damage;
         hpLeft = HP;
     }

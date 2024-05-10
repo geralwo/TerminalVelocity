@@ -226,6 +226,10 @@ public class SceneObject : IDisposable
         return globalPosition;
     }
 
+    public Dictionary<string, object> CustomData = new Dictionary<string, object>();
+
+    public Action? OnStartAction;
+
     public SceneObject()
     {
         InputEnabled = false;
@@ -295,6 +299,7 @@ public class SceneObject : IDisposable
     /// </summary>
     public virtual void OnStart()
     {
+        OnStartAction?.Invoke();
         Children.ForEach(child => child.OnStart());
         Visible = Visible; // hack: else nothing is visible
     }

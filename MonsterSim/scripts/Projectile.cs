@@ -9,6 +9,7 @@ public class Projectile<T> : PhysicsArea where T : SceneObject
     public Vec2i Direction;
     private IEnumerator<Vec2i> currentPathIndex;
     int MoveTimer = 500;
+    int LifeTime = 1;
     public Projectile(Vec2i _startPosition, Vec2i _direction, T _owner, int _speed = 500) : base(_startPosition, Vec2i.ONE)
     {
         MoveTimer = _speed;
@@ -22,14 +23,17 @@ public class Projectile<T> : PhysicsArea where T : SceneObject
         TopLevel = true;
         ProcessAction += () =>
         {
+            if (Game.RunTime.ElapsedMilliseconds % 777 == 0)
+                Dispose();
             if (Game.RunTime.ElapsedMilliseconds % MoveTimer == 0)
                 currentPathIndex.MoveNext();
-            Velocity = Direction;
+            if (!IsColliding)
+                Velocity = Direction;
         };
-        CollisionAction += (CollisionInfo c) =>
-        {
-            TerminalVelocity.core.Debug.Log($"{this.name} collided with {c.Colliders[0].name}", this);
-        };
+        // CollisionAction += (CollisionInfo c) =>
+        // {
+        //     TerminalVelocity.core.Debug.Log($"{this.name} collided with {c.Colliders[0].name}", this);
+        // };
         currentPathIndex.MoveNext();
     }
 }
