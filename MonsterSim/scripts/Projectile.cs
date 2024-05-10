@@ -1,58 +1,35 @@
-using System.Buffers;
-using System.Diagnostics;
 using TerminalVelocity;
-
-public class Projectile : PhysicsArea, IProjectile
+public class Projectile<T> : PhysicsArea where T : SceneObject
 {
-    public int lifeTimeInSeconds = 2;
-    public Vec2i[] TargetPositions;
-    private Vec2i TargetPosition;
-    
-    private SceneObject Owner;
 
-    public Projectile(Vec2i _startPosition,Vec2i _targetPosition, SceneObject _owner, int _speed = 1, string _display=".") : base(_startPosition,Vec2i.ONE)
+    public T Owner;
+    public Vec2i TargetPosition;
+    public List<Vec2i> PathPoints;
+    public Vec2i ProjectileSpeed;
+    public Vec2i Direction;
+    private IEnumerator<Vec2i> currentPathIndex;
+    int MoveTimer = 500;
+    public Projectile(Vec2i _startPosition, Vec2i _direction, T _owner, int _speed = 500) : base(_startPosition, Vec2i.ONE)
     {
+        MoveTimer = _speed;
         Owner = _owner;
-        Display = _display;
+        Direction = _direction;
         Position = _startPosition;
-        Velocity = Position.DirectionTo(_targetPosition);
-        TargetPositions = Vec2i.GetLine(Position,_targetPosition).ToArray();
-        TargetPosition = _targetPosition;
+        PathPoints = Vec2i.GetLine(Position, Position + _direction);
+        currentPathIndex = PathPoints.AsEnumerable().GetEnumerator();
+        BackgroundColor = ConsoleColor.Cyan;
         ProcessEnabled = true;
-        Stopwatch timer = new Stopwatch();
-        // Create an enumerator to iterate through the list
-        var _iterator = TargetPositions.GetEnumerator();
-
-        // Move to the first item
-        if (_iterator.MoveNext())
-        {
-            Position = (Vec2i)_iterator.Current;
-        }
+        TopLevel = true;
         ProcessAction += () =>
         {
-            //if(Position == TargetPosition) Dispose();
-            if(timer.ElapsedMilliseconds > lifeTimeInSeconds * 1000)
-            {
-                Dispose();
-            }
-            if (_iterator.MoveNext())
-            {
-                Position = (Vec2i)_iterator.Current;
-            }
+            if (Game.RunTime.ElapsedMilliseconds % MoveTimer == 0)
+                currentPathIndex.MoveNext();
+            Velocity = Direction;
         };
-        timer.Start();
+        CollisionAction += (CollisionInfo c) =>
+        {
+            TerminalVelocity.core.Debug.Log($"{this.name} collided with {c.Colliders[0].name}", this);
+        };
+        currentPathIndex.MoveNext();
     }
-
-    public override void OnCollision(PhysicsServer.CollisionInfo collision)
-    {
-
-    }
-
-    public Vec2i Direction => Position.DirectionTo(TargetPosition);
-
-    List<string> IProjectile.CollisionIgnoreFilter => new List<string>();
-
-    public Guid ProjectileOwner => throw new NotImplementedException();
-
-    SceneObject IProjectile.ProjectileOwner => Owner;
 }
