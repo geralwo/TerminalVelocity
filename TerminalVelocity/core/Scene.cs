@@ -7,12 +7,12 @@ public class Scene : SceneObject
 		name = _name;
 		Visible = false;
 	}
-    public override void OnInput(ConsoleKey key)
-    {
-        if (key == ConsoleKey.Escape)
+	public override void OnInput(ConsoleKey key)
+	{
+		if (key == ConsoleKey.Escape)
 			Game.Quit = true;
-    }
-    public virtual void unload()
+	}
+	public virtual void unload()
 	{
 		Console.Clear();
 	}
