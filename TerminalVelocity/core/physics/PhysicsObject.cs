@@ -65,14 +65,20 @@ public class PhysicsObject : SceneObject
     public bool IsColliding = false;
     public PhysicsObject()
     {
-        IsSolid = solid;
-        CreateCollisionShape();
     }
 
 
     public PhysicsObject(Vec2i _position) : this()
     {
         Position = _position;
+    }
+
+
+    public override void OnStart()
+    {
+        CreateCollisionShape();
+        IsSolid = solid;
+        base.OnStart();
     }
     /// <summary>
     /// Creates an Vec2i Array of offsets that represent the shape of the object
