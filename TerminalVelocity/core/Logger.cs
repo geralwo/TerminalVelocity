@@ -1,9 +1,8 @@
-namespace TerminalVelocity.core;
-using TerminalVelocity;
-public class Debug
+namespace TerminalVelocity.common;
+public class Logger
 {
-    private static readonly Debug instance = new Debug("Engine.log");
-    public static Debug Instance => instance;
+    private static readonly Logger instance = new Logger("Engine.log");
+    public static Logger Instance => instance;
 
     private readonly object lockObject = new object(); // For thread safety
     private readonly LinkedList<string> debugEntries = new LinkedList<string>(); // Maintains insertion order
@@ -13,11 +12,11 @@ public class Debug
     public LogLevel currentLogLevel = LogLevel.Game; // Default to logging game logs
 
 
-    private Debug(string _filename)
+    private Logger(string _filename)
     {
         FileName = _filename;
     }
-    public Debug(LogLevel _logLevel, string _filename)
+    public Logger(LogLevel _logLevel, string _filename)
     {
         currentLogLevel = _logLevel;
         FileName = _filename;

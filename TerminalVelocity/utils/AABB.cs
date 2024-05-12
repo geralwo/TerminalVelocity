@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Runtime.CompilerServices;
 
 namespace TerminalVelocity;
 
@@ -43,11 +42,11 @@ public struct AABB : IEnumerable<Vec2i>
                _pos.y >= Position.y && _pos.y <= End.y;
     }
 
-    public bool Contains(AABB _aabb)
-    {
-        return _aabb.Position.x >= Position.x && _aabb.End.x <= End.x &&
-               _aabb.Position.y >= Position.y && _aabb.End.y <= End.y;
-    }
+    // public bool Contains(AABB _aabb)
+    // {
+    //     return _aabb.Position.x >= Position.x && _aabb.End.x <= End.x &&
+    //            _aabb.Position.y >= Position.y && _aabb.End.y <= End.y;
+    // }
 
     public SceneObject GetVisual(int z = 0)
     {

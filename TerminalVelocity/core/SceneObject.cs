@@ -294,6 +294,21 @@ public class SceneObject : IDisposable
         _child.OnStart();
         return true;
     }
+    public virtual bool AddChildren(SceneObject[] _childs)
+    {
+        foreach (SceneObject _child in _childs)
+        {
+            _child.Parent = this;
+            _child.Position += this.position;
+            _child.ZIndex += this.ZIndex;
+            _child.Visible = _child.Visible;
+            // if (_child is PhysicsObject physicsObject)
+            //     _ = physicsObject.IsSolid; // call the getter to set collisionshape
+            Children.Add(_child);
+            _child.OnStart();
+        }
+        return true;
+    }
     /// <summary>
     /// OnStart() gets executed when an object is added to a parent object (SceneObject, Scene)
     /// </summary>
@@ -320,7 +335,7 @@ public class SceneObject : IDisposable
     /// <summary>
     /// Returns the root Scene
     /// </summary>
-    /// <returns>SceneObject scene_object</returns>
+    /// <returns>SceneObject root</returns>
     public SceneObject get_root()
     {
         if (this.Parent == null)

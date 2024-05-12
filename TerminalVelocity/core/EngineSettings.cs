@@ -6,9 +6,9 @@ public class EngineSettings
     public long MaxFps = 1000 / 120;
     public LogLevel LogLevel = LogLevel.Game;
 
-    public EngineSettings() 
+    public EngineSettings()
     {
-        if(System.OperatingSystem.IsWindows())
+        if (System.OperatingSystem.IsWindows())
         {
             WindowSize -= 1;
         }

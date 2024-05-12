@@ -7,9 +7,9 @@ public class QuadTreeTest : Scene
     private QuadTree qt;
 
     private SceneObject qt_vis;
-    
-    SceneObject cursor = new SceneObject(Vec2i.ZERO,"x");
-    
+
+    SceneObject cursor = new SceneObject(Vec2i.ZERO, "x");
+
     public QuadTreeTest(string _name = "QuadTreeTest") : base(_name)
     {
         cursor.ZIndex = 10;
@@ -20,10 +20,10 @@ public class QuadTreeTest : Scene
         AddChild(cursor);
         cursor.center_xy();
     }
-    
+
     public override void OnInput(ConsoleKey key)
     {
-        switch(key)
+        switch (key)
         {
             case ConsoleKey.UpArrow:
                 cursor.Position += Vec2i.UP;
@@ -40,7 +40,7 @@ public class QuadTreeTest : Scene
             case ConsoleKey.Enter:
                 PhysicsObject n = new PhysicsObject(cursor.Position);
                 n.Color = Game.GetRandomConsoleColor();
-                if(qt.Insert(n.Position,n))
+                if (qt.Insert(n.Position, n))
                 {
                     RemoveChild(qt_vis);
                     AddChild(n);

@@ -1,6 +1,6 @@
 using TerminalVelocity;
 Game g = new Game();
-Game.LogLevel = LogLevel.Important;
+Game.LogLevel = LogLevel.Game;
 g.Run(new RenderTestMenu());
 Game.PrintEngineStats();
 string path = Directory.GetCurrentDirectory();

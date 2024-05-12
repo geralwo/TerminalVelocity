@@ -20,7 +20,7 @@ namespace TerminalVelocity
 
         private static bool _isRunning;
         private static Thread? _inputThread;
-        
+
         static Input()
         {
             StartInputListener();

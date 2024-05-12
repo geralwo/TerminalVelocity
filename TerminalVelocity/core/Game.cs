@@ -72,7 +72,7 @@ public class Game
     public void Run(Scene _startScene)
     {
         _init_console();
-        core.Debug.CurrentLogLevel = Game.LogLevel;
+        common.Logger.CurrentLogLevel = Game.LogLevel;
         Game.CurrentScene = _startScene;
         RunTime.Start();
         Input.StartInputListener();
@@ -80,10 +80,11 @@ public class Game
         {
             PhysicsServer.Step();
             ProcessTick?.Invoke();
-            RenderServer.DrawBuffer();
+            if (RenderServer.IsReady)
+                RenderServer.DrawBuffer();
         }
         RunTime.Stop();
-        TerminalVelocity.core.Debug.PrintToFile();
+        TerminalVelocity.common.Logger.PrintToFile();
         _finished();
     }
     /// <summary>

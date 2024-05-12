@@ -8,7 +8,7 @@ public class PhysicsArea : PhysicsObject
         get => GetShiftedLocalAreaCoordinates();
     }
 
-    // public override string Display { 
+    // public override string Display {
     //     get
     //     {
     //         string str = "";
@@ -21,17 +21,17 @@ public class PhysicsArea : PhysicsObject
     //             str += "\n";
     //         }
     //         return str;
-    //     } 
+    //     }
     // }
     public PhysicsArea(Vec2i _position, Vec2i _size)
     {
-        IsSolid     = false;
-        Display     = " ";
+        IsSolid = false;
+        Display = " ";
         BackgroundColor = ConsoleColor.Magenta;
-        Position    = _position;
-        if(_size == Vec2i.ZERO)
+        Position = _position;
+        if (_size == Vec2i.ZERO)
             _size = Vec2i.ONE;
-        Area        = new AABB(Position, _size);
+        Area = new AABB(Position, _size);
         PhysicsServer.AddCollider(this);
     }
 
@@ -42,7 +42,7 @@ public class PhysicsArea : PhysicsObject
         {
             for (int y = 0; y < Area.Size.y; y++)
             {
-                coords.Add(new Vec2i(x-Area.Size.x / 2, y-Area.Size.y / 2));
+                coords.Add(new Vec2i(x - Area.Size.x / 2, y - Area.Size.y / 2));
             }
         }
         return coords.ToArray();

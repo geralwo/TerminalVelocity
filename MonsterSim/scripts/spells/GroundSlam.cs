@@ -54,7 +54,7 @@ public class GroundSlam<T> : PhysicsArea where T : ICreature
             if (collision is ICreature attackble)
             {
                 attackble.TakeDamage((int)(Creator.AD * 0.3), out _);
-                TerminalVelocity.core.Debug.Log($"{collision.name} takes dmg from {Creator.Name} by {this.name}", Creator);
+                TerminalVelocity.common.Logger.Log($"{collision.name} takes dmg from {Creator.Name} by {this.name}", Creator);
             }
         }
     }

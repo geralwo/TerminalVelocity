@@ -10,13 +10,12 @@ namespace TerminalVelocity
         /// <summary>
         /// This is the screen buffer that gets drawn to the terminal
         /// </summary>
-        private ConcurrentDictionary<Vec2i, Pixel> screenBuffer = new();
+        private Dictionary<Vec2i, Pixel> screenBuffer = new();
 
         /// <summary>
         /// This is the buffer containing objects to render
         /// </summary>
         private List<SceneObject> registered_buffer = new();
-
         private RenderServer() { }
 
         public static RenderServer Instance => singleton.Value;
@@ -24,18 +23,24 @@ namespace TerminalVelocity
         public static bool AddItem(SceneObject item) => Instance.addItem(item);
         private bool addItem(SceneObject obj)
         {
-            if (registered_buffer.Contains(obj))
+            lock (registered_buffer)
             {
-                return false;
+                if (registered_buffer.Contains(obj))
+                {
+                    return false;
+                }
+                registered_buffer.Add(obj);
+                return true;
             }
-            registered_buffer.Add(obj);
-            return true;
         }
 
         public static bool RemoveItem(SceneObject obj)
         {
             var instance = Instance;
-            return instance.registered_buffer.Remove(obj);
+            lock (instance.registered_buffer)
+            {
+                return instance.registered_buffer.Remove(obj);
+            }
         }
 
         public static int Count()
@@ -59,6 +64,7 @@ namespace TerminalVelocity
             Instance.frame_completed = false;
             Instance.frameTime = Stopwatch.StartNew();
 
+            Instance.Render();
             foreach (var kvp in Instance.screenBuffer)
             {
                 var screen_coord = kvp.Key;
@@ -73,78 +79,81 @@ namespace TerminalVelocity
                     Console.ResetColor();
                 }
             }
-            Instance.Render();
             Instance.frameTime.Stop();
             Instance.frame_completed = true;
             Game.FrameCount++;
             var _frameTimePad = Game.Settings.Engine.MaxFps - Instance.frameTime.ElapsedMilliseconds;
             if (Instance.frameTime.ElapsedMilliseconds < Game.Settings.Engine.MaxFps)
                 Thread.Sleep((int)_frameTimePad);
-            core.Debug.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {Instance.frameTime.Elapsed.Microseconds}µs", Instance);
+            common.Logger.AddImportantEntry($"Frame {Game.FrameCount} completed FrameTime: {Instance.frameTime.Elapsed.Microseconds}µs", Instance);
         }
 
         private void Render()
         {
-            var new_screenBuffer = new ConcurrentDictionary<Vec2i, Pixel>();
-
-            var rBufferCopy = new List<SceneObject>(registered_buffer);
-
-            foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
+            lock (registered_buffer)
             {
-                if (obj is PhysicsArea area)
+
+                var new_screenBuffer = new Dictionary<Vec2i, Pixel>();
+
+                var rBufferCopy = new List<SceneObject>(registered_buffer);
+
+                foreach (var obj in rBufferCopy.Where(obj => obj.Visible && obj.Position.IsInBoundsOf(Game.Settings.Engine.WindowSize)))
                 {
-                    var p = new Pixel(area.Display[0], obj);
-
-                    foreach (var local_coord in area.CollisionShape)
+                    if (obj is PhysicsArea area)
                     {
-                        var screenPosition = obj.Position + local_coord;
+                        var p = new Pixel(area.Display[0], obj);
 
-                        if (!screenPosition.IsInBoundsOf(Game.Settings.Engine.WindowSize)) continue;
-
-                        if (!new_screenBuffer.TryAdd(screenPosition, p))
+                        foreach (var local_coord in area.CollisionShape)
                         {
-                            if (obj.ZIndex > new_screenBuffer[screenPosition].ZIndex)
+                            var screenPosition = obj.Position + local_coord;
+
+                            if (!screenPosition.IsInBoundsOf(Game.Settings.Engine.WindowSize)) continue;
+
+                            if (!new_screenBuffer.TryAdd(screenPosition, p))
                             {
-                                new_screenBuffer[screenPosition] = p;
+                                if (p != new_screenBuffer[screenPosition] && obj.ZIndex > new_screenBuffer[screenPosition].ZIndex)
+                                {
+                                    new_screenBuffer[screenPosition] = p;
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < obj.Display.Length; i++)
+                    {
+                        var screen_coord = obj.Position + Vec2i.RIGHT * i;
+                        var pixel = new Pixel(obj.Display[i], obj);
+
+                        if (!new_screenBuffer.TryAdd(screen_coord, pixel))
+                        {
+                            if (pixel != new_screenBuffer[screen_coord] && pixel.ZIndex > new_screenBuffer[screen_coord].ZIndex)
+                            {
+                                new_screenBuffer[screen_coord] = pixel;
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i < obj.Display.Length; i++)
+                // Clear old pixels that are no longer part of the new screen buffer
+                foreach (var oldPixelCoord in screenBuffer.Keys)
                 {
-                    var screen_coord = obj.Position + Vec2i.RIGHT * i;
-                    var pixel = new Pixel(obj.Display[i], obj);
-
-                    if (!new_screenBuffer.TryAdd(screen_coord, pixel))
+                    if (!oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize)) continue;
+                    if (!new_screenBuffer.ContainsKey(oldPixelCoord))
                     {
-                        if (pixel != new_screenBuffer[screen_coord] && pixel.ZIndex > new_screenBuffer[screen_coord].ZIndex)
-                        {
-                            new_screenBuffer[screen_coord] = pixel;
-                        }
+                        Console.SetCursorPosition(oldPixelCoord.x, oldPixelCoord.y);
+                        Console.Write(" ");
                     }
                 }
-            }
 
-            // Clear old pixels that are no longer part of the new screen buffer
-            foreach (var oldPixelCoord in screenBuffer.Keys)
-            {
-                if (!oldPixelCoord.IsInBoundsOf(Game.Settings.Engine.WindowSize)) continue;
-                if (!new_screenBuffer.ContainsKey(oldPixelCoord))
-                {
-                    Console.SetCursorPosition(oldPixelCoord.x, oldPixelCoord.y);
-                    Console.Write(" ");
-                }
+                screenBuffer = new_screenBuffer;
             }
-
-            screenBuffer = new_screenBuffer;
         }
 
         public void clearScene()
         {
             Console.Clear();
-            screenBuffer = new ConcurrentDictionary<Vec2i, Pixel>();
-                registered_buffer = new List<SceneObject>();
+            screenBuffer = new Dictionary<Vec2i, Pixel>();
+            registered_buffer = new List<SceneObject>();
         }
 
         public static void ClearScene() => Instance.clearScene();

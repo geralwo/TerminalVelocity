@@ -16,7 +16,7 @@ public class WinScreen : Scene
 
     public override void OnInput(ConsoleKey key)
     {
-        if(key == ConsoleKey.Enter)
+        if (key == ConsoleKey.Enter)
             Game.CurrentScene = new MainMenu();
     }
 

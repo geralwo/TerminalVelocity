@@ -6,4 +6,3 @@ public struct Settings
     {
     }
 }
-    

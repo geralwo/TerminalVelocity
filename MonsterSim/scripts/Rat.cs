@@ -22,7 +22,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
             if (HP <= 0)
             {
                 Dispose();
-                TerminalVelocity.core.Debug.Log($"{this.name} died", this);
+                TerminalVelocity.common.Logger.Log($"{this.name} died", this);
             }
         }
     }
@@ -38,7 +38,7 @@ public class Rat : PhysicsObject, IAttackMove, IDefensiveMove, IMovementAbility,
     public void Attack(ICreature target)
     {
         target.TakeDamage(AD, out var _targetHP);
-        TerminalVelocity.core.Debug.Log($"{this.name} attacks {target.Name}.HP -> {_targetHP}", this);
+        TerminalVelocity.common.Logger.Log($"{this.name} attacks {target.Name}.HP -> {_targetHP}", this);
     }
 
     private void OnCollision(CollisionInfo collisionInfo)

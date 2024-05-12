@@ -5,7 +5,7 @@ using TerminalVelocity;
 public class GameScene : Scene
 {
     Player p = new Player(Vec2i.ONE, EscapeRoomSettings.PlayerChar);
-    Level l = new Level(EscapeRoomSettings.RoomSize.x,EscapeRoomSettings.RoomSize.y);
+    Level l = new Level(EscapeRoomSettings.RoomSize.x, EscapeRoomSettings.RoomSize.y);
     public GameScene(string _name) : base(_name)
     {
         name = "game_scene;";
@@ -15,7 +15,7 @@ public class GameScene : Scene
         p.BackgroundColor = ConsoleColor.White;
         p.Color = ConsoleColor.Red;
         p.ZIndex = 10;
-        
+
         AddChild(l);
         AddChild(p);
         InputEnabled = true;
@@ -24,9 +24,9 @@ public class GameScene : Scene
 
     public override void OnProcess()
     {
-        if(Game.CurrentScene == this && l.ready)
+        if (Game.CurrentScene == this && l.ready)
         {
-            if(p.Position == l.key?.Position)
+            if (p.Position == l.key?.Position)
             {
                 if (l.door != null && l.key != null)
                 {
@@ -35,17 +35,17 @@ public class GameScene : Scene
                 }
                 else
                 {
-                    if(l.door == null)
+                    if (l.door == null)
                         throw new Exception("door not found");
-                    else if(l.key == null)
+                    else if (l.key == null)
                         throw new Exception("key not found");
                 }
             }
-            if(p.Position == l.door_spawn)
+            if (p.Position == l.door_spawn)
             {
                 Game.CurrentScene = new WinScreen();
             }
-            
+
         }
 
 
@@ -53,9 +53,9 @@ public class GameScene : Scene
 
     public override void OnInput(ConsoleKey key)
     {
-        if(Game.CurrentScene == this)
+        if (Game.CurrentScene == this)
         {
-            switch(key)
+            switch (key)
             {
                 case ConsoleKey.Escape:
                     Game.CurrentScene = new MainMenu();

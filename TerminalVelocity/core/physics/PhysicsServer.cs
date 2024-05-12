@@ -62,15 +62,15 @@ public class PhysicsServer
             foreach (var obj in colDup)
             {
                 if (obj == null) continue;
-                core.Logger.AddPhysicsEntry($"Iterating over {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
+                common.Logger.AddPhysicsEntry($"Iterating over {obj.name} -> p:{obj.Position} v:{obj.Velocity} IsColliding:{obj.IsColliding}", Instance);
                 // in Step() we go through each object and insert it into the quad tree.
                 // we want to only check for collisions on objects that have a velocity != 0
-                core.Logger.AddPhysicsEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
+                common.Logger.AddPhysicsEntry($"Trying to insert {obj.CollisionShape.Length} shape(s) into CollisionTree", Instance);
                 var collisionShape = obj.CollisionShape;
                 for (int i = 0; i < collisionShape.Length; i++)
                 {
                     var posInTree = obj.Position + collisionShape[i];
-                    core.Logger.AddPhysicsEntry("Trying to insert Shape " + collisionShape[i] + " into " + posInTree, Instance);
+                    common.Logger.AddPhysicsEntry("Trying to insert Shape " + collisionShape[i] + " into " + posInTree, Instance);
                     CollisionTree.Insert(posInTree, obj);
                 }
             }
@@ -83,13 +83,13 @@ public class PhysicsServer
                 obj.Velocity = obj.Velocity.StepToZero();
             }
             time.Stop();
-            core.Logger.AddPhysicsEntry($"Step took {time.Elapsed.Microseconds}µs", Instance);
+            common.Logger.AddPhysicsEntry($"Step took {time.Elapsed.Microseconds}µs", Instance);
         }
     }
 
     private static void checkCollision(PhysicsObject obj)
     {
-        TerminalVelocity.core.Logger.AddPhysicsEntry("Checking collision for " + obj.name, Instance);
+        TerminalVelocity.common.Logger.AddPhysicsEntry("Checking collision for " + obj.name, Instance);
 
         // Keep track of points that have already been queried
         var queriedPositions = new HashSet<Vec2i>();
@@ -104,7 +104,7 @@ public class PhysicsServer
             {
                 queriedPositions.Add(positionToCheck);
 
-                core.Logger.AddPhysicsEntry($"Checking {positionToCheck} for collisions", Instance);
+                common.Logger.AddPhysicsEntry($"Checking {positionToCheck} for collisions", Instance);
                 if (CollisionTree.Query(positionToCheck, out PhysicsObject[] queryResult))
                 {
                     // Process collision results
@@ -115,7 +115,7 @@ public class PhysicsServer
                             if (obj.CollisionIgnoreFilter.Contains(collider.name)) continue;
 
                             var ignoreNames = obj.CollisionIgnoreFilter.Where(x => true);
-                            core.Logger.AddPhysicsEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} [{string.Join(", ", ignoreNames)}] collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
+                            common.Logger.AddPhysicsEntry($"OBJECT COLLISION: obj {obj.name} {obj.Position} [{string.Join(", ", ignoreNames)}] collided with {collider.name} {collider.Position} trying to go to {obj.Position + obj.Velocity}", obj);
                             if (collider is not PhysicsArea)
                             {
                                 if (obj is not PhysicsArea)

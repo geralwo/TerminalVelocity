@@ -215,10 +215,22 @@ public struct Vec2i
         var rng = new Random();
         return new Vec2i(rng.Next(_maxExclusive), rng.Next(_maxExclusive));
     }
-    public static Vec2i Random(Vec2i _maxExclusive)
+
+    public static Vec2i Random(Vec2i _range, bool _randomSign = false)
     {
         var rng = new Random();
-        return new Vec2i(rng.Next(_maxExclusive.x), rng.Next(_maxExclusive.y));
+        var x = rng.Next(_range.x);
+        var y = rng.Next(_range.y);
+        if (_randomSign)
+        {
+            var flipSigns = new Random().Next(100) < 50 ? true : false;
+            if (flipSigns)
+                x = -x;
+            flipSigns = new Random().Next(100) < 50 ? true : false;
+            if (flipSigns)
+                y = -y;
+        }
+        return new Vec2i(x, y);
     }
 
     public static List<Vec2i> GetLine(Vec2i start, Vec2i end)
@@ -304,4 +316,12 @@ public struct Vec2i
                 return Vec2i.ZERO;
         }
     }
+
+    public static Vec2i New(int x, int y)
+    {
+        return new Vec2i(x, y);
+    }
+
+
+
 }

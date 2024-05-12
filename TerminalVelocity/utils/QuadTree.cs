@@ -9,7 +9,7 @@ namespace TerminalVelocity
         public static int DefaultCapacity = 16;
         public AABB Aabb { get; private set; } // Ensure this property is properly set
         public int Capacity { get; set; } = DefaultCapacity; // Settable property
-        public Dictionary<Vec2i,PhysicsObject> Items { get; private set; } = new Dictionary<Vec2i,PhysicsObject>();
+        public Dictionary<Vec2i, PhysicsObject> Items { get; private set; } = new Dictionary<Vec2i, PhysicsObject>();
         public bool Divided { get; private set; } = false; // Private setter to prevent external modification
         public QuadTree[] SubTrees { get; private set; } = new QuadTree[4]; // Avoid null pointer issues
 
@@ -33,15 +33,15 @@ namespace TerminalVelocity
         {
             if (!Aabb.Contains(obj.Position))
             {
-                TerminalVelocity.core.Debug.AddDebugEntry($"Position {obj.Position} is out of bounds for object {obj.name}  <- {Aabb.Center}", this);
+                TerminalVelocity.common.Logger.AddDebugEntry($"Position {obj.Position} is out of bounds for object {obj.name}  <- {Aabb.Center}", this);
                 return false;
             }
 
             if (!Divided && Items.Count < Capacity)
             {
-                if(Items.TryAdd(position,obj))
+                if (Items.TryAdd(position, obj))
                 {
-                    TerminalVelocity.core.Debug.AddImportantEntry($"Inserted object {obj.name} at {position} <- {Aabb.Center}", this);
+                    TerminalVelocity.common.Logger.AddImportantEntry($"Inserted object {obj.name} at {position} <- {Aabb.Center}", this);
                     return true;
                 }
                 else Subdivide();
@@ -61,7 +61,7 @@ namespace TerminalVelocity
                 }
             }
 
-            TerminalVelocity.core.Debug.AddDebugEntry($"failed to insert object {obj.name} <- {Aabb.Center}", this);
+            TerminalVelocity.common.Logger.AddDebugEntry($"failed to insert object {obj.name} <- {Aabb.Center}", this);
             return false;
         }
 
@@ -122,7 +122,7 @@ namespace TerminalVelocity
             var result = new List<PhysicsObject>();
             if (Aabb.Contains(position))
             {
-                if(Items.ContainsKey(position))
+                if (Items.ContainsKey(position))
                     result.Add(Items[position]);
 
                 if (Divided)
@@ -138,7 +138,7 @@ namespace TerminalVelocity
             }
 
             queryResult = result.ToArray();
-            TerminalVelocity.core.Debug.AddDebugEntry($"Query result length: {queryResult.Length}", this);
+            TerminalVelocity.common.Logger.AddDebugEntry($"Query result length: {queryResult.Length}", this);
             return queryResult.Length > 0;
         }
     }
